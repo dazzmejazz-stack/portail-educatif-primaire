@@ -84,7 +84,7 @@ export async function createActivity(input: ActivityInput): Promise<number> {
       ${input.title},
       ${input.description},
       ${JSON.stringify(input.blocks)}::jsonb,
-      ${Date.now()}
+      ${Math.floor(Date.now() / 1000)}
     )
     RETURNING id
   `) as { id: number }[]
