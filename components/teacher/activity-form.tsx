@@ -1,5 +1,5 @@
 'use client'
-
+import { upload } from '@vercel/blob/client'
 import { useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import {
@@ -474,12 +474,13 @@ function UploadField({
     setErr(null)
     setUploading(true)
     try {
-      const fd = new FormData()
-      fd.append('file', file)
-      const res = await fetch('/api/upload', { method: 'POST', body: fd })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Échec')
-      onUploaded(data.url, data.name)
+      const blob = await upload(file.name, file, {
+  access: 'public',
+  handleUploadUrl: '/api/upload',
+  multipart: true,
+})
+
+onUploaded(blob.url, file.name)
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'Échec du téléversement')
     } finally {
