@@ -1,36 +1,43 @@
-import { put } from '@vercel/blob'
-import { type NextRequest, NextResponse } from 'next/server'
+import { handleUpload, type HandleUploadBody } from '@vercel/blob/client'
+import { NextResponse } from 'next/server'
 import { isTeacher } from '@/lib/auth'
 
-const MAX_BYTES = 50 * 1024 * 1024 // 50 Mo
-
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   if (!(await isTeacher())) {
-    return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+    return NextResponse.json(
+      { error: 'Non autorisé' },
+      { status: 401 }
+    )
   }
 
   try {
-    const formData = await request.formData()
-    const file = formData.get('file') as File | null
+    const body = (await request.json()) as HandleUploadBody
 
-    if (!file) {
-      return NextResponse.json({ error: 'Aucun fichier' }, { status: 400 })
-    }
-    if (file.size > MAX_BYTES) {
-      return NextResponse.json(
-        { error: 'Fichier trop volumineux (max 50 Mo)' },
-        { status: 400 },
-      )
-    }
-
-    const blob = await put(file.name, file, {
-      access: 'public',
-      addRandomSuffix: true,
+    const jsonResponse = await handleUpload({
+      body,
+      request,
+      onBeforeGenerateToken: async (pathname) => {
+        return {
+          allowedContentTypes: [
+            'video/*',
+            'audio/*',
+            'image/*',
+            'application/pdf',
+          ],
+          addRandomSuffix: true,
+        }
+      },
+      onUploadCompleted: async ({ blob }) => {
+        console.log('Téléversement terminé:', blob.url)
+      },
     })
 
-    return NextResponse.json({ url: blob.url, name: file.name })
+    return NextResponse.json(jsonResponse)
   } catch (error) {
-    console.error('[v0] Upload error:', error)
-    return NextResponse.json({ error: "Échec du téléversement" }, { status: 500 })
+    console.error('Upload error:', error)
+    return NextResponse.json(
+      { error: 'Échec du téléversement' },
+      { status: 500 }
+    )
   }
 }
