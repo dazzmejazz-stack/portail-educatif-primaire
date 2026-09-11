@@ -33,7 +33,7 @@ export type SaveResult = { ok: boolean; error?: string }
 
 type SavePayload = {
   id?: number
-  grade: number
+  grades: number[]
   section: string
   title: string
   description: string
@@ -53,15 +53,19 @@ export async function saveActivityAction(
 
   const title = payload.title.trim()
   if (!title) return { ok: false, error: 'Le titre est obligatoire.' }
-  if (!Number.isInteger(payload.grade) || payload.grade < 1 || payload.grade > 6) {
-    return { ok: false, error: 'Année invalide.' }
-  }
+ if (
+  !Array.isArray(payload.grades) ||
+  payload.grades.length === 0 ||
+  payload.grades.some((grade) => !Number.isInteger(grade) || grade < 1 || grade > 6)
+) {
+  return { ok: false, error: 'Année invalide.' }
+}
   if (!isValidSection(payload.section)) {
     return { ok: false, error: 'Section invalide.' }
   }
 
   const input: ActivityInput = {
-    grade: payload.grade,
+    grade: payload.grades[0],
     section: payload.section,
     title,
     description: payload.description.trim() || null,
@@ -71,15 +75,20 @@ export async function saveActivityAction(
   try {
     if (payload.id) {
       await updateActivity(payload.id, input)
-    } else {
-      await createActivity(input)
-    }
+ } else {
+  for (const grade of payload.grades) {
+    await createActivity({
+      ...input,
+      grade,
+    })
+  }
+}
   } catch (error) {
     console.error('[v0] saveActivityAction error:', error)
     return { ok: false, error: "Erreur lors de l'enregistrement." }
   }
 
-  revalidateFor(payload.grade, payload.section)
+ payload.grades.forEach((grade) => revalidateFor(grade, payload.section))
   return { ok: true }
 }
 
