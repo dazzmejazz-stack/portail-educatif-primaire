@@ -27,7 +27,7 @@ export async function signInTeacher(password: string): Promise<boolean> {
   store.set(COOKIE_NAME, expectedToken(), {
     httpOnly: true,
     secure: isHttps,
-    sameSite: isHttps ? 'none' : 'lax',
+   sameSite: 'lax',
     path: '/',
     maxAge: 60 * 60 * 24 * 30,
   })
