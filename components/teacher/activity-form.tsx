@@ -64,7 +64,7 @@ const BLOCK_BUTTONS: { type: BlockType; label: string; icon: typeof Type }[] = [
 
 export function ActivityForm({ initial }: Props) {
   const router = useRouter()
-  const [grade, setGrade] = useState(initial?.grade ?? GRADES[0].n)
+const [grades, setGrades] = useState<number[]>([initial?.grade ?? GRADES[0].n])
   const [section, setSection] = useState(initial?.section ?? SECTIONS[0].slug)
   const [title, setTitle] = useState(initial?.title ?? '')
   const [description, setDescription] = useState(initial?.description ?? '')
@@ -137,13 +137,19 @@ export function ActivityForm({ initial }: Props) {
               <button
                 key={g.n}
                 type="button"
-                onClick={() => setGrade(g.n)}
+                onClick={() =>
+  setGrades((prev) =>
+    prev.includes(g.n)
+      ? prev.filter((n) => n !== g.n)
+      : [...prev, g.n]
+  )
+}
                 className="rounded-xl px-4 py-2 font-display text-base font-bold text-white transition-transform active:scale-95"
                 style={{
                   backgroundColor: g.color,
-                  outline: grade === g.n ? '3px solid var(--foreground)' : 'none',
+                 outline: grades.includes(g.n) ? '3px solid var(--foreground)' : 'none',
                   outlineOffset: 2,
-                  opacity: grade === g.n ? 1 : 0.55,
+                 opacity: grades.includes(g.n) ? 1 : 0.55,
                 }}
               >
                 {g.label}
