@@ -112,12 +112,9 @@ export function ActivityForm({ initial }: Props) {
         description,
         blocks,
       })
-      if (res.ok) {
-        router.push('/enseignant/tableau')
-        router.refresh()
-      } else {
-        setError(res.error ?? 'Une erreur est survenue.')
-      }
+    if (!res.ok) {
+  setError(res.error ?? 'Une erreur est survenue.')
+    }
     })
   }
 
