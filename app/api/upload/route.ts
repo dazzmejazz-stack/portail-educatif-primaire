@@ -1,14 +1,7 @@
 import { handleUpload, type HandleUploadBody } from '@vercel/blob/client'
 import { NextResponse } from 'next/server'
-import { isTeacher } from '@/lib/auth'
 
 export async function POST(request: Request) {
-  if (!(await isTeacher())) {
-    return NextResponse.json(
-      { error: 'Non autorisé' },
-      { status: 401 }
-    )
-  }
 
   try {
     const body = (await request.json()) as HandleUploadBody
