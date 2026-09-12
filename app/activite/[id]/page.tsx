@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getActivity } from '@/lib/activities'
+import { getActivityById } from '@/lib/activities'
 import { getGrade, getSection } from '@/lib/constants'
 import { BlockRenderer } from '@/components/block-renderer'
 import { BackLink } from '@/components/back-link'
@@ -13,7 +13,7 @@ export default async function ActivityPage({
   const activityId = Number(id)
   if (!Number.isInteger(activityId)) notFound()
 
-  const activity = await getActivity(activityId)
+  const activity = await getActivityById(activityId)
   if (!activity) notFound()
 
   const grade = getGrade(activity.grade)
