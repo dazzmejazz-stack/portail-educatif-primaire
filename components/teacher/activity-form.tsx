@@ -114,7 +114,7 @@ const [grades, setGrades] = useState<number[]>([initial?.grade ?? GRADES[0].n])
       })
       if (res.ok) {
         router.push('/enseignant/tableau')
-        router.refresh()
+  
       } else {
         setError(res.error ?? 'Une erreur est survenue.')
       }
