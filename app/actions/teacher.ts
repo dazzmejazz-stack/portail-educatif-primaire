@@ -74,15 +74,34 @@ export async function saveActivityAction(
 
   try {
     if (payload.id) {
-      await updateActivity(payload.id, input)
- } else {
+  const current = await getActivityById(payload.id)
+  if (!current) return { ok: false, error: 'Activité introuvable.' }
+
+  if (payload.grades.includes(current.grade)) {
+    await updateActivity(payload.id, {
+      ...input,
+      grade: current.grade,
+    })
+  } else {
+    await deleteActivity(payload.id)
+  }
+
+  for (const grade of payload.grades) {
+    if (grade !== current.grade) {
+      await createActivity({
+        ...input,
+        grade,
+      })
+    }
+  }
+} else {
   for (const grade of payload.grades) {
     await createActivity({
       ...input,
       grade,
     })
   }
-}
+    }
   } catch (error) {
     console.error('[v0] saveActivityAction error:', error)
     return { ok: false, error: "Erreur lors de l'enregistrement." }
