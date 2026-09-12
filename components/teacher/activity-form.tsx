@@ -123,7 +123,7 @@ const [success, setSuccess] = useState(false)
 
   return (
     <div className="flex flex-col gap-6">
-      {success && <p>✅ Activité enregistrée !</p>}
+      {success && <p className="text-center font-bold text-green-600">✅ Activité enregistrée !</p>}
       <div className="rounded-3xl bg-card p-5 shadow-sm ring-1 ring-border">
         <h2 className="mb-4 font-display text-xl font-bold text-card-foreground">
           Où publier ?
