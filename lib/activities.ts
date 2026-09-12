@@ -48,7 +48,7 @@ export async function getAllActivities(): Promise<Activity[]> {
   return rows.map(mapRow)
 }
 
-export async function getActivityById(id: number)
+export async function getActivityById(id: number): Promise<Activity | null> {
   const rows = (await sql`SELECT * FROM activities WHERE id = ${id}`) as Row[]
   return rows[0] ? mapRow(rows[0]) : null
 }
