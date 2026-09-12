@@ -78,17 +78,13 @@ export async function saveActivityAction(
   const current = await getActivityById(payload.id)
   if (!current) return { ok: false, error: 'Activité introuvable.' }
 
-  if (payload.grades.includes(current.grade)) {
-    await updateActivity(payload.id, {
-      ...input,
-      grade: current.grade,
-    })
-  } else {
-    await deleteActivity(payload.id)
-  }
+  await updateActivity(payload.id, {
+  ...input,
+  grade: payload.grades[0],
+})
 
   for (const grade of payload.grades) {
-    if (grade !== current.grade) {
+    if (grade !== payload.grades[0]) {
       await createActivity({
         ...input,
         grade,
