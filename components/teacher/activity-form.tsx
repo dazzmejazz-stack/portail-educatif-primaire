@@ -112,11 +112,8 @@ const [grades, setGrades] = useState<number[]>([initial?.grade ?? GRADES[0].n])
         description,
         blocks,
       })
-      if (res.ok) {
-        window.location.href = '/enseignant/tableau'
-  
-      } else {
-        setError(res.error ?? 'Une erreur est survenue.')
+      if (!res.ok) {
+  setError(res.error ?? 'Une erreur est survenue.')
       }
     })
   }
