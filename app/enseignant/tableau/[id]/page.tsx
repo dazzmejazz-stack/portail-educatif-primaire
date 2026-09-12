@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation'
 import { isTeacher } from '@/lib/auth'
-import { getActivity } from '@/lib/activities'
+import { getActivityById } from '@/lib/activities'
 import { ActivityForm } from '@/components/teacher/activity-form'
 import { BackLink } from '@/components/back-link'
 
@@ -15,7 +15,7 @@ export default async function EditActivityPage({
   const activityId = Number(id)
   if (!Number.isInteger(activityId)) notFound()
 
-  const activity = await getActivity(activityId)
+  const activity = await getActivityById(activityId)
   if (!activity) notFound()
 
   return (
