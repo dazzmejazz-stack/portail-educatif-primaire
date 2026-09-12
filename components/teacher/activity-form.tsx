@@ -106,7 +106,7 @@ const [grades, setGrades] = useState<number[]>([initial?.grade ?? GRADES[0].n])
     startSaving(async () => {
       const res = await saveActivityAction({
         id: initial?.id,
-        grade,
+        grades,
         section,
         title,
         description,
