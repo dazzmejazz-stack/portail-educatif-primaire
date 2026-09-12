@@ -277,6 +277,7 @@ const [success, setSuccess] = useState(false)
           ) : null}
           Enregistrer
         </button>
+        {success && <span>✅ Activité enregistrée !</span>}
       </div>
     </div>
   )
