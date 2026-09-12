@@ -113,7 +113,7 @@ const [grades, setGrades] = useState<number[]>([initial?.grade ?? GRADES[0].n])
         blocks,
       })
       if (res.ok) {
-        router.push('/enseignant/tableau')
+        window.location.href = '/enseignant/tableau'
   
       } else {
         setError(res.error ?? 'Une erreur est survenue.')
