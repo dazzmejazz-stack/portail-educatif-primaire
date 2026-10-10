@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Notes au hasard</title>
+<style>
+html{color-scheme:light}
+body{margin:0}
+:root {
+--bg: #eef1f4;
+--surface: #ffffff;
+--ink: #17202b;
+--muted: #5a6776;
+--staff: #8d99a8;
+--edge: #d3dae2;
+--accent: #2457d6;
+--accent-soft: #e3ebfc;
+--on-accent: #ffffff;
+--font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+--font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root:not([data-theme="light"]) {
+--bg: #0f141b;
+--surface: #18202a;
+--ink: #e8edf3;
+--muted: #97a4b3;
+--staff: #5b6878;
+--edge: #2c3744;
+--accent: #86aaff;
+--accent-soft: #23324f;
+--on-accent: #0b1220;
+color-scheme: dark;
+}
+}
+:root[data-theme="dark"] {
+--bg: #0f141b;
+--surface: #18202a;
+--ink: #e8edf3;
+--muted: #97a4b3;
+--staff: #5b6878;
+--edge: #2c3744;
+--accent: #86aaff;
+--accent-soft: #23324f;
+--on-accent: #0b1220;
+color-scheme: dark;
+}
+body {
+background: var(--bg);
+color: var(--ink);
+font-family: var(--font-display);
+padding-inline: 16px;
+padding-block: 24px;
+}
+.app { max-width: 560px; margin-inline: auto; display: flex; flex-direction: column; gap: 16px; }
+header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.titleblock { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+h1 { margin: 0; font-size: 1.375rem; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); font-size: 0.9375rem; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.fs-btn { display: none; }
+.card {
+background: var(--surface);
+border: 1px solid var(--edge);
+border-radius: 14px;
+min-width: 0;
+}
+.staff { padding: 12px 12px 8px; }
+svg { display: block; width: 100%; height: auto; max-width: 100%; }
+.line { stroke: var(--staff); stroke-width: 1.4; }
+.ink { fill: var(--ink); }
+.hollow { fill: none; stroke: var(--ink); stroke-width: 2.4; }
+.stem { stroke: var(--ink); stroke-width: 2.2; stroke-linecap: round; }
+.beam { stroke: var(--ink); stroke-width: 5; stroke-linecap: butt; }
+.flag { fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; }
+.rstroke { fill: none; stroke: var(--ink); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+.ledger { stroke: var(--ink); stroke-width: 1.8; stroke-linecap: round; }
+#clef { fill: var(--ink); opacity: 0; transition: opacity 0.2s; }
+#clef.ready { opacity: 1; }
+.nm {
+fill: var(--accent);
+font-family: var(--font-display);
+font-weight: 800;
+font-size: 27px;
+letter-spacing: -0.02em;
+text-anchor: middle;
+}
+.rl { fill: var(--muted); font-family: var(--font-display); font-weight: 600; font-size: 14px; text-anchor: middle; }
+.pt { fill: var(--ink); font-family: var(--font-display); font-weight: 700; font-size: 15px; text-anchor: middle; }
+.cb { fill: none; stroke: var(--accent); stroke-width: 1.6; }
+.rowlab { fill: var(--muted); font-family: var(--font-mono); font-size: 12px; text-anchor: start; }
+.nt { transition: opacity 0.08s; }
+.n { animation: pop 0.3s ease-out backwards; }
+@keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.running .nt { opacity: 0.4; }
+.running .nt.on { opacity: 1; }
+.nt.on .ink { fill: var(--accent); }
+.nt.on .hollow { stroke: var(--accent); }
+.nt.on .stem, .nt.on .flag, .nt.on .rstroke { stroke: var(--accent); }
+.running.prep .nt { opacity: 1; }
+.status { font-size: 0.875rem; font-weight: 600; color: var(--muted); min-height: 1.4em; padding: 0 4px 4px; }
+.status.prep { color: var(--accent); }
+.panel { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.tempo { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.readout { display: flex; flex-direction: column; align-items: center; line-height: 1.1; min-width: 0; }
+#bpmNum { font-size: 2.75rem; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.unit { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--muted); }
+#tempoWord { font-style: italic; color: var(--accent); font-weight: 600; font-size: 1rem; min-height: 1.2em; }
+input[type="range"] { width: 100%; height: 32px; accent-color: var(--accent); margin: 0; }
+.dots { display: flex; justify-content: center; gap: 14px; }
+.dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--staff); background: transparent; transition: background 0.05s; }
+.dot:first-child { border-color: var(--accent); }
+.dot.on { background: var(--accent); border-color: var(--accent); }
+.group { display: flex; flex-direction: column; gap: 8px; }
+.label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.seg { display: flex; border: 1px solid var(--edge); border-radius: 10px; overflow: hidden; }
+.seg button {
+flex: 1 1 0;
+min-width: 0;
+min-height: 44px;
+padding-inline: 6px;
+border: 0;
+border-left: 1px solid var(--edge);
+background: var(--surface);
+color: var(--ink);
+font-weight: 600;
+font-size: 0.9375rem;
+}
+.seg button:first-child { border-left: 0; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+.seg button:focus-visible { outline-offset: -3px; }
+select {
+font: inherit;
+font-weight: 600;
+min-height: 44px;
+padding-inline: 12px;
+border: 1px solid var(--edge);
+border-radius: 10px;
+background: var(--surface);
+color: var(--ink);
+width: 100%;
+}
+.row { display: flex; gap: 12px; flex-wrap: wrap; }
+button { font: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.btn {
+min-height: 48px;
+padding-inline: 20px;
+border-radius: 10px;
+border: 1px solid var(--edge);
+background: var(--surface);
+color: var(--ink);
+font-weight: 600;
+font-size: 1rem;
+}
+.btn.small { min-height: 40px; padding-inline: 14px; font-size: 0.875rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); width: 100%; font-size: 1.125rem; }
+.btn.step { min-width: 56px; padding-inline: 0; font-size: 1.5rem; line-height: 1; }
+.btn[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.btn:active { transform: translateY(1px); }
+.hint { margin: 0; font-size: 0.8125rem; color: var(--muted); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.board { max-width: 1200px; }
+.board header p, .board .hint, .board #settings, .board input#bpm { display: none; }
+.board .fs-btn { display: inline-block; }
+.board svg { max-height: 60vh; }
+.board .status { font-size: 1.25rem; }
+.board #bpmNum { font-size: 4rem; }
+.board .dot { width: 30px; height: 30px; }
+.board .dots { gap: 24px; }
+.board .btn { min-height: 56px; font-size: 1.125rem; }
+.board .btn.small { min-height: 44px; font-size: 0.9375rem; }
+.board .btn.primary { font-size: 1.375rem; }
+@media (prefers-reduced-motion: reduce) {
+.n { animation: none; }
+#clef, .nt, .dot { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<header>
+<div class="titleblock">
+<h1>Notes au hasard</h1>
+<p>Cl&#xE9; de sol. Les notes Do, Mi, Sol et La, lues au tempo que vous choisissez.</p>
+</div>
+<div class="actions">
+<button class="btn small fs-btn" id="fsBtn" type="button">Plein &#xE9;cran</button>
+<button class="btn small" id="boardBtn" type="button" aria-pressed="false">Mode tableau</button>
+</div>
+</header>
+<section class="card staff" id="staffCard" aria-label="Port&#xE9;e">
+<div class="status" id="status">Appuyez sur D&#xE9;marrer</div>
+<svg viewBox="0 0 340 232" role="img" aria-labelledby="svgTitle">
+<title id="svgTitle">Port&#xE9;e en cl&#xE9; de sol avec les notes de la mesure</title>
+<g>
+<line class="line" x1="14" x2="326" y1="86" y2="86"/>
+<line class="line" x1="14" x2="326" y1="102" y2="102"/>
+<line class="line" x1="14" x2="326" y1="118" y2="118"/>
+<line class="line" x1="14" x2="326" y1="134" y2="134"/>
+<line class="line" x1="14" x2="326" y1="150" y2="150"/>
+<line class="line" x1="14" x2="14" y1="86" y2="150"/>
+<line class="line" x1="326" x2="326" y1="86" y2="150"/>
+</g>
+<text id="clef" x="22" y="168" font-size="96" font-family="'Noto Music','Segoe UI Symbol','Apple Symbols','Noto Sans Symbols 2',serif">&#x1D11E;</text>
+<g id="notes"></g>
+</svg>
+<div class="sr" aria-live="polite" id="live"></div>
+</section>
+<section class="card panel" aria-label="M&#xE9;tronome">
+<div class="tempo">
+<button class="btn step" id="slower" type="button" aria-label="Plus lent">&minus;</button>
+<div class="readout">
+<div id="bpmNum">80</div>
+<div class="unit">battements par minute</div>
+<div id="tempoWord">Andante</div>
+</div>
+<button class="btn step" id="faster" type="button" aria-label="Plus rapide">+</button>
+</div>
+<input id="bpm" type="range" min="40" max="200" step="1" value="80" aria-label="Tempo en battements par minute">
+<div class="dots" id="dots" aria-hidden="true">
+<span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+</div>
+<button class="btn primary" id="start" type="button">D&#xE9;marrer</button>
+</section>
+<div class="row" id="quick">
+<button class="btn" id="next" type="button">M&#xE9;langer</button>
+<button class="btn" id="listen" type="button">&#xC9;couter</button>
+<button class="btn" id="toggleName" type="button" aria-pressed="true">Noms affich&#xE9;s</button>
+</div>
+<section class="card panel" id="settings" aria-label="R&#xE9;glages">
+<div class="group">
+<label class="label" for="soundSel">Son</label>
+<select id="soundSel">
+<option value="click">Clic</option>
+<option value="rock" selected>Batterie rock</option>
+<option value="pop">Batterie pop</option>
+<option value="disco">Batterie disco</option>
+<option value="reggae">Batterie reggae</option>
+<option value="ballade">Batterie ballade</option>
+</select>
+</div>
+<div class="group">
+<div class="label" id="rhythmLabel">Valeur des notes dans la mesure</div>
+<div class="seg" id="rhythmSeg" role="group" aria-labelledby="rhythmLabel">
+<button type="button" data-value="1" aria-pressed="false">Ronde</button>
+<button type="button" data-value="2" aria-pressed="false">Blanches</button>
+<button type="button" data-value="4" aria-pressed="true">Noires</button>
+<button type="button" data-value="8" aria-pressed="false">Croches</button>
+<button type="button" data-value="mix" aria-pressed="false">Mixte</button>
+</div>
+</div>
+<div class="group">
+<div class="label" id="restLabel">Silences dans la mesure</div>
+<div class="seg" id="restSeg" role="group" aria-labelledby="restLabel">
+<button type="button" data-value="0" aria-pressed="true">Non</button>
+<button type="button" data-value="1" aria-pressed="false">Oui</button>
+</div>
+</div>
+<div class="group">
+<div class="label" id="everyLabel">Nouvel ordre des notes</div>
+<div class="seg" id="everySeg" role="group" aria-labelledby="everyLabel">
+<button type="button" data-value="0" aria-pressed="false">Jamais</button>
+<button type="button" data-value="1" aria-pressed="false">Chaque mesure</button>
+<button type="button" data-value="2" aria-pressed="true">2 mesures</button>
+<button type="button" data-value="4" aria-pressed="false">4 mesures</button>
+</div>
+</div>
+<div class="group">
+<div class="label" id="emptyLabel">Mesure vide avant chaque nouvel ordre</div>
+<div class="seg" id="emptySeg" role="group" aria-labelledby="emptyLabel">
+<button type="button" data-value="1" aria-pressed="true">Oui</button>
+<button type="button" data-value="0" aria-pressed="false">Non</button>
+</div>
+</div>
+</section>
+<p class="hint">Raccourcis : Espace d&#xE9;marre ou arr&#xEA;te, N ou fl&#xE8;che droite m&#xE9;lange, T active le mode tableau, fl&#xE8;ches haut et bas changent le tempo.</p>
+</div>
+<script>
+(function () {
+var NOTES = [
+{ fr: "Do",  en: "C4", str: 3, step: -2, freq: 261.63 },
+{ fr: "Mi",  en: "E4", str: 2, step: 0,  freq: 329.63 },
+{ fr: "Sol", en: "G4", str: 4, step: 2,  freq: 392.0 },
+{ fr: "La",  en: "A4", str: 1, step: 3,  freq: 440.0 }
+];
+var YB = 150, SP = 16;
+var XA = 96, XB = 318;   // zone de la port\u00E9e occup\u00E9e par la mesure (8 croches)
+var NS = "http://www.w3.org/2000/svg";
+var BPM_MIN = 40, BPM_MAX = 200;
+var STORE_KEY = "notes-au-hasard-v1";
+var STYLES = {
+rock:    { kick: [1,0,0,0,1,0,0,0], snare: [0,0,1,0,0,0,1,0], hat: [0.28,0.16,0.28,0.16,0.28,0.16,0.28,0.16], sg: 1 },
+pop:     { kick: [1,0,0,0,1,1,0,0], snare: [0,0,1,0,0,0,1,0], hat: [0.28,0.16,0.28,0.16,0.28,0.16,0.28,0.16], sg: 1 },
+disco:   { kick: [1,0,1,0,1,0,1,0], snare: [0,0,1,0,0,0,1,0], hat: [0,0.3,0,0.3,0,0.3,0,0.3], sg: 0.8 },
+reggae:  { kick: [0,0,0,0,1,0,0,0], snare: [0,0,0,0,1,0,0,0], hat: [0.14,0.26,0.14,0.26,0.14,0.26,0.14,0.26], sg: 0.8 },
+ballade: { kick: [1,0,0,0,0,1,0,0], snare: [0,0,1,0,0,0,1,0], hat: [0.2,0,0.14,0,0.2,0,0.14,0], sg: 0.55 }
+};
+var RHYTHMS = ["1", "2", "4", "8", "mix"];
+var rhythm = "4";         // ronde, blanches, noires, croches ou mixte
+var restsOn = false;      // des silences se m\u00EAlent aux notes
+var measure = [];         // \u00E9v\u00E9nements de la mesure : { start, dur, note } (start et dur en croches, note = -1 pour un silence)
+var stepEvent = [];       // pour chaque croche de la mesure, l'\u00E9v\u00E9nement en cours
+var lastSeq = null;
+var showName = true;
+var shuffleEvery = 2;     // mesures entre deux m\u00E9langes, 0 = jamais
+var soundMode = "rock";   // "click" ou un style de batterie
+var emptyOn = true;       // une mesure vide montre les prochaines notes avant de les jouer
+var isEmpty = false;      // la mesure en cours est la mesure vide
+var bpm = 80;
+var running = false, step = 0, nextTime = 0, measures = 0, curStep = -1;
+var timer = null, uiTimers = [];
+var ac = null, out = null, noise = null;
+var notesG = document.getElementById("notes");
+var liveEl = document.getElementById("live");
+var staffCard = document.getElementById("staffCard");
+var dots = document.getElementById("dots").children;
+var startBtn = document.getElementById("start");
+var bpmInput = document.getElementById("bpm");
+var bpmNum = document.getElementById("bpmNum");
+var tempoWord = document.getElementById("tempoWord");
+var toggleName = document.getElementById("toggleName");
+var soundSel = document.getElementById("soundSel");
+function el(tag, attrs, parent) {
+var e = document.createElementNS(NS, tag);
+for (var k in attrs) e.setAttribute(k, attrs[k]);
+if (parent) parent.appendChild(e);
+return e;
+}
+function save() {
+try {
+localStorage.setItem(STORE_KEY, JSON.stringify({
+bpm: bpm, sound: soundMode, rhythm: rhythm, rests: restsOn,
+every: shuffleEvery, empty: emptyOn, names: showName
+}));
+} catch (e) {}
+}
+function load() {
+try {
+var s = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+if (!s) return;
+if (typeof s.bpm === "number" && s.bpm >= BPM_MIN && s.bpm <= BPM_MAX) bpm = Math.round(s.bpm);
+if (s.sound === "click" || STYLES[s.sound]) soundMode = s.sound;
+if (RHYTHMS.indexOf(s.rhythm) >= 0) rhythm = s.rhythm;
+if (typeof s.rests === "boolean") restsOn = s.rests;
+if ([0, 1, 2, 4].indexOf(s.every) >= 0) shuffleEvery = s.every;
+if (typeof s.empty === "boolean") emptyOn = s.empty;
+if (typeof s.names === "boolean") showName = s.names;
+} catch (e) {}
+}
+function setSeg(id, value) {
+var btns = document.getElementById(id).querySelectorAll("button");
+Array.prototype.forEach.call(btns, function (b) {
+b.setAttribute("aria-pressed", String(b.getAttribute("data-value") === String(value)));
+});
+}
+function syncUI() {
+soundSel.value = soundMode;
+setSeg("rhythmSeg", rhythm);
+setSeg("restSeg", restsOn ? "1" : "0");
+setSeg("everySeg", shuffleEvery);
+setSeg("emptySeg", emptyOn ? "1" : "0");
+toggleName.setAttribute("aria-pressed", String(showName));
+toggleName.textContent = showName ? "Noms affich\u00E9s" : "Noms masqu\u00E9s";
+}
+function perm() {
+var a = [0, 1, 2, 3];
+for (var i = a.length - 1; i > 0; i--) {
+var j = Math.floor(Math.random() * (i + 1));
+var t = a[i]; a[i] = a[j]; a[j] = t;
+}
+return a;
+}
+function makeOrder(n, prev) {
+var a, same, tries = 0;
+do {
+a = [];
+while (a.length < n) {
+var p = perm();
+if (a.length && p[0] === a[a.length - 1]) p.push(p.shift());
+a = a.concat(p);
+}
+a = a.slice(0, n);
+same = prev && prev.length === a.length && a.every(function (v, i) { return v === prev[i]; });
+} while (same && ++tries < 30);
+return a;
+}
+function mixedDurs() {
+for (var tries = 0; tries < 12; tries++) {
+var d = [];
+for (var half = 0; half < 2; half++) {
+if (Math.random() < 0.35) d.push(4);
+else for (var beat = 0; beat < 2; beat++) { if (Math.random() < 0.55) d.push(2); else d.push(1, 1); }
+}
+var kinds = {};
+d.forEach(function (v) { kinds[v] = true; });
+if (Object.keys(kinds).length > 1) return d;
+}
+return [4, 2, 1, 1];
+}
+function durationsFor(r) {
+if (r === "1") return [8];
+if (r === "2") return [4, 4];
+if (r === "4") return [2, 2, 2, 2];
+if (r === "8") return [1, 1, 1, 1, 1, 1, 1, 1];
+return mixedDurs();
+}
+function genMeasure() {
+var durs = durationsFor(rhythm), evs = [], s = 0;
+durs.forEach(function (d) { evs.push({ start: s, dur: d, note: -1 }); s += d; });
+var rest = evs.map(function () { return false; });
+if (restsOn && evs.length > 1) {
+var cap = Math.floor(evs.length / 2), cnt = 0;
+perm8(evs.length).forEach(function (i) {
+if (cnt < cap && Math.random() < 0.3) { rest[i] = true; cnt++; }
+});
+}
+var need = rest.filter(function (r) { return !r; }).length;
+var seq = makeOrder(need, lastSeq);
+lastSeq = seq;
+var k = 0;
+evs.forEach(function (e, i) { e.note = rest[i] ? -1 : seq[k++]; });
+return evs;
+}
+function perm8(n) {
+var a = [];
+for (var i = 0; i < n; i++) a.push(i);
+for (var j = a.length - 1; j > 0; j--) {
+var r = Math.floor(Math.random() * (j + 1));
+var t = a[j]; a[j] = a[r]; a[r] = t;
+}
+return a;
+}
+function newMeasure() {
+measure = genMeasure();
+stepEvent = [];
+measure.forEach(function (e, i) {
+for (var t = e.start; t < e.start + e.dur; t++) stepEvent[t] = i;
+});
+}
+function updateStatus() {
+var st = document.getElementById("status");
+var prep = running && isEmpty;
+staffCard.classList.toggle("prep", prep);
+st.classList.toggle("prep", prep);
+st.textContent = !running ? "Appuyez sur D\u00E9marrer"
+: prep ? "Mesure vide : pr\u00E9parez ces notes"
+: "\u00C0 vous : lisez les notes";
+}
+function applyMark() {
+var kids = notesG.children;
+var hi = (running && !isEmpty && curStep >= 0) ? stepEvent[curStep] : -1;
+for (var i = 0; i < kids.length; i++) kids[i].classList.toggle("on", i === hi);
+var db = (running && curStep >= 0) ? Math.floor(curStep / 2) : -1;
+for (var d = 0; d < dots.length; d++) dots[d].classList.toggle("on", d === db);
+}
+function drawRest(g, dur, x) {
+if (dur === 8) {            // pause : suspendue sous la 4e ligne
+el("rect", { class: "ink", x: x - 9, y: 102, width: 18, height: 7 }, g);
+} else if (dur === 4) {     // demi-pause : pos\u00E9e sur la 3e ligne
+el("rect", { class: "ink", x: x - 9, y: 111, width: 18, height: 7 }, g);
+} else if (dur === 2) {     // soupir
+el("path", { class: "rstroke", d: "M" + (x - 4) + " 88 L" + (x + 4) + " 99 L" + (x - 3) + " 110 L" + (x + 3) + " 120 Q" + (x - 5) + " 118 " + (x - 4) + " 128" }, g);
+} else {                    // demi-soupir
+el("circle", { class: "ink", cx: x - 3.5, cy: 104, r: 3.2 }, g);
+el("path", { class: "rstroke", d: "M" + (x - 3) + " 107 Q" + (x + 4) + " 106 " + (x + 4) + " 100 L" + (x - 2) + " 124" }, g);
+}
+}
+function draw(animate) {
+while (notesG.firstChild) notesG.removeChild(notesG.firstChild);
+var unit = (XB - XA) / 8;
+var xs = measure.map(function (e) { return XA + (e.start + e.dur / 2) * unit; });
+var ys = measure.map(function (e) { return e.note >= 0 ? YB - NOTES[e.note].step * (SP / 2) : 0; });
+var anyEighth = measure.some(function (e) { return e.dur === 1; });
+var beamY = {}, pairs = [];
+for (var i = 0; i < measure.length - 1; i++) {
+var a = measure[i], b = measure[i + 1];
+if (a.dur === 1 && b.dur === 1 && a.start % 2 === 0 && a.note >= 0 && b.note >= 0) {
+var by = Math.min(ys[i], ys[i + 1]) - 48;
+beamY[i] = by; beamY[i + 1] = by;
+pairs.push([i, i + 1]);
+i++;
+}
+}
+function stemOff(e) { return (e.dur === 1 ? 10.5 * 0.78 : 10.5) - 0.9; }
+var cy = anyEighth ? 212 : 215;
+measure.forEach(function (e, idx) {
+var x = xs[idx], y = ys[idx];
+var small = e.dur === 1;
+var g = el("g", { class: animate ? "nt n" : "nt" }, notesG);
+if (animate) g.style.animationDelay = (idx * 60) + "ms";
+if (e.note < 0) {
+drawRest(g, e.dur, x);
+var rl = el("text", { class: "rl", x: x, y: small ? 196 : 198 }, g);
+rl.setAttribute("style", "font-size:" + (small ? 10 : 14) + "px");
+rl.textContent = "silence";
+return;
+}
+var n = NOTES[e.note];
+var sc = small ? 0.78 : 1;
+var rx = 10.5 * sc, ry = 7.5 * sc;
+var so = stemOff(e);
+if (n.step <= -2) {
+var half = (e.dur === 8 ? 12.5 : rx) + 7.5;
+el("line", { class: "ledger", x1: x - half, x2: x + half, y1: YB + SP, y2: YB + SP }, g);
+}
+if (e.dur !== 8) {
+var top = beamY[idx] !== undefined ? beamY[idx] : y - 54;
+el("line", { class: "stem", x1: x + so, x2: x + so, y1: y - 2, y2: top }, g);
+if (small && beamY[idx] === undefined) {
+el("path", { class: "flag", d: "M" + (x + so) + " " + top + " q 10 6 7 20" }, g);
+}
+}
+if (e.dur === 8) {
+el("ellipse", { class: "hollow", cx: x, cy: y, rx: 12.5, ry: 7.5 }, g);
+} else {
+el("ellipse", { class: e.dur === 4 ? "hollow" : "ink", cx: x, cy: y, rx: rx, ry: ry, transform: "rotate(-20 " + x + " " + y + ")" }, g);
+}
+var nm = el("text", { class: "nm", x: x, y: small ? 196 : 198 }, g);
+nm.setAttribute("style", "font-size:" + (small ? 15 : 27) + "px");
+nm.textContent = showName ? n.fr : "?";
+if (showName) {
+var cr = small ? 9 : 11, cfs = small ? 12 : 15, ccy = small ? 212 : 215;
+el("circle", { class: "cb", cx: x, cy: ccy, r: cr }, g);
+var pt = el("text", { class: "pt", x: x, y: ccy + cfs * 0.35 }, g);
+pt.setAttribute("style", "font-size:" + cfs + "px");
+pt.textContent = String(n.str);
+}
+});
+pairs.forEach(function (p) {
+var ea = measure[p[0]], eb = measure[p[1]];
+el("line", { class: "beam", x1: xs[p[0]] + stemOff(ea), x2: xs[p[1]] + stemOff(eb), y1: beamY[p[0]], y2: beamY[p[0]] }, notesG);
+});
+if (showName && measure.some(function (e) { return e.note >= 0; })) {
+var lab = el("text", { class: "rowlab", x: 22, y: cy + 4 }, notesG);
+lab.textContent = "corde";
+}
+liveEl.textContent = measure.map(function (e) {
+return e.note < 0 ? "silence" : (showName ? NOTES[e.note].fr : "?");
+}).join(", ");
+applyMark();
+}
+function reshuffle(animate) {
+newMeasure();
+draw(animate);
+}
+function tempoName(v) {
+if (v < 60) return "Largo";
+if (v < 76) return "Adagio";
+if (v < 108) return "Andante";
+if (v < 120) return "Moderato";
+if (v < 156) return "Allegro";
+if (v < 176) return "Vivace";
+return "Presto";
+}
+function setBpm(v) {
+bpm = Math.max(BPM_MIN, Math.min(BPM_MAX, Math.round(v)));
+bpmInput.value = String(bpm);
+bpmNum.textContent = String(bpm);
+tempoWord.textContent = tempoName(bpm);
+}
+function changeBpm(v) { setBpm(v); save(); }
+bpmInput.addEventListener("input", function () { changeBpm(Number(bpmInput.value)); });
+document.getElementById("slower").addEventListener("click", function () { changeBpm(bpm - 2); });
+document.getElementById("faster").addEventListener("click", function () { changeBpm(bpm + 2); });
+function ensureAC() {
+if (!ac) {
+ac = new (window.AudioContext || window.webkitAudioContext)();
+out = ac.createGain();
+out.gain.value = 0.7;
+out.connect(ac.destination);
+}
+if (ac.state === "suspended") ac.resume();
+}
+function noiseBuffer() {
+if (!noise) {
+noise = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
+var d = noise.getChannelData(0);
+for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+}
+return noise;
+}
+function click(t, accent) {
+var o = ac.createOscillator(), g = ac.createGain();
+o.type = "sine";
+o.frequency.value = accent ? 1568 : 1047;
+g.gain.setValueAtTime(0.0001, t);
+g.gain.exponentialRampToValueAtTime(accent ? 0.7 : 0.45, t + 0.002);
+g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+o.connect(g); g.connect(out);
+o.start(t); o.stop(t + 0.09);
+}
+function kick(t) {
+var o = ac.createOscillator(), g = ac.createGain();
+o.type = "sine";
+o.frequency.setValueAtTime(150, t);
+o.frequency.exponentialRampToValueAtTime(45, t + 0.12);
+g.gain.setValueAtTime(1, t);
+g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+o.connect(g); g.connect(out);
+o.start(t); o.stop(t + 0.32);
+}
+function snare(t, gain) {
+var src = ac.createBufferSource(), hp = ac.createBiquadFilter(), ng = ac.createGain();
+src.buffer = noiseBuffer();
+hp.type = "highpass";
+hp.frequency.value = 1200;
+ng.gain.setValueAtTime(0.6 * gain, t);
+ng.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+src.connect(hp); hp.connect(ng); ng.connect(out);
+src.start(t, Math.random() * 0.5); src.stop(t + 0.2);
+var o = ac.createOscillator(), og = ac.createGain();
+o.type = "triangle";
+o.frequency.value = 190;
+og.gain.setValueAtTime(0.35 * gain, t);
+og.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+o.connect(og); og.connect(out);
+o.start(t); o.stop(t + 0.12);
+}
+function hat(t, gain) {
+var src = ac.createBufferSource(), hp = ac.createBiquadFilter(), g = ac.createGain();
+src.buffer = noiseBuffer();
+hp.type = "highpass";
+hp.frequency.value = 7000;
+g.gain.setValueAtTime(gain, t);
+g.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+src.connect(hp); hp.connect(g); g.connect(out);
+src.start(t, Math.random() * 0.5); src.stop(t + 0.06);
+}
+function onStep(s) {
+if (!running) return;
+if (s === 0) {
+if (shuffleEvery > 0 && emptyOn) {
+if (measures % (shuffleEvery + 1) === 0) {
+isEmpty = true;
+if (measures > 0) reshuffle(false);
+} else {
+isEmpty = false;
+}
+} else {
+isEmpty = false;
+if (shuffleEvery > 0 && measures > 0 && measures % shuffleEvery === 0) reshuffle(false);
+}
+measures++;
+updateStatus();
+}
+curStep = s;
+applyMark();
+}
+function scheduleStep(s, t) {
+if (soundMode === "click") {
+if (s % 2 === 0) click(t, s === 0);
+} else {
+var st = STYLES[soundMode] || STYLES.rock;
+if (st.hat[s]) hat(t, st.hat[s]);
+if (st.kick[s]) kick(t);
+if (st.snare[s]) snare(t, st.sg);
+}
+var delay = Math.max(0, (t - ac.currentTime) * 1000);
+uiTimers.push(setTimeout(function () { onStep(s); }, delay));
+}
+function schedule() {
+while (nextTime < ac.currentTime + 0.2) {
+scheduleStep(step, nextTime);
+nextTime += 30 / bpm;
+step = (step + 1) % 8;
+}
+if (uiTimers.length > 60) uiTimers.splice(0, uiTimers.length - 60);
+}
+function start() {
+try { ensureAC(); } catch (e) { return; }
+running = true;
+measures = 0;
+step = 0;
+curStep = -1;
+nextTime = ac.currentTime + 0.1;
+isEmpty = false;
+staffCard.classList.add("running");
+startBtn.textContent = "Arr\u00EAter";
+updateStatus();
+schedule();
+timer = setInterval(schedule, 25);
+}
+function stop() {
+running = false;
+clearInterval(timer);
+uiTimers.forEach(clearTimeout);
+uiTimers = [];
+curStep = -1;
+staffCard.classList.remove("running");
+startBtn.textContent = "D\u00E9marrer";
+isEmpty = false;
+updateStatus();
+applyMark();
+}
+startBtn.addEventListener("click", function () { running ? stop() : start(); });
+function listen() {
+try {
+ensureAC();
+var eighth = 30 / bpm, t0 = ac.currentTime + 0.05;
+measure.forEach(function (e) {
+if (e.note < 0) return;
+var o = ac.createOscillator(), g = ac.createGain(), t = t0 + e.start * eighth;
+var len = Math.min(0.9, e.dur * eighth * 0.9);
+o.type = "triangle";
+o.frequency.value = NOTES[e.note].freq;
+g.gain.setValueAtTime(0.0001, t);
+g.gain.exponentialRampToValueAtTime(0.3, t + 0.02);
+g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+o.connect(g); g.connect(out);
+o.start(t); o.stop(t + len + 0.05);
+});
+} catch (e) {}
+}
+document.getElementById("next").addEventListener("click", function () { reshuffle(!running); });
+document.getElementById("listen").addEventListener("click", listen);
+toggleName.addEventListener("click", function () {
+showName = !showName;
+syncUI();
+save();
+draw(false);
+});
+function bindSeg(id, onChange) {
+var btns = document.getElementById(id).querySelectorAll("button");
+Array.prototype.forEach.call(btns, function (b) {
+b.addEventListener("click", function () {
+Array.prototype.forEach.call(btns, function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+onChange(b.getAttribute("data-value"));
+save();
+});
+});
+}
+soundSel.addEventListener("change", function () { soundMode = soundSel.value; save(); });
+bindSeg("rhythmSeg", function (v) { rhythm = v; reshuffle(!running); });
+bindSeg("restSeg", function (v) { restsOn = v === "1"; reshuffle(!running); });
+bindSeg("everySeg", function (v) { shuffleEvery = Number(v); });
+bindSeg("emptySeg", function (v) { emptyOn = v === "1"; });
+var appEl = document.getElementById("app");
+var boardBtn = document.getElementById("boardBtn");
+function setBoard(on) {
+appEl.classList.toggle("board", on);
+boardBtn.setAttribute("aria-pressed", String(on));
+boardBtn.textContent = on ? "Quitter le mode tableau" : "Mode tableau";
+}
+boardBtn.addEventListener("click", function () { setBoard(!appEl.classList.contains("board")); });
+document.getElementById("fsBtn").addEventListener("click", function () {
+try {
+if (document.fullscreenElement) { document.exitFullscreen(); return; }
+var p = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+if (p && p.catch) p.catch(function () {});
+} catch (e) {}
+});
+document.addEventListener("keydown", function (e) {
+var t = e.target;
+if (t && t.closest && t.closest("button")) return;
+if (t && t.tagName === "SELECT") return;
+if (t && t.tagName === "INPUT" && (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown")) return;
+var k = e.key;
+if (k === " ") { e.preventDefault(); running ? stop() : start(); }
+else if (k === "n" || k === "N" || k === "ArrowRight" || k === "Enter") { e.preventDefault(); reshuffle(!running); }
+else if (k === "t" || k === "T") { e.preventDefault(); setBoard(!appEl.classList.contains("board")); }
+else if (k === "ArrowUp") { e.preventDefault(); changeBpm(bpm + 4); }
+else if (k === "ArrowDown") { e.preventDefault(); changeBpm(bpm - 4); }
+});
+function placeClef() {
+var clef = document.getElementById("clef");
+var ch = "\u{1D11E}";
+function show() { clef.classList.add("ready"); }
+if (!document.fonts || !document.fonts.load) { show(); return; }
+document.fonts.load('100px "Noto Music"', ch).then(function () {
+var c = document.createElement("canvas").getContext("2d");
+c.font = '100px "Noto Music","Segoe UI Symbol","Apple Symbols","Noto Sans Symbols 2",serif';
+var m = c.measureText(ch);
+var asc = m.actualBoundingBoxAscent, desc = m.actualBoundingBoxDescent, left = m.actualBoundingBoxLeft;
+var h = asc + desc;
+if (!(h > 10)) { show(); return; }
+var k = 112 / h; // 1 intervalle au-dessus de la port\u00E9e jusqu'\u00E0 2 intervalles sous la ligne du bas
+clef.setAttribute("font-size", String(100 * k));
+clef.setAttribute("x", String(22 + left * k));
+clef.setAttribute("y", String(70 + asc * k));
+show();
+}).catch(show);
+}
+placeClef();
+load();
+setBpm(bpm);
+syncUI();
+newMeasure();
+draw(false);
+})();
+</script>
+</body>
+</html>
