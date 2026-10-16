@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Écoute musicale</title>
+<style>
+:root { --bg:#f2f0ec; --card:#ffffff; --fg:#1f2430; --muted:#5b6272; --accent:#2646c9; --line:#d6d9e2; }
+@media (prefers-color-scheme: dark) { :root { --bg:#14171f; --card:#1c212c; --fg:#eceff6; --muted:#a3abbd; --accent:#8fa6ff; --line:#2d3444; } }
+body { margin:0; background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height:1.4; padding:24px 16px 40px; }
+.wrap { max-width:640px; margin:0 auto; }
+h1 { font-size:clamp(1.8rem,6vw,2.6rem); line-height:1.1; margin:0 0 6px; }
+p { color:var(--muted); margin:0 0 24px; }
+ul { list-style:none; margin:0; padding:0; display:grid; gap:12px; }
+a { display:block; background:var(--card); border:2px solid var(--line); border-radius:12px; padding:16px; color:var(--fg); text-decoration:none; font-weight:600; font-size:1.1rem; }
+a:hover, a:focus-visible { border-color:var(--accent); outline:none; }
+a span { display:block; font-weight:400; font-size:0.95rem; color:var(--muted); margin-top:2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Écoute musicale</h1>
+  <p>Choisis ton niveau, puis touche les cases pour voir les réponses.</p>
+  <ul>
+    <li><a href="/musique/ecoute-musicale-1re-annee.html">1re année<span>Smetana, Grieg, Rossini, Saint-Saëns, Vivaldi</span></a></li>
+    <li><a href="/musique/ecoute-musicale-2e-annee.html">2e année<span>Bach, Haendel, Stravinsky, Chopin, Bruckner</span></a></li>
+    <li><a href="/musique/ecoute-musicale-3e-annee.html">3e année<span>Moussorgski, Beethoven, Liszt, Rimski-Korsakov</span></a></li>
+    <li><a href="/musique/ecoute-musicale-4e-annee.html">4e année<span>Saint-Saëns, Debussy</span></a></li>
+    <li><a href="/musique/le-rock-4e-annee.html">Le rock, 4e année<span>Chuck Berry, les Beatles, Bob Dylan</span></a></li>
+  </ul>
+</div>
+</body>
+</html>
