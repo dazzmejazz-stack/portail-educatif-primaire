@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le rock 4e année</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f2eeee;
+  --card: #ffffff;
+  --fg: #2b1d17;
+  --muted: #6e5a50;
+  --accent: #b34a1e;
+  --accent-soft: #f3d9cc;
+  --line: #ddd0ca;
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1d1411; --card: #2a1d18; --fg: #f4e9e4; --muted: #c4aea3;
+    --accent: #f08a5d; --accent-soft: #43291f; --line: #553a2f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1d1411; --card: #2a1d18; --fg: #f4e9e4; --muted: #c4aea3;
+  --accent: #f08a5d; --accent-soft: #43291f; --line: #553a2f;
+  color-scheme: dark;
+}
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+  padding-block: 24px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1200px; margin: 0 auto; }
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem, 6vw, 2.8rem); line-height: 1.05; margin: 0; text-wrap: balance; }
+.sub { margin: 6px 0 0; color: var(--muted); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  font: inherit; font-weight: 600; font-size: 0.95rem;
+  color: var(--accent); background: transparent;
+  border: 2px solid var(--accent); border-radius: 10px;
+  padding: 10px 16px; min-height: 44px; cursor: pointer;
+}
+.btn:hover { background: var(--accent-soft); }
+.btn:focus-visible, .card:focus-visible, .listen:focus-visible, .blank:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.def {
+  background: var(--card); border: 2px solid var(--line); border-radius: 12px;
+  padding: 16px; margin-bottom: 28px; max-width: 760px;
+}
+.def h2 {
+  font-family: var(--font-display); font-weight: 600; font-size: 0.85rem;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px;
+}
+.def p { margin: 0; font-size: 1.15rem; line-height: 2.1; max-width: 65ch; }
+.blank {
+  font: inherit; font-weight: 700; color: var(--accent);
+  background: repeating-linear-gradient(135deg, var(--accent-soft) 0 6px, transparent 6px 12px);
+  border: 2px solid var(--accent); border-radius: 8px;
+  min-width: 5.5rem; min-height: 40px; padding: 2px 10px; margin: 0 2px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.blank .n { font-size: 0.8rem; opacity: 0.8; margin-right: 4px; }
+.blank.open { background: var(--accent-soft); }
+
+.board { display: grid; grid-template-columns: 1fr; gap: 28px; }
+.extrait { min-width: 0; }
+.ex-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin: 0 0 10px; padding-bottom: 8px; border-bottom: 2px solid var(--line);
+}
+.extrait h2 {
+  font-family: var(--font-display); font-weight: 600; font-size: 0.85rem;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0;
+}
+.listen {
+  font-weight: 600; font-size: 0.9rem; color: var(--accent); text-decoration: none;
+  border: 2px solid var(--accent); border-radius: 10px; padding: 8px 12px; min-height: 40px;
+  display: inline-flex; align-items: center; white-space: nowrap;
+}
+.listen:hover { background: var(--accent-soft); }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+.card {
+  font: inherit; color: inherit; text-align: left;
+  background: var(--card); border: 2px solid var(--line); border-radius: 12px;
+  padding: 12px; min-height: 130px; min-width: 0;
+  display: flex; flex-direction: column; gap: 10px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: border-color .15s, background .15s;
+}
+.card:hover { border-color: var(--accent); }
+.card.wide { grid-column: 1 / -1; }
+.label { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.mask {
+  flex: 1; min-height: 56px; border-radius: 8px; display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.8rem; color: var(--accent);
+  background: repeating-linear-gradient(135deg, var(--accent-soft) 0 8px, transparent 8px 16px);
+}
+.answer { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; line-height: 1.2; overflow-wrap: anywhere; }
+.note { font-size: 0.9rem; color: var(--muted); }
+.item { display: flex; flex-direction: column; gap: 1px; }
+.card .answer-box { display: none; }
+.card.open { border-color: var(--accent); background: var(--accent-soft); }
+.card.open .mask { display: none; }
+.card.open .answer-box { display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: center; align-items: flex-start; animation: pop .22s ease-out; }
+
+@keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .card.open .answer-box { animation: none; } }
+
+@media (min-width: 900px) {
+  .board { grid-template-columns: repeat(3, minmax(0, 300px)); gap: 16px; justify-content: start; }
+  .cards { grid-template-columns: 1fr; }
+  .card.wide { grid-column: auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Le rock 4e année</h1>
+      <p class="sub">Touche une case pour voir la réponse.</p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="show-all" type="button">Tout révéler</button>
+      <button class="btn" id="hide-all" type="button">Tout cacher</button>
+    </div>
+  </header>
+
+  <section class="def" aria-labelledby="def-title">
+    <h2 id="def-title">C’est quoi ?</h2>
+    <p id="def"></p>
+  </section>
+
+  <main class="board" id="board"></main>
+</div>
+
+<script>
+var BLANKS = ["populaire", "américaine", "1950", "blues"];
+
+var ARTISTES = [
+  {
+    q: "Chuck Berry Johnny B Goode",
+    periode: "Début du rock’n’roll",
+    quand: "Les années 50",
+    ou: "Saint-Louis, Missouri aux États-Unis",
+    qui: "Chuck Berry",
+    avec: [["Sa voix"], ["Son jeu de guitare électrique"]],
+    pieces: ["Johnny B Good", "Roll over Beethoven"]
+  },
+  {
+    q: "The Beatles I want to hold your hand",
+    periode: "Groupe rock pop britannique",
+    quand: "1961",
+    ou: "Grande-Bretagne",
+    qui: "Les Beatles",
+    avec: [
+      ["John Lennon", "chanteur, guitariste"],
+      ["Paul McCartney", "chanteur, bassiste"],
+      ["George Harrison", "guitariste, chanteur"],
+      ["Ringo Starr", "batteur, chanteur"]
+    ],
+    pieces: ["Penny Lane", "I want to hold your hand"]
+  },
+  {
+    q: "Bob Dylan Blowin in the Wind",
+    periode: "Rock folk",
+    quand: "1962",
+    ou: "États-Unis",
+    qui: "Bob Dylan",
+    avec: [["Chanteur"], ["Guitariste"], ["Harmoniciste"], ["Pianiste"]],
+    pieces: ["Blowin’ In The Wind (1963)", "Like a Rolling Stone (1965)"]
+  }
+];
+
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+}
+
+function answer(t) {
+  return '<span class="answer">' + esc(t) + "</span>";
+}
+
+function makeCard(label, answerHtml, wide) {
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "card" + (wide ? " wide" : "");
+  b.setAttribute("aria-expanded", "false");
+  b.innerHTML =
+    '<span class="label"></span>' +
+    '<span class="mask" aria-hidden="true">?</span>' +
+    '<span class="answer-box"></span>';
+  b.querySelector(".label").textContent = label;
+  b.querySelector(".answer-box").innerHTML = answerHtml;
+  b.addEventListener("click", function () { toggle(b); });
+  return b;
+}
+
+function toggle(el, force) {
+  var open = typeof force === "boolean" ? force : !el.classList.contains("open");
+  el.classList.toggle("open", open);
+  el.setAttribute("aria-expanded", open ? "true" : "false");
+  if (el.classList.contains("blank")) {
+    el.querySelector(".t").textContent = open ? el.getAttribute("data-word") : "";
+  }
+}
+
+(function () {
+  var p = document.getElementById("def");
+  function blank(i) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "blank";
+    b.setAttribute("aria-expanded", "false");
+    b.setAttribute("data-word", BLANKS[i]);
+    b.innerHTML = '<span class="n">' + (i + 1) + '.</span><span class="t"></span>';
+    b.addEventListener("click", function () { toggle(b); });
+    return b;
+  }
+  p.appendChild(document.createTextNode("Musique "));
+  p.appendChild(blank(0));
+  p.appendChild(document.createTextNode(" d’origine "));
+  p.appendChild(blank(1));
+  p.appendChild(document.createTextNode(" apparue dans les années "));
+  p.appendChild(blank(2));
+  p.appendChild(document.createTextNode(", issue du jazz, du "));
+  p.appendChild(blank(3));
+  p.appendChild(document.createTextNode(", du rhythm and blues et de la musique folklorique anglo-américaine."));
+})();
+
+var board = document.getElementById("board");
+
+ARTISTES.forEach(function (e, i) {
+  var sec = document.createElement("section");
+  sec.className = "extrait";
+
+  var h = document.createElement("h2");
+  h.textContent = "Artiste " + (i + 1);
+  var head = document.createElement("div");
+  head.className = "ex-head";
+  head.appendChild(h);
+  var a = document.createElement("a");
+  a.className = "listen";
+  a.href = e.url || ("https://www.youtube.com/results?search_query=" + encodeURIComponent(e.q));
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  a.textContent = "Écouter ↗";
+  head.appendChild(a);
+
+  var avecHtml = e.avec.map(function (x) {
+    return '<span class="item">' + answer(x[0]) + (x[1] ? '<span class="note">' + esc(x[1]) + "</span>" : "") + "</span>";
+  }).join("");
+
+  var cards = document.createElement("div");
+  cards.className = "cards";
+  cards.appendChild(makeCard("Période", answer(e.periode)));
+  cards.appendChild(makeCard("Quand", answer(e.quand)));
+  cards.appendChild(makeCard("Où", answer(e.ou)));
+  cards.appendChild(makeCard("Qui", answer(e.qui)));
+  cards.appendChild(makeCard("Avec quoi", avecHtml, true));
+  cards.appendChild(makeCard("Pièces", e.pieces.map(answer).join(""), true));
+
+  sec.appendChild(head);
+  sec.appendChild(cards);
+  board.appendChild(sec);
+});
+
+function setAll(open) {
+  document.querySelectorAll("button.card, button.blank").forEach(function (c) { toggle(c, open); });
+}
+document.getElementById("show-all").addEventListener("click", function () { setAll(true); });
+document.getElementById("hide-all").addEventListener("click", function () { setAll(false); });
+</script>
+</body>
+</html>

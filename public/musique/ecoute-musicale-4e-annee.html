@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Écoute musicale 4e année</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f2eeee;
+  --card: #ffffff;
+  --fg: #2b1d17;
+  --muted: #6e5a50;
+  --accent: #b34a1e;
+  --accent-soft: #f3d9cc;
+  --line: #ddd0ca;
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1d1411; --card: #2a1d18; --fg: #f4e9e4; --muted: #c4aea3;
+    --accent: #f08a5d; --accent-soft: #43291f; --line: #553a2f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1d1411; --card: #2a1d18; --fg: #f4e9e4; --muted: #c4aea3;
+  --accent: #f08a5d; --accent-soft: #43291f; --line: #553a2f;
+  color-scheme: dark;
+}
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+  padding-block: 24px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1200px; margin: 0 auto; }
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem, 6vw, 2.8rem); line-height: 1.05; margin: 0; text-wrap: balance; }
+.sub { margin: 6px 0 0; color: var(--muted); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  font: inherit; font-weight: 600; font-size: 0.95rem;
+  color: var(--accent); background: transparent;
+  border: 2px solid var(--accent); border-radius: 10px;
+  padding: 10px 16px; min-height: 44px; cursor: pointer;
+}
+.btn:hover { background: var(--accent-soft); }
+.btn:focus-visible, .card:focus-visible, .listen:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.board { display: grid; grid-template-columns: 1fr; gap: 28px; }
+.extrait { min-width: 0; }
+.ex-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin: 0 0 10px; padding-bottom: 8px; border-bottom: 2px solid var(--line);
+}
+.extrait h2 {
+  font-family: var(--font-display); font-weight: 600; font-size: 0.85rem;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0;
+}
+.listen {
+  font-weight: 600; font-size: 0.9rem; color: var(--accent); text-decoration: none;
+  border: 2px solid var(--accent); border-radius: 10px; padding: 8px 12px; min-height: 40px;
+  display: inline-flex; align-items: center; white-space: nowrap;
+}
+.listen:hover { background: var(--accent-soft); }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+.card {
+  font: inherit; color: inherit; text-align: left;
+  background: var(--card); border: 2px solid var(--line); border-radius: 12px;
+  padding: 12px; min-height: 140px; min-width: 0;
+  display: flex; flex-direction: column; gap: 10px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: border-color .15s, background .15s;
+}
+.card:hover { border-color: var(--accent); }
+.label { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.mask {
+  flex: 1; border-radius: 8px; display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.8rem; color: var(--accent);
+  background: repeating-linear-gradient(135deg, var(--accent-soft) 0 8px, transparent 8px 16px);
+}
+.answer { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; line-height: 1.2; overflow-wrap: anywhere; }
+.card .answer-box { display: none; }
+.card.open { border-color: var(--accent); background: var(--accent-soft); }
+.card.open .mask { display: none; }
+.card.open .answer-box { display: flex; flex-direction: column; gap: 6px; flex: 1; justify-content: center; align-items: flex-start; animation: pop .22s ease-out; }
+
+@keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .card.open .answer-box { animation: none; } }
+
+@media (min-width: 900px) {
+  .board { grid-template-columns: repeat(auto-fill, minmax(200px, 250px)); gap: 16px; justify-content: start; }
+  .cards { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Écoute musicale 4e année</h1>
+      <p class="sub">Touche une case pour voir la réponse.</p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="show-all" type="button">Tout révéler</button>
+      <button class="btn" id="hide-all" type="button">Tout cacher</button>
+    </div>
+  </header>
+  <main class="board" id="board"></main>
+</div>
+
+<script>
+var EXTRAITS = [
+  {
+    q: "Saint-Saëns Bacchanale Samson et Dalila",
+    comp: "Saint-Saëns",
+    oeuvre: "Bacchanale de Samson et Dalila",
+    lumiere: "Ambiance arabe grâce à la gamme mineure harmonique",
+    decouvrir: "Comparaison entre la gamme majeure et mineure harmonique"
+  },
+  {
+    q: "Debussy Pagodes",
+    comp: "Debussy",
+    oeuvre: "Pagodes",
+    lumiere: "Couleurs d’Asie grâce à la gamme pentatonique",
+    decouvrir: "Comparaison entre la gamme majeure et pentatonique"
+  }
+];
+
+var board = document.getElementById("board");
+
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+}
+
+function makeCard(label, answerHtml) {
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "card";
+  b.setAttribute("aria-expanded", "false");
+  b.innerHTML =
+    '<span class="label"></span>' +
+    '<span class="mask" aria-hidden="true">?</span>' +
+    '<span class="answer-box"></span>';
+  b.querySelector(".label").textContent = label;
+  b.querySelector(".answer-box").innerHTML = answerHtml;
+  b.addEventListener("click", function () { toggle(b); });
+  return b;
+}
+
+function toggle(card, force) {
+  var open = typeof force === "boolean" ? force : !card.classList.contains("open");
+  card.classList.toggle("open", open);
+  card.setAttribute("aria-expanded", open ? "true" : "false");
+}
+
+function answer(t) {
+  return '<span class="answer">' + esc(t) + "</span>";
+}
+
+EXTRAITS.forEach(function (e, i) {
+  var sec = document.createElement("section");
+  sec.className = "extrait";
+
+  var h = document.createElement("h2");
+  h.textContent = "Extrait " + (i + 1);
+  var head = document.createElement("div");
+  head.className = "ex-head";
+  head.appendChild(h);
+  var a = document.createElement("a");
+  a.className = "listen";
+  a.href = e.url || ("https://www.youtube.com/results?search_query=" + encodeURIComponent(e.q));
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  a.textContent = "Écouter ↗";
+  head.appendChild(a);
+
+  var cards = document.createElement("div");
+  cards.className = "cards";
+  cards.appendChild(makeCard("Compositeur", answer(e.comp)));
+  cards.appendChild(makeCard("Titre", answer(e.oeuvre)));
+  cards.appendChild(makeCard("Met en lumière…", answer(e.lumiere)));
+  cards.appendChild(makeCard("Nous a fait découvrir…", answer(e.decouvrir)));
+
+  sec.appendChild(head);
+  sec.appendChild(cards);
+  board.appendChild(sec);
+});
+
+function setAll(open) {
+  board.querySelectorAll("button.card").forEach(function (c) { toggle(c, open); });
+}
+document.getElementById("show-all").addEventListener("click", function () { setAll(true); });
+document.getElementById("hide-all").addEventListener("click", function () { setAll(false); });
+</script>
+</body>
+</html>
