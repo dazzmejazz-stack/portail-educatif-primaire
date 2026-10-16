@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Écoute musicale 2e année</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #edf0f5;
+  --card: #ffffff;
+  --fg: #172033;
+  --muted: #566077;
+  --accent: #2646c9;
+  --accent-soft: #dce3fa;
+  --line: #c9d0df;
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1522; --card: #18202f; --fg: #e8ecf5; --muted: #9aa5ba;
+    --accent: #8fa6ff; --accent-soft: #232e52; --line: #2b3650;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1522; --card: #18202f; --fg: #e8ecf5; --muted: #9aa5ba;
+  --accent: #8fa6ff; --accent-soft: #232e52; --line: #2b3650;
+  color-scheme: dark;
+}
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+  padding-block: 24px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1200px; margin: 0 auto; }
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem, 6vw, 2.8rem); line-height: 1.05; margin: 0; text-wrap: balance; }
+.sub { margin: 6px 0 0; color: var(--muted); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  font: inherit; font-weight: 600; font-size: 0.95rem;
+  color: var(--accent); background: transparent;
+  border: 2px solid var(--accent); border-radius: 10px;
+  padding: 10px 16px; min-height: 44px; cursor: pointer;
+}
+.btn:hover { background: var(--accent-soft); }
+.btn:focus-visible, .card:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.board { display: grid; grid-template-columns: 1fr; gap: 28px; }
+.extrait { min-width: 0; }
+.extrait h2 {
+  font-family: var(--font-display); font-weight: 600; font-size: 0.85rem;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+  margin: 0;
+}
+.ex-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin: 0 0 10px; padding-bottom: 8px; border-bottom: 2px solid var(--line);
+}
+.listen {
+  font-weight: 600; font-size: 0.9rem; color: var(--accent); text-decoration: none;
+  border: 2px solid var(--accent); border-radius: 10px; padding: 8px 12px; min-height: 40px;
+  display: inline-flex; align-items: center; white-space: nowrap;
+}
+.listen:hover { background: var(--accent-soft); }
+.listen:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+.card {
+  font: inherit; color: inherit; text-align: left;
+  background: var(--card); border: 2px solid var(--line); border-radius: 12px;
+  padding: 12px; min-height: 124px; min-width: 0;
+  display: flex; flex-direction: column; gap: 10px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: border-color .15s, background .15s;
+}
+.card:hover { border-color: var(--accent); }
+.label { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.mask {
+  flex: 1; border-radius: 8px; display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.8rem; color: var(--accent);
+  background: repeating-linear-gradient(135deg, var(--accent-soft) 0 8px, transparent 8px 16px);
+}
+.answer { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; line-height: 1.2; overflow-wrap: anywhere; }
+.emoji { font-size: 2.6rem; line-height: 1; }
+.note { font-size: 0.9rem; color: var(--muted); }
+.card .answer-box { display: none; }
+.card.open { border-color: var(--accent); background: var(--accent-soft); }
+.card.open .mask { display: none; }
+.card.open .answer-box { display: flex; flex-direction: column; gap: 6px; flex: 1; justify-content: center; animation: pop .22s ease-out; }
+.card.empty { border-style: dashed; background: transparent; cursor: default; justify-content: center; align-items: center; color: var(--muted); font-size: 0.9rem; }
+.card.empty:hover { border-color: var(--line); }
+
+.code { width: 56px; height: 56px; color: var(--accent); flex: none; }
+
+@keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .card.open .answer-box { animation: none; } }
+
+@media (min-width: 900px) {
+  .board { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+  .cards { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Écoute musicale 2e année</h1>
+      <p class="sub">Touche une case pour voir la réponse.</p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="show-all" type="button">Tout révéler</button>
+      <button class="btn" id="hide-all" type="button">Tout cacher</button>
+    </div>
+  </header>
+  <main class="board" id="board"></main>
+</div>
+
+<script>
+var EXTRAITS = [
+  { q: "Bach double concerto hautbois violon", comp: "Jean-Sébastien Bach", oeuvre: "Double concerto pour hautbois et violon", emoji: "😌", ambiance: "Paisible, zen", sonLabel: null, son: null },
+  { q: "Handel Water Music", comp: "Georg Friedrich Haendel", oeuvre: "Water Music", emoji: "😄", ambiance: "Joyeuse", sonLabel: "Famille d'instruments", son: "Percussion · Vent · Corde" },
+  { q: "Stravinsky L'Oiseau de feu", comp: "Igor Stravinsky", oeuvre: "L'Oiseau de feu", emoji: "🐺", ambiance: "Mystérieuse et menaçante", sonLabel: "Le son", son: "Grave", code: "grave" },
+  { q: "Chopin valse op. 64 n° 2 Pollini", comp: "Frédéric Chopin", oeuvre: "Valse op. 64 n° 2 en do dièse mineur", emoji: "😢", ambiance: "Triste", sonLabel: "Le son", son: "Doux", code: "doux" },
+  { q: "Bruckner symphonie 9", comp: "Anton Bruckner", oeuvre: "Symphonie n° 9", emoji: "😠", ambiance: "Colère", sonLabel: "Le son", son: "Sons ascendants", code: "ascendant" }
+];
+
+var CODES = {
+  grave: '<line x1="6" y1="16" x2="42" y2="16"/><line x1="18" y1="27" x2="30" y2="39"/><line x1="30" y1="27" x2="18" y2="39"/>',
+  doux: '<circle cx="24" cy="24" r="6"/>',
+  ascendant: '<line x1="8" y1="40" x2="40" y2="8"/><polyline points="25,8 40,8 40,23"/>'
+};
+
+function codeSvg(name) {
+  return '<svg class="code" viewBox="0 0 48 48" role="img" aria-label="' + name + '" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">' + CODES[name] + "</svg>";
+}
+
+var board = document.getElementById("board");
+
+function makeCard(label, answerHtml) {
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "card";
+  b.setAttribute("aria-expanded", "false");
+  b.innerHTML =
+    '<span class="label"></span>' +
+    '<span class="mask" aria-hidden="true">?</span>' +
+    '<span class="answer-box"></span>';
+  b.querySelector(".label").textContent = label;
+  b.querySelector(".answer-box").innerHTML = answerHtml;
+  b.addEventListener("click", function () { toggle(b); });
+  return b;
+}
+
+function toggle(card, force) {
+  var open = typeof force === "boolean" ? force : !card.classList.contains("open");
+  card.classList.toggle("open", open);
+  card.setAttribute("aria-expanded", open ? "true" : "false");
+}
+
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+}
+
+EXTRAITS.forEach(function (e, i) {
+  var sec = document.createElement("section");
+  sec.className = "extrait";
+  var h = document.createElement("h2");
+  h.textContent = "Extrait " + (i + 1);
+  var cards = document.createElement("div");
+  cards.className = "cards";
+
+  cards.appendChild(makeCard("Compositeur", '<span class="answer">' + esc(e.comp) + "</span>"));
+  cards.appendChild(makeCard("Œuvre", '<span class="answer">' + esc(e.oeuvre) + "</span>"));
+  cards.appendChild(makeCard("Ambiance", '<span class="emoji" role="img" aria-label="' + esc(e.ambiance) + '">' + e.emoji + '</span><span class="note">' + esc(e.ambiance) + "</span>"));
+
+  if (e.son) {
+    var sonHtml = (e.code ? codeSvg(e.code) : "") + '<span class="answer">' + esc(e.son) + "</span>";
+    cards.appendChild(makeCard(e.sonLabel, sonHtml));
+  } else {
+    var empty = document.createElement("div");
+    empty.className = "card empty";
+    empty.textContent = "Pas de 4e case";
+    cards.appendChild(empty);
+  }
+
+  var head = document.createElement("div");
+  head.className = "ex-head";
+  head.appendChild(h);
+  var a = document.createElement("a");
+  a.className = "listen";
+  a.href = e.url || ("https://www.youtube.com/results?search_query=" + encodeURIComponent(e.q));
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  a.textContent = "Écouter ↗";
+  head.appendChild(a);
+  sec.appendChild(head);
+  sec.appendChild(cards);
+  board.appendChild(sec);
+});
+
+function setAll(open) {
+  board.querySelectorAll("button.card").forEach(function (c) { toggle(c, open); });
+}
+document.getElementById("show-all").addEventListener("click", function () { setAll(true); });
+document.getElementById("hide-all").addEventListener("click", function () { setAll(false); });
+</script>
+</body>
+</html>
