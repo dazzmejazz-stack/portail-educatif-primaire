@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Écoute musicale 1re année</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #eaf4f2;
+  --card: #ffffff;
+  --fg: #12302c;
+  --muted: #4d6b66;
+  --accent: #0b7a6e;
+  --accent-soft: #cdeae5;
+  --line: #bcd6d1;
+  --font-display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1c1a; --card: #162826; --fg: #e4f2ef; --muted: #9bb8b2;
+    --accent: #5fd0bf; --accent-soft: #1d3b37; --line: #2a4743;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1c1a; --card: #162826; --fg: #e4f2ef; --muted: #9bb8b2;
+  --accent: #5fd0bf; --accent-soft: #1d3b37; --line: #2a4743;
+  color-scheme: dark;
+}
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+  padding-block: 24px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1200px; margin: 0 auto; }
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(2rem, 6.5vw, 3rem); line-height: 1.05; margin: 0; text-wrap: balance; }
+.sub { margin: 6px 0 0; color: var(--muted); font-size: 1.05rem; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  font: inherit; font-weight: 600; font-size: 0.95rem;
+  color: var(--accent); background: transparent;
+  border: 2px solid var(--accent); border-radius: 12px;
+  padding: 10px 16px; min-height: 44px; cursor: pointer;
+}
+.btn:hover { background: var(--accent-soft); }
+.btn:focus-visible, .card:focus-visible, .listen:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.board { display: grid; grid-template-columns: 1fr; gap: 30px; }
+.extrait { min-width: 0; }
+.ex-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin: 0 0 12px; padding-bottom: 8px; border-bottom: 3px solid var(--line);
+}
+.extrait h2 {
+  font-family: var(--font-display); font-weight: 700; font-size: 1.3rem;
+  color: var(--accent); margin: 0;
+}
+.listen {
+  font-weight: 600; font-size: 0.95rem; color: var(--accent); text-decoration: none;
+  border: 2px solid var(--accent); border-radius: 12px; padding: 8px 14px; min-height: 44px;
+  display: inline-flex; align-items: center; white-space: nowrap;
+}
+.listen:hover { background: var(--accent-soft); }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+
+.card {
+  font: inherit; color: inherit; text-align: left;
+  background: var(--card); border: 3px solid var(--line); border-radius: 16px;
+  padding: 12px; min-height: 160px; min-width: 0;
+  display: flex; flex-direction: column; gap: 8px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: border-color .15s, background .15s;
+}
+.card:hover { border-color: var(--accent); }
+.label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.mask {
+  flex: 1; border-radius: 10px; display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 2.4rem; color: var(--accent);
+  background: repeating-linear-gradient(135deg, var(--accent-soft) 0 8px, transparent 8px 16px);
+}
+.answer { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; line-height: 1.15; overflow-wrap: anywhere; }
+.emoji { font-size: 3.4rem; line-height: 1.1; overflow-wrap: anywhere; }
+.note { font-size: 0.9rem; color: var(--muted); }
+.card .answer-box { display: none; }
+.card.open { border-color: var(--accent); background: var(--accent-soft); }
+.card.open .mask { display: none; }
+.card.open .answer-box { display: flex; flex-direction: column; gap: 6px; flex: 1; justify-content: center; align-items: flex-start; animation: pop .22s ease-out; }
+.card.empty { border-style: dashed; background: transparent; cursor: default; justify-content: center; align-items: center; color: var(--muted); font-size: 0.95rem; }
+.card.empty:hover { border-color: var(--line); }
+.code { width: 72px; height: 72px; color: var(--accent); flex: none; }
+
+@keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .card.open .answer-box { animation: none; } }
+
+@media (min-width: 900px) {
+  .board { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+  .cards { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Écoute musicale 1re année</h1>
+      <p class="sub">Touche une case pour voir la réponse.</p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="show-all" type="button">Tout révéler</button>
+      <button class="btn" id="hide-all" type="button">Tout cacher</button>
+    </div>
+  </header>
+  <main class="board" id="board"></main>
+</div>
+
+<script>
+var EXTRAITS = [
+  { q: "Smetana La Moldau", comp: "Bedřich Smetana", oeuvre: "La Moldau", image: "⛰️🌊", imageNote: "Le parcours de la rivière", son: null },
+  { q: "Grieg Peer Gynt Le matin", comp: "Edvard Grieg", oeuvre: "Le matin", image: "🌅", imageNote: "Un lever de soleil", son: "Crescendo", code: "crescendo" },
+  { q: "Rossini Guillaume Tell ouverture", comp: "Gioachino Rossini", oeuvre: "Ouverture de Guillaume Tell", image: "⛈️", imageNote: "Un orage", son: "Fort", code: "fort" },
+  { q: "Saint-Saëns Le coucou au fond des bois", comp: "Camille Saint-Saëns", oeuvre: "Le coucou au fond des bois", image: "🐦🕰️", imageNote: "Un coucou, une horloge coucou", son: "Court", code: "court" },
+  { q: "Vivaldi Le Printemps Quatre Saisons", comp: "Antonio Vivaldi", oeuvre: "Le Printemps", image: "🐦🌸", imageNote: "Des oiseaux avec des fleurs", son: "Aigu", code: "aigu" }
+];
+
+var CODES = {
+  crescendo: '<line x1="8" y1="24" x2="40" y2="11"/><line x1="8" y1="24" x2="40" y2="37"/>',
+  fort: '<circle cx="24" cy="24" r="18"/>',
+  court: '<line x1="8" y1="24" x2="20" y2="24"/><line x1="28" y1="24" x2="40" y2="24"/>',
+  aigu: '<line x1="6" y1="34" x2="42" y2="34"/><line x1="18" y1="8" x2="30" y2="20"/><line x1="30" y1="8" x2="18" y2="20"/>'
+};
+
+function codeSvg(name) {
+  return '<svg class="code" viewBox="0 0 48 48" role="img" aria-label="' + name + '" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">' + CODES[name] + "</svg>";
+}
+
+var board = document.getElementById("board");
+
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+}
+
+function makeCard(label, answerHtml) {
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "card";
+  b.setAttribute("aria-expanded", "false");
+  b.innerHTML =
+    '<span class="label"></span>' +
+    '<span class="mask" aria-hidden="true">?</span>' +
+    '<span class="answer-box"></span>';
+  b.querySelector(".label").textContent = label;
+  b.querySelector(".answer-box").innerHTML = answerHtml;
+  b.addEventListener("click", function () { toggle(b); });
+  return b;
+}
+
+function toggle(card, force) {
+  var open = typeof force === "boolean" ? force : !card.classList.contains("open");
+  card.classList.toggle("open", open);
+  card.setAttribute("aria-expanded", open ? "true" : "false");
+}
+
+EXTRAITS.forEach(function (e, i) {
+  var sec = document.createElement("section");
+  sec.className = "extrait";
+
+  var h = document.createElement("h2");
+  h.textContent = "Extrait " + (i + 1);
+  var head = document.createElement("div");
+  head.className = "ex-head";
+  head.appendChild(h);
+  var a = document.createElement("a");
+  a.className = "listen";
+  a.href = e.url || ("https://www.youtube.com/results?search_query=" + encodeURIComponent(e.q));
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  a.textContent = "Écouter ↗";
+  head.appendChild(a);
+
+  var cards = document.createElement("div");
+  cards.className = "cards";
+  cards.appendChild(makeCard("Compositeur", '<span class="answer">' + esc(e.comp) + "</span>"));
+  cards.appendChild(makeCard("Œuvre", '<span class="answer">' + esc(e.oeuvre) + "</span>"));
+  cards.appendChild(makeCard("Image", '<span class="emoji" role="img" aria-label="' + esc(e.imageNote) + '">' + e.image + '</span><span class="note">' + esc(e.imageNote) + "</span>"));
+
+  if (e.son) {
+    cards.appendChild(makeCard("Le son", codeSvg(e.code) + '<span class="answer">' + esc(e.son) + "</span>"));
+  } else {
+    var empty = document.createElement("div");
+    empty.className = "card empty";
+    empty.textContent = "Pas de 4e case";
+    cards.appendChild(empty);
+  }
+
+  sec.appendChild(head);
+  sec.appendChild(cards);
+  board.appendChild(sec);
+});
+
+function setAll(open) {
+  board.querySelectorAll("button.card").forEach(function (c) { toggle(c, open); });
+}
+document.getElementById("show-all").addEventListener("click", function () { setAll(true); });
+document.getElementById("hide-all").addEventListener("click", function () { setAll(false); });
+</script>
+</body>
+</html>
