@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau d&#8217;&#233;coute 4e ann&#233;e</title>
+<style>
+@page { size: letter landscape; margin: 12mm; }
+:root { --bg:#f2eeee; --card:#fff; --fg:#2b1d17; --muted:#6e5a50; --accent:#b34a1e; --soft:#f3d9cc; --line:#c9b3a8; }
+@media (prefers-color-scheme: dark) { :root { --bg:#1d1411; --card:#2a1d18; --fg:#f4e9e4; --muted:#c4aea3; --accent:#f08a5d; --soft:#43291f; --line:#6a4a3c; } }
+@media print { :root { --bg:#fff; --card:#fff; --fg:#000; --muted:#333; --accent:#000; --soft:#eee; --line:#666; } .actions, .listen { display:none; } }
+body { margin:0; background:var(--bg); color:var(--fg); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.35; padding:24px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px)); }
+.wrap { max-width:1250px; margin:0 auto; }
+header { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:end; gap:12px; margin-bottom:16px; }
+h1 { font-size:clamp(1.7rem,5vw,2.4rem); margin:0; line-height:1.1; }
+.sub { margin:4px 0 0; color:var(--muted); }
+.btn { font:inherit; font-weight:600; color:var(--accent); background:transparent; border:2px solid var(--accent); border-radius:10px; padding:8px 14px; min-height:44px; cursor:pointer; }
+.btn:hover { background:var(--soft); }
+.actions { display:flex; gap:8px; flex-wrap:wrap; }
+.scroll { overflow-x:auto; }
+table { width:100%; min-width:760px; border-collapse:collapse; background:var(--card); border:2px solid var(--line); table-layout:fixed; }
+th, td { border:2px solid var(--line); padding:8px; text-align:center; vertical-align:middle; }
+thead th { background:var(--soft); font-size:0.85rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); padding:10px; }
+th.num { width:110px; }
+tbody th { background:var(--soft); font-weight:700; color:var(--accent); }
+.listen { display:inline-block; margin-top:4px; font-size:0.8rem; font-weight:600; color:var(--accent); text-decoration:none; }
+.listen:hover { text-decoration:underline; }
+td { height:84px; padding:0; }
+.cell { font:inherit; color:inherit; width:100%; height:100%; min-height:84px; background:transparent; border:0; cursor:pointer; padding:8px; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:600; font-size:0.95rem; line-height:1.2; }
+.cell:hover { background:var(--soft); }
+.cell:focus-visible, .btn:focus-visible, .listen:focus-visible { outline:3px solid var(--accent); outline-offset:-3px; }
+.cell .ans { display:none; }
+.cell.open .ans { display:inline-flex; }
+.cell.open { background:var(--soft); }
+.stack { display:flex; flex-direction:column; align-items:center; gap:4px; }
+h2 { font-size:1.1rem; margin:28px 0 10px; }
+.bank { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+.bank section { min-width:0; }
+.bank h3 { margin:0 0 8px; font-size:0.8rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
+.chips { display:flex; flex-direction:column; gap:8px; }
+.chip { background:var(--card); border:2px solid var(--line); border-radius:10px; padding:8px 10px; min-height:40px; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:600; font-size:0.9rem; overflow-wrap:anywhere; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Tableau d&#8217;&#233;coute 4e ann&#233;e</h1>
+      <p class="sub">&#201;coute chaque extrait, puis place les bonnes r&#233;ponses dans les cases.</p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="show" type="button">Tout r&#233;v&#233;ler</button>
+      <button class="btn" id="hide" type="button">Tout cacher</button>
+    </div>
+  </header>
+
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr><th class="num"></th><th>Compositeur</th><th>Titre</th><th>Nature</th><th>Code</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <h2>Les r&#233;ponses</h2>
+  <div class="bank" id="bank"></div>
+</div>
+
+<script>
+var COLS = ["Compositeur", "Titre", "Nature", "Code"];
+var ROWS = [
+ {
+  "q": "Saint-Saëns Bacchanale Samson et Dalila",
+  "cells": [
+   "Saint-Saëns",
+   "Bacchanale de Samson et Dalila",
+   "<span class=\"stack\"><span>Ambiance arabe grâce à la gamme mineure harmonique</span></span>",
+   "<span class=\"stack\"><span>Comparaison entre la gamme majeure et mineure harmonique</span></span>"
+  ]
+ },
+ {
+  "q": "Debussy Pagodes",
+  "cells": [
+   "Debussy",
+   "Pagodes",
+   "<span class=\"stack\"><span>Ambiance asiatique grâce à la gamme pentatonique</span></span>",
+   "<span class=\"stack\"><span>Comparaison entre la gamme majeure et pentatonique</span></span>"
+  ]
+ }
+];
+var PERM = [1, 0];
+function cell(html) {
+  var td = document.createElement("td");
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "cell";
+  b.setAttribute("aria-label", "Révéler la réponse");
+  b.innerHTML = '<span class="ans">' + html + "</span>";
+  b.addEventListener("click", function () { b.classList.toggle("open"); });
+  td.appendChild(b);
+  return td;
+}
+var tb = document.getElementById("rows");
+ROWS.forEach(function (r, i) {
+  var tr = document.createElement("tr");
+  var th = document.createElement("th");
+  th.scope = "row";
+  th.innerHTML = "Extrait " + (i + 1) + '<br><a class="listen" target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/results?search_query=' + encodeURIComponent(r.q) + '">Écouter ↗</a>';
+  tr.appendChild(th);
+  r.cells.forEach(function (c) { tr.appendChild(cell(c)); });
+  tb.appendChild(tr);
+});
+var bank = document.getElementById("bank");
+COLS.forEach(function (name, ci) {
+  var s = document.createElement("section");
+  var h = document.createElement("h3");
+  h.textContent = name;
+  var c = document.createElement("div");
+  c.className = "chips";
+  PERM.forEach(function (ri) {
+    var d = document.createElement("div");
+    d.className = "chip";
+    d.innerHTML = ROWS[ri].cells[ci];
+    c.appendChild(d);
+  });
+  s.appendChild(h);
+  s.appendChild(c);
+  bank.appendChild(s);
+});
+function setAll(open) {
+  document.querySelectorAll(".cell").forEach(function (c) { c.classList.toggle("open", open); });
+}
+document.getElementById("show").addEventListener("click", function () { setAll(true); });
+document.getElementById("hide").addEventListener("click", function () { setAll(false); });
+</script>
+</body>
+</html>
