@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le rock 5e ann&#233;e</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f2eeee;
+  --card: #ffffff;
+  --fg: #2b1d17;
+  --muted: #6e5a50;
+  --accent: #b34a1e;
+  --accent-soft: #f3d9cc;
+  --line: #ddd0ca;
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1d1411; --card: #2a1d18; --fg: #f4e9e4; --muted: #c4aea3;
+    --accent: #f08a5d; --accent-soft: #43291f; --line: #553a2f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1d1411; --card: #2a1d18; --fg: #f4e9e4; --muted: #c4aea3;
+  --accent: #f08a5d; --accent-soft: #43291f; --line: #553a2f;
+  color-scheme: dark;
+}
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+  padding-block: 24px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1200px; margin: 0 auto; }
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem, 6vw, 2.8rem); line-height: 1.05; margin: 0; text-wrap: balance; }
+.sub { margin: 6px 0 0; color: var(--muted); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  font: inherit; font-weight: 600; font-size: 0.95rem;
+  color: var(--accent); background: transparent;
+  border: 2px solid var(--accent); border-radius: 10px;
+  padding: 10px 16px; min-height: 44px; cursor: pointer;
+}
+.btn:hover { background: var(--accent-soft); }
+.btn:focus-visible, .card:focus-visible, .listen:focus-visible, .blank:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.def {
+  background: var(--card); border: 2px solid var(--line); border-radius: 12px;
+  padding: 16px; margin-bottom: 28px; max-width: 760px;
+}
+.def h2 {
+  font-family: var(--font-display); font-weight: 600; font-size: 0.85rem;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px;
+}
+.def p { margin: 0; font-size: 1.15rem; line-height: 2.1; max-width: 65ch; }
+.blank {
+  font: inherit; font-weight: 700; color: var(--accent);
+  background: repeating-linear-gradient(135deg, var(--accent-soft) 0 6px, transparent 6px 12px);
+  border: 2px solid var(--accent); border-radius: 8px;
+  min-width: 5.5rem; min-height: 40px; padding: 2px 10px; margin: 0 2px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.blank .n { font-size: 0.8rem; opacity: 0.8; margin-right: 4px; }
+.blank.open { background: var(--accent-soft); }
+
+.board { display: grid; grid-template-columns: 1fr; gap: 28px; }
+.extrait { min-width: 0; }
+.ex-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin: 0 0 10px; padding-bottom: 8px; border-bottom: 2px solid var(--line);
+}
+.extrait h2 {
+  font-family: var(--font-display); font-weight: 600; font-size: 0.85rem;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0;
+}
+.listen {
+  font-weight: 600; font-size: 0.9rem; color: var(--accent); text-decoration: none;
+  border: 2px solid var(--accent); border-radius: 10px; padding: 8px 12px; min-height: 40px;
+  display: inline-flex; align-items: center; white-space: nowrap;
+}
+.listen:hover { background: var(--accent-soft); }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+.card {
+  font: inherit; color: inherit; text-align: left;
+  background: var(--card); border: 2px solid var(--line); border-radius: 12px;
+  padding: 12px; min-height: 130px; min-width: 0;
+  display: flex; flex-direction: column; gap: 10px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: border-color .15s, background .15s;
+}
+.card:hover { border-color: var(--accent); }
+.card.wide { grid-column: 1 / -1; }
+.label { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.mask {
+  flex: 1; min-height: 56px; border-radius: 8px; display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.8rem; color: var(--accent);
+  background: repeating-linear-gradient(135deg, var(--accent-soft) 0 8px, transparent 8px 16px);
+}
+.answer { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; line-height: 1.2; overflow-wrap: anywhere; }
+.note { font-size: 0.9rem; color: var(--muted); }
+.item { display: flex; flex-direction: column; gap: 1px; }
+.card .answer-box { display: none; }
+.card.open { border-color: var(--accent); background: var(--accent-soft); }
+.card.open .mask { display: none; }
+.card.open .answer-box { display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: center; align-items: flex-start; animation: pop .22s ease-out; }
+
+@keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .card.open .answer-box { animation: none; } }
+
+@media (min-width: 900px) {
+  .board { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .cards { grid-template-columns: 1fr; }
+  .card.wide { grid-column: auto; }
+}
+.vids { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.vids a { font-weight:600; font-size:.9rem; color:var(--accent); border:2px solid var(--accent); border-radius:10px; padding:8px 12px; text-decoration:none; }
+.vids a:hover { background:var(--accent-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Le rock 5e ann&#233;e</h1>
+      <p class="sub">Touche une case pour voir la r&#233;ponse.</p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="show-all" type="button">Tout r&#233;v&#233;ler</button>
+      <button class="btn" id="hide-all" type="button">Tout cacher</button>
+    </div>
+  </header>
+
+  <section class="def" aria-labelledby="def-title">
+    <h2 id="def-title">C&#8217;est quoi le rock ?</h2>
+    <p id="def"></p>
+    <div class="vids">
+      <a href="https://www.youtube.com/watch?v=W8Chr-4aFIo" target="_blank" rel="noopener noreferrer">Vid&#233;o 1 &#8599;</a>
+      <a href="https://www.youtube.com/watch?v=aKja0JgI6O8" target="_blank" rel="noopener noreferrer">Vid&#233;o 2 &#8599;</a>
+    </div>
+  </section>
+
+  <main class="board" id="board"></main>
+</div>
+<script>
+var BLANKS = ["populaire", "américaine", "1950", "blues"];
+
+var ARTISTES = [
+  { q: "Jimi Hendrix Foxey Lady", qui: "Jimi Hendrix", quand: "1965-1970", ou: "États-Unis et en Angleterre", periode: "Rock électrique",
+    avec: [["Chanteur"], ["Guitariste", "guitare électrique"], ["Pédales à effet"]], pieces: ["Foxey Lady (1967)"] },
+  { q: "Deep Purple Smoke on the Water", qui: "Deep Purple", quand: "1968-1976", ou: "Grande-Bretagne", periode: "Hard rock",
+    def: "…est en fait du R&B et du blues avec un volume sonore extrême et avec un son de guitare distordu tandis que les chanteurs hurlent des textes souvent révoltés.",
+    avec: [["Un chanteur"], ["Un guitariste"], ["Un bassiste"], ["Un batteur"], ["Un claviériste"]], pieces: ["Smoke on the Water"] },
+  { q: "The Clash Should I stay or should I go", qui: "The Clash", quand: "1974", ou: "Royaume-Uni, à Londres", periode: "Punk rock",
+    def: "Style musical associé à ce mouvement, issu du rock, aux structures et à l’instrumentation généralement simplifiées, caractérisé notamment par un rythme rapide et des paroles provocatrices. Mouvement apparu en Grande-Bretagne au milieu des années 1970, regroupant principalement des jeunes exprimant un rejet de l’ordre social établi, notamment par des coiffures et tenues jugées excentriques et provocantes ainsi que par un style musical marqué par un esprit de protestation.",
+    avec: [["Un chanteur et guitariste"], ["Un guitariste et chanteur"], ["Un bassiste"], ["Un batteur"]], pieces: ["Should I stay or should I go"] },
+  { q: "Depeche Mode Just Can't Get Enough", qui: "Depeche Mode", quand: "1981", ou: "Angleterre", periode: "Pop rock synthétique (synthpop)",
+    def: "Genre musical populaire des années 80 où le synthétiseur est le principal instrument.",
+    avec: [["Dave Gahan", "chant"], ["Martin Gore", "guitare électrique, synthétiseur, chant et chœurs"], ["Andy Fletcher", "synthétiseur, guitare basse"]], pieces: ["Just Can’t Get Enough"] }
+];
+
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+}
+
+function answer(t) {
+  return '<span class="answer">' + esc(t) + "</span>";
+}
+
+function makeCard(label, answerHtml, wide) {
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "card" + (wide ? " wide" : "");
+  b.setAttribute("aria-expanded", "false");
+  b.innerHTML =
+    '<span class="label"></span>' +
+    '<span class="mask" aria-hidden="true">?</span>' +
+    '<span class="answer-box"></span>';
+  b.querySelector(".label").textContent = label;
+  b.querySelector(".answer-box").innerHTML = answerHtml;
+  b.addEventListener("click", function () { toggle(b); });
+  return b;
+}
+
+function toggle(el, force) {
+  var open = typeof force === "boolean" ? force : !el.classList.contains("open");
+  el.classList.toggle("open", open);
+  el.setAttribute("aria-expanded", open ? "true" : "false");
+  if (el.classList.contains("blank")) {
+    el.querySelector(".t").textContent = open ? el.getAttribute("data-word") : "";
+  }
+}
+
+(function () {
+  var p = document.getElementById("def");
+  function blank(i) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "blank";
+    b.setAttribute("aria-expanded", "false");
+    b.setAttribute("data-word", BLANKS[i]);
+    b.innerHTML = '<span class="n">' + (i + 1) + '.</span><span class="t"></span>';
+    b.addEventListener("click", function () { toggle(b); });
+    return b;
+  }
+  p.appendChild(document.createTextNode("Musique "));
+  p.appendChild(blank(0));
+  p.appendChild(document.createTextNode(" d’origine "));
+  p.appendChild(blank(1));
+  p.appendChild(document.createTextNode(" apparue dans les années "));
+  p.appendChild(blank(2));
+  p.appendChild(document.createTextNode(", issue du jazz, du "));
+  p.appendChild(blank(3));
+  p.appendChild(document.createTextNode(", du rhythm and blues et de la musique folklorique anglo-américaine."));
+})();
+
+var board = document.getElementById("board");
+
+ARTISTES.forEach(function (e, i) {
+  var sec = document.createElement("section");
+  sec.className = "extrait";
+
+  var h = document.createElement("h2");
+  h.textContent = "Artiste " + (i + 1);
+  var head = document.createElement("div");
+  head.className = "ex-head";
+  head.appendChild(h);
+  var a = document.createElement("a");
+  a.className = "listen";
+  a.href = e.url || ("https://www.youtube.com/results?search_query=" + encodeURIComponent(e.q));
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  a.textContent = "Écouter ↗";
+  head.appendChild(a);
+
+  var avecHtml = e.avec.map(function (x) {
+    return '<span class="item">' + answer(x[0]) + (x[1] ? '<span class="note">' + esc(x[1]) + "</span>" : "") + "</span>";
+  }).join("");
+
+  var cards = document.createElement("div");
+  cards.className = "cards";
+  cards.appendChild(makeCard("Période", answer(e.periode)));
+  if (e.def) cards.appendChild(makeCard("C’est quoi…", '<span class="note">' + esc(e.def) + "</span>", true));
+  cards.appendChild(makeCard("Quand", answer(e.quand)));
+  cards.appendChild(makeCard("Où", answer(e.ou)));
+  cards.appendChild(makeCard("Qui", answer(e.qui)));
+  cards.appendChild(makeCard("Avec quoi", avecHtml, true));
+  cards.appendChild(makeCard(e.pieces.length > 1 ? "Pièces" : "Pièce", e.pieces.map(answer).join(""), true));
+
+  sec.appendChild(head);
+  sec.appendChild(cards);
+  board.appendChild(sec);
+});
+
+function setAll(open) {
+  document.querySelectorAll("button.card, button.blank").forEach(function (c) { toggle(c, open); });
+}
+document.getElementById("show-all").addEventListener("click", function () { setAll(true); });
+document.getElementById("hide-all").addEventListener("click", function () { setAll(false); });
+</script>
+</body>
+</html>
