@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Xylophone : les deux mains</title>
+<style>
+:root{--bg:#fbf6ec;--fg:#1f2a44;--muted:#5d6580;--accent:#c8431f;--soft:#f6e1d3;--skin:#ecc19b;--skin2:#a8693f;--ink:#4a2410;}
+@media (prefers-color-scheme: dark){:root{--bg:#171b27;--fg:#eef0f6;--muted:#a7aec4;--accent:#f08a5d;--soft:#3a2a26;--skin:#d9a77c;--skin2:#8a5a36;--ink:#3a1c0c;}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;padding:20px max(16px,env(safe-area-inset-left,0px)) 32px}
+.wrap{max-width:1400px;margin:0 auto}
+header{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:end;margin-bottom:8px}
+h1{margin:0;font-size:clamp(1.8rem,5vw,3rem);line-height:1.1}
+.sub{margin:4px 0 0;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:700;color:var(--accent);background:transparent;border:2px solid var(--accent);border-radius:10px;padding:8px 14px;min-height:44px;cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn:focus-visible,.f:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+svg{width:100%;height:auto;display:block}
+.f{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.f .shape{fill:var(--skin);stroke:var(--skin2);stroke-width:4;transition:fill .15s}
+.f:hover .shape{fill:#f5d3b3}
+.f .letter{font-size:64px;font-weight:800;fill:var(--ink);text-anchor:middle;dominant-baseline:central}
+.f .word{font-size:36px;font-weight:800;fill:var(--ink);text-anchor:middle;dominant-baseline:central;display:none}
+.f.open .letter{display:none}
+.f.open .word{display:block}
+.f.open .shape{fill:#f7b98a}
+.plain{fill:var(--skin);stroke:var(--skin2);stroke-width:4}
+.mask{fill:var(--skin)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div><h1>Au xylophone</h1><p class="sub">Touche un doigt pour voir le mot complet.</p></div>
+ <div class="actions"><button class="btn" id="show" type="button">Tout r&#233;v&#233;ler</button><button class="btn" id="hide" type="button">Tout cacher</button></div>
+</header>
+<svg viewBox="0 0 1500 1100" role="img" aria-label="Deux mains : une main ouverte &#224; cinq doigts et une main avec deux doigts lev&#233;s">
+ <g transform="translate(280 70)">
+  <rect class="plain" x="40" y="420" width="410" height="300" rx="130"/>
+  <g class="f" tabindex="0" role="button" data-word="maintien" aria-label="Index">
+   <g transform="rotate(-6 100 440)"><rect class="shape" x="62" y="120" width="82" height="360" rx="41"/>
+   <text class="letter" x="103" y="180">m</text><text class="word" x="103" y="320" transform="rotate(-90 103 320)">maintien</text></g></g>
+  <g class="f" tabindex="0" role="button" data-word="alterner" aria-label="Majeur">
+   <g transform="rotate(-1 190 440)"><rect class="shape" x="150" y="70" width="82" height="410" rx="41"/>
+   <text class="letter" x="191" y="130">a</text><text class="word" x="191" y="290" transform="rotate(-90 191 290)">alterner</text></g></g>
+  <g class="f" tabindex="0" role="button" data-word="bond (petit)" aria-label="Annulaire">
+   <g transform="rotate(5 280 440)"><rect class="shape" x="240" y="105" width="82" height="375" rx="41"/>
+   <text class="letter" x="281" y="165">b</text><text class="word" x="281" y="310" transform="rotate(-90 281 310)">bond (petit)</text></g></g>
+  <g class="f" tabindex="0" role="button" data-word="milieu" aria-label="Auriculaire">
+   <g transform="rotate(12 370 460)"><rect class="shape" x="330" y="210" width="78" height="280" rx="39"/>
+   <text class="letter" x="369" y="278" style="font-size:52px">mi</text><text class="word" x="369" y="372" transform="rotate(-90 369 372)">milieu</text></g></g>
+  <rect class="mask" x="62" y="445" width="350" height="70"/>
+  <g class="f" tabindex="0" role="button" data-word="posture" aria-label="Pouce">
+   <g transform="translate(95 590) rotate(-58)"><rect class="shape" x="-44" y="-250" width="88" height="290" rx="44"/>
+   <text class="letter" x="0" y="-195">p</text><text class="word" x="0" y="-100" transform="rotate(90 0 -100)">posture</text></g></g>
+ </g>
+ <g transform="translate(950 70)">
+  <rect class="plain" x="40" y="420" width="410" height="300" rx="130"/>
+  <ellipse class="plain" cx="300" cy="455" rx="62" ry="48"/>
+  <ellipse class="plain" cx="372" cy="500" rx="52" ry="44"/>
+  <g class="f" tabindex="0" role="button" data-word="notes" aria-label="Index">
+   <g transform="rotate(-4 110 440)"><rect class="shape" x="70" y="120" width="82" height="360" rx="41"/>
+   <text class="letter" x="111" y="180">n</text><text class="word" x="111" y="300" transform="rotate(-90 111 300)">notes</text></g></g>
+  <g class="f" tabindex="0" role="button" data-word="rythme" aria-label="Majeur">
+   <g transform="rotate(4 200 440)"><rect class="shape" x="160" y="70" width="82" height="410" rx="41"/>
+   <text class="letter" x="201" y="130">r</text><text class="word" x="201" y="280" transform="rotate(-90 201 280)">rythme</text></g></g>
+  <rect class="mask" x="68" y="445" width="180" height="50"/>
+  <rect class="plain" x="60" y="500" width="230" height="78" rx="39" transform="rotate(-14 175 540)"/>
+ </g>
+ <g aria-label="Xylophone">
+  <rect x="270" y="900" width="960" height="14" rx="7" fill="#8a5a36" stroke="#1f2a44" stroke-width="3"/>
+  <rect x="300" y="1030" width="900" height="14" rx="7" fill="#8a5a36" stroke="#1f2a44" stroke-width="3"/>
+  <rect x="290" y="865" width="80" height="210" rx="14" fill="#c8431f" stroke="#1f2a44" stroke-width="4"/><circle cx="330" cy="887" r="6" fill="#1f2a44" opacity=".55"/><circle cx="330" cy="1053" r="6" fill="#1f2a44" opacity=".55"/><rect x="382" y="872" width="80" height="196" rx="14" fill="#e0711f" stroke="#1f2a44" stroke-width="4"/><circle cx="422" cy="894" r="6" fill="#1f2a44" opacity=".55"/><circle cx="422" cy="1046" r="6" fill="#1f2a44" opacity=".55"/><rect x="474" y="879" width="80" height="182" rx="14" fill="#e8a91f" stroke="#1f2a44" stroke-width="4"/><circle cx="514" cy="901" r="6" fill="#1f2a44" opacity=".55"/><circle cx="514" cy="1039" r="6" fill="#1f2a44" opacity=".55"/><rect x="566" y="886" width="80" height="168" rx="14" fill="#8fb83a" stroke="#1f2a44" stroke-width="4"/><circle cx="606" cy="908" r="6" fill="#1f2a44" opacity=".55"/><circle cx="606" cy="1032" r="6" fill="#1f2a44" opacity=".55"/><rect x="658" y="893" width="80" height="154" rx="14" fill="#2f9e6a" stroke="#1f2a44" stroke-width="4"/><circle cx="698" cy="915" r="6" fill="#1f2a44" opacity=".55"/><circle cx="698" cy="1025" r="6" fill="#1f2a44" opacity=".55"/><rect x="750" y="900" width="80" height="140" rx="14" fill="#1f8fa0" stroke="#1f2a44" stroke-width="4"/><circle cx="790" cy="922" r="6" fill="#1f2a44" opacity=".55"/><circle cx="790" cy="1018" r="6" fill="#1f2a44" opacity=".55"/><rect x="842" y="907" width="80" height="126" rx="14" fill="#1f6f96" stroke="#1f2a44" stroke-width="4"/><circle cx="882" cy="929" r="6" fill="#1f2a44" opacity=".55"/><circle cx="882" cy="1011" r="6" fill="#1f2a44" opacity=".55"/><rect x="934" y="914" width="80" height="112" rx="14" fill="#4a58b8" stroke="#1f2a44" stroke-width="4"/><circle cx="974" cy="936" r="6" fill="#1f2a44" opacity=".55"/><circle cx="974" cy="1004" r="6" fill="#1f2a44" opacity=".55"/><rect x="1026" y="921" width="80" height="98" rx="14" fill="#7a4ab8" stroke="#1f2a44" stroke-width="4"/><circle cx="1066" cy="943" r="6" fill="#1f2a44" opacity=".55"/><circle cx="1066" cy="997" r="6" fill="#1f2a44" opacity=".55"/><rect x="1118" y="928" width="80" height="84" rx="14" fill="#b84a8f" stroke="#1f2a44" stroke-width="4"/><circle cx="1158" cy="950" r="6" fill="#1f2a44" opacity=".55"/><circle cx="1158" cy="990" r="6" fill="#1f2a44" opacity=".55"/>
+  <line x1="1290" y1="800" x2="1060" y2="905" stroke="#8a5a36" stroke-width="10" stroke-linecap="round"/><circle cx="1040" cy="915" r="22" fill="#e8a91f" stroke="#1f2a44" stroke-width="4"/>
+ </g>
+</svg>
+</div>
+<script>
+var fs=[].slice.call(document.querySelectorAll('.f'));
+function tg(f,v){var o=typeof v==='boolean'?v:!f.classList.contains('open');f.classList.toggle('open',o);f.setAttribute('aria-pressed',o?'true':'false')}
+fs.forEach(function(f){f.addEventListener('click',function(){tg(f)});f.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tg(f)}})});
+document.getElementById('show').onclick=function(){fs.forEach(function(f){tg(f,true)})};
+document.getElementById('hide').onclick=function(){fs.forEach(function(f){tg(f,false)})};
+</script>
+</body>
+</html>
