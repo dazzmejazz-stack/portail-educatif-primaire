@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Écoute musicale 2e année</title>
+<title>&#201;coute musicale 2e ann&#233;e</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600&display=swap">
 <style>
 :root {
@@ -84,6 +84,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem
 }
 .card:hover { border-color: var(--accent); }
 .label { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.slot { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 4px; min-width: 0; }
 .mask {
   flex: 1; border-radius: 8px; display: grid; place-items: center;
   font-family: var(--font-display); font-weight: 700; font-size: 1.8rem; color: var(--accent);
@@ -115,11 +116,11 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem
 <div class="wrap">
   <header>
     <div>
-      <h1>Écoute musicale 2e année</h1>
-      <p class="sub">Touche une case pour voir la réponse.</p>
+      <h1>&#201;coute musicale 2e ann&#233;e</h1>
+      <p class="sub">Touche une case pour voir la r&#233;ponse.</p>
     </div>
     <div class="actions">
-      <button class="btn" id="show-all" type="button">Tout révéler</button>
+      <button class="btn" id="show-all" type="button">Tout r&#233;v&#233;ler</button>
       <button class="btn" id="hide-all" type="button">Tout cacher</button>
     </div>
   </header>
@@ -128,7 +129,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem
 
 <script>
 var EXTRAITS = [
-  { q: "Bach double concerto hautbois violon", comp: "Jean-Sébastien Bach", oeuvre: "Double concerto pour hautbois et violon", emoji: "😌", ambiance: "Paisible, zen", sonLabel: null, son: null },
+  { q: "Bach double concerto hautbois violon", comp: "Jean-Sébastien Bach", oeuvre: "Double concerto pour hautbois et violon", emoji: "😌", ambiance: "Paisible, sérénité", sonLabel: null, son: null },
   { q: "Handel Water Music", comp: "Georg Friedrich Haendel", oeuvre: "Water Music", emoji: "😄", ambiance: "Joyeuse", sonLabel: "Famille d'instruments", son: "Percussions · Vents · Cordes" },
   { q: "Stravinsky L'Oiseau de feu", comp: "Igor Stravinsky", oeuvre: "L'Oiseau de feu", emoji: "🐺", ambiance: "Mystérieuse et menaçante", sonLabel: "Le son", son: "Grave", code: "grave" },
   { q: "Chopin valse op. 64 n° 2 Pollini", comp: "Frédéric Chopin", oeuvre: "Valse op. 64 n° 2 en do dièse mineur", emoji: "😢", ambiance: "Triste", sonLabel: "Le son", son: "Doux", code: "doux" },
