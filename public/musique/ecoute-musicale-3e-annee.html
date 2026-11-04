@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Écoute musicale 3e année</title>
+<title>&#201;coute musicale 3e ann&#233;e</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600&display=swap">
 <style>
 :root {
@@ -36,7 +36,6 @@ body {
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.4;
-  margin: 0;
   padding-block: 24px 40px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
@@ -114,11 +113,11 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem
 <div class="wrap">
   <header>
     <div>
-      <h1>Écoute musicale 3e année</h1>
-      <p class="sub">Touche une case pour voir la réponse.</p>
+      <h1>&#201;coute musicale 3e ann&#233;e</h1>
+      <p class="sub">Touche une case pour voir la r&#233;ponse.</p>
     </div>
     <div class="actions">
-      <button class="btn" id="show-all" type="button">Tout révéler</button>
+      <button class="btn" id="show-all" type="button">Tout r&#233;v&#233;ler</button>
       <button class="btn" id="hide-all" type="button">Tout cacher</button>
     </div>
   </header>
@@ -131,14 +130,14 @@ var EXTRAITS = [
     q: "Moussorgski Une nuit sur le mont Chauve",
     comp: "Modeste Moussorgski",
     oeuvre: "Une nuit sur le mont Chauve",
-    lumiere: ["la danse des sorcières", "le Dieu Noir"],
+    lumiere: ["La danse des sorcières", "Le Dieu Noir"],
     quat: '<span class="nuances"><span class="nuance">p</span><span class="nuance">f</span></span><span class="answer">Nuances : forte et piano</span>'
   },
   {
     q: "Beethoven symphonie 3 Héroïque",
     comp: "Ludwig van Beethoven",
     oeuvre: "Symphonie héroïque",
-    lumiere: ["qu’elle devait se nommer Symphonie Bonaparte", "le souffle puissant de l’héroïsme"],
+    lumiere: ["Elle devait se nommer Symphonie Bonaparte", "Le souffle puissant de l’héroïsme"],
     codes: ["crescendo", "decrescendo"],
     quat: '<span class="answer">Crescendo et decrescendo</span>'
   },
@@ -146,7 +145,7 @@ var EXTRAITS = [
     q: "Liszt Mazeppa poème symphonique",
     comp: "Franz Liszt",
     oeuvre: "Mazeppa",
-    lumiere: ["les galops d’un cheval sauvage", "la chute qui semble annoncer la mort d’un héros cosaque et son réveil au triomphe"],
+    lumiere: ["Les galops d’un cheval sauvage", "La chute qui semble annoncer la mort d’un héros cosaque et son réveil au triomphe"],
     codes: ["ascendant", "descendant"],
     quat: '<span class="answer">Sons ascendants et descendants</span>'
   },
@@ -154,7 +153,7 @@ var EXTRAITS = [
     q: "Rimski-Korsakov Shéhérazade",
     comp: "Nikolaï Rimski-Korsakov",
     oeuvre: "Shéhérazade",
-    lumiere: ["deux armées qui se défient : on va livrer bataille", "un procédé de composition qui s’appelle : question-réponse"],
+    lumiere: ["Deux armées qui se défient : on va livrer bataille", "Un procédé de composition qui s’appelle : question-réponse"],
     quat: '<span class="answer">Instrument à vent : cuivres et bois</span>'
   }
 ];
@@ -218,7 +217,7 @@ EXTRAITS.forEach(function (e, i) {
   cards.className = "cards";
   cards.appendChild(makeCard("Compositeur", '<span class="answer">' + esc(e.comp) + "</span>"));
   cards.appendChild(makeCard("Œuvre", '<span class="answer">' + esc(e.oeuvre) + "</span>"));
-  cards.appendChild(makeCard("Met en lumière…", e.lumiere.map(function (t) { return '<span class="answer">' + esc(t) + "</span>"; }).join("")));
+  e.lumiere.forEach(function (t) { cards.appendChild(makeCard("Histoire", '<span class="answer">' + esc(t) + "</span>")); });
   var quatHtml = (e.codes ? '<span class="codes">' + e.codes.map(codeSvg).join("") + "</span>" : "") + e.quat;
   cards.appendChild(makeCard("Nous a fait découvrir…", quatHtml));
 
