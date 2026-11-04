@@ -38,7 +38,7 @@ h1 { font-size: clamp(1.7rem, 5vw, 2.4rem); margin: 0; line-height: 1.1; }
 .btn:hover { background: var(--soft); }
 .actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .scroll { overflow-x: auto; }
-table { width: 100%; min-width: 760px; border-collapse: collapse; background: var(--card); border: 2px solid var(--line); table-layout: fixed; }
+table { width: 100%; min-width: 900px; border-collapse: collapse; background: var(--card); border: 2px solid var(--line); table-layout: fixed; }
 th, td { border: 2px solid var(--line); padding: 8px; text-align: center; vertical-align: middle; }
 thead th { background: var(--soft); font-size: 0.9rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 10px; }
 th.num { width: 110px; }
@@ -66,7 +66,7 @@ td { height: 84px; padding: 0; }
 .none { color: var(--muted); font-size: 0.9rem; font-style: italic; }
 
 h2 { font-size: 1.1rem; margin: 28px 0 10px; }
-.bank { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.bank { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
 .bank section { min-width: 0; }
 .bank h3 { margin: 0 0 8px; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 .chips { display: flex; flex-direction: column; gap: 8px; }
@@ -95,7 +95,7 @@ h2 { font-size: 1.1rem; margin: 28px 0 10px; }
   <div class="scroll">
     <table>
       <thead>
-        <tr><th class="num"></th><th>Compositeur</th><th>Titre</th><th>Nature</th><th>Code</th></tr>
+        <tr><th class="num"></th><th>Compositeur</th><th>Titre</th><th>Histoire</th><th>Histoire</th><th>Code</th></tr>
       </thead>
       <tbody id="rows"></tbody>
     </table>
@@ -122,9 +122,8 @@ function svg(n) {
   if (n === "f") return '<span class="nuance">f</span>';
   return '<svg viewBox="0 0 48 48" role="img" aria-label="' + n + '" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">' + P[n] + '</svg>';
 }
-function natureHtml(r) {
-  var lines = r.nature.map(function (t) { return "<span>" + t + "</span>"; }).join("");
-  return '<span class="stack">' + (r.emoji ? '<span class="emo">' + r.emoji + "</span>" : "") + lines + "</span>";
+function histHtml(r, k) {
+  return '<span class="stack"><span>' + r.nature[k] + "</span></span>";
 }
 function codeHtml(symbols, mot) {
   return '<span class="stack">' + (symbols.length ? '<span class="syms">' + symbols.map(svg).join("") + "</span>" : "") + "<span>" + mot + "</span></span>";
@@ -140,7 +139,8 @@ var ROWS = [
 var BANK = [
   ["Compositeurs", ["Liszt", "Rimski-Korsakov", "Moussorgski", "Beethoven"]],
   ["Titres", ["Shéhérazade", "Symphonie héroïque", "Mazeppa", "Une nuit sur le mont Chauve"]],
-  ["Natures", [ROWS[2], ROWS[0], ROWS[3], ROWS[1]].map(natureHtml)],
+  ["Histoire", [ROWS[2], ROWS[0], ROWS[3], ROWS[1]].map(function (r) { return histHtml(r, 0); })],
+  ["Histoire", [ROWS[2], ROWS[0], ROWS[3], ROWS[1]].map(function (r) { return histHtml(r, 1); })],
   ["Codes", [codeHtml(["crescendo", "decrescendo"], "Crescendo et decrescendo"), codeHtml([], "Instrument à vent : cuivres et bois"), codeHtml(["p", "f"], "Nuances : forte et piano"), codeHtml(["ascendant", "descendant"], "Sons ascendants et descendants")]]
 ];
 
@@ -164,7 +164,8 @@ ROWS.forEach(function (r, i) {
   tr.appendChild(th);
   tr.appendChild(cell(r.comp));
   tr.appendChild(cell(r.titre));
-  tr.appendChild(cell(natureHtml(r)));
+  tr.appendChild(cell(histHtml(r, 0)));
+  tr.appendChild(cell(histHtml(r, 1)));
   var c = codeOf(r);
   if (c) {
     tr.appendChild(cell(c));
