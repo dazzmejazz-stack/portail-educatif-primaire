@@ -32,6 +32,7 @@ audio{width:100%;margin:6px 0 12px;display:none}
 .ans svg{width:48px;height:48px;color:var(--accent)}
 .count{color:var(--muted);font-size:.95rem;margin-top:10px}
 .hid{display:none}
+.cd{color:var(--accent);font-weight:700;margin-top:10px;min-height:1.4em}
 </style>
 </head>
 <body>
@@ -50,7 +51,9 @@ audio{width:100%;margin:6px 0 12px;display:none}
  <div class="row" style="margin-top:12px">
   <button class="btn" id="reveal" type="button">R&#233;v&#233;ler</button>
   <button class="btn" id="next" type="button">Suivante &#8250;</button>
+  <button class="btn" id="auto" type="button">Arr&#234;ter l&#8217;encha&#238;nement</button>
  </div>
+ <p class="cd" id="cd"></p>
  <p class="count" id="count"></p>
 </div>
 </div>
@@ -127,7 +130,18 @@ function showAnswer(show){
   $("mask").style.display=show?"none":"grid";
   $("reveal").textContent=show?"Cacher":"Révéler";
 }
+var REVEAL_AT=10,WAIT=5,autoOn=true,timer=null;
+function clearCd(){if(timer){clearInterval(timer);timer=null}$("cd").textContent=""}
+function startCd(){
+  clearCd();var n=WAIT;
+  $("cd").textContent="Prochaine pièce dans "+n+" s…";
+  timer=setInterval(function(){
+    n--;
+    if(n<=0){clearCd();play()}else{$("cd").textContent="Prochaine pièce dans "+n+" s…"}
+  },1000);
+}
 function play(){
+  clearCd();
   if(!queue.length)refill();
   cur=queue.shift();last=cur;played++;
   players.forEach(function(x){x.pause();x.style.display="none"});
@@ -137,14 +151,23 @@ function play(){
   showAnswer(!mystery);
   $("count").textContent="Pièce "+played+" sur "+PIECES.length+" (toutes jouées avant de recommencer)";
 }
+players.forEach(function(a,i){
+  a.addEventListener("timeupdate",function(){
+    if(mystery&&cur===i&&a.duration&&a.duration-a.currentTime<=REVEAL_AT&&!$("ans").classList.contains("show")){showAnswer(true)}
+  });
+  a.addEventListener("ended",function(){if(mystery&&cur===i&&autoOn)startCd()});
+});
 function setMode(m){
   mystery=m;
   $("tab-h").setAttribute("aria-pressed",String(!m));$("tab-m").setAttribute("aria-pressed",String(m));
   $("go").textContent=m?"❓ Extrait mystère":"🎲 Pièce au hasard";
   $("reveal").style.display=m?"":"none";
+  $("auto").style.display=m?"":"none";
+  clearCd();
   if(cur!==null)showAnswer(!m);
 }
 $("go").onclick=play;$("next").onclick=play;
+$("auto").onclick=function(){autoOn=!autoOn;$("auto").textContent=autoOn?"Arrêter l’enchaînement":"Reprendre l’enchaînement";if(!autoOn)clearCd();else if(cur!==null&&players[cur].ended)startCd()};
 $("reveal").onclick=function(){showAnswer(!$("ans").classList.contains("show"))};
 $("tab-h").onclick=function(){setMode(false)};$("tab-m").onclick=function(){setMode(true)};
 setMode(false);
