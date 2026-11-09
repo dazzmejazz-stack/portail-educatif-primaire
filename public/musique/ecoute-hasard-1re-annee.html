@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>&#201;coute au hasard 1re ann&#233;e</title>
+<style>
+:root{--bg:#eaf4f2;--card:#fff;--fg:#12302c;--muted:#4d6b66;--accent:#0b7a6e;--soft:#cdeae5;--line:#bcd6d1}
+@media (prefers-color-scheme: dark){:root{--bg:#0e1c1a;--card:#162826;--fg:#e4f2ef;--muted:#9bb8b2;--accent:#5fd0bf;--soft:#1d3b37;--line:#2a4743}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.4;padding:24px max(16px,env(safe-area-inset-left,0px)) 40px}
+.wrap{max-width:760px;margin:0 auto}
+h1{margin:0;font-size:clamp(1.8rem,6vw,2.6rem);line-height:1.1}
+.sub{margin:6px 0 18px;color:var(--muted)}
+.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab{flex:1;font:inherit;font-weight:700;font-size:1.05rem;color:var(--accent);background:transparent;border:2px solid var(--accent);border-radius:12px;padding:12px;min-height:48px;cursor:pointer}
+.tab[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.btn{font:inherit;font-weight:700;color:var(--accent);background:transparent;border:2px solid var(--accent);border-radius:12px;padding:12px 18px;min-height:48px;cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn.main{display:block;width:100%;background:var(--accent);color:var(--bg);font-size:1.5rem;padding:26px;border-radius:18px}
+.btn:focus-visible,.tab:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:18px;margin-top:16px}
+audio{width:100%;margin:6px 0 12px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.mask{min-height:120px;border-radius:12px;display:grid;place-items:center;font-size:2.6rem;font-weight:800;color:var(--accent);background:repeating-linear-gradient(135deg,var(--soft) 0 8px,transparent 8px 16px)}
+.ans{background:var(--soft);border:2px solid var(--accent);border-radius:12px;padding:16px;display:none;flex-direction:column;gap:6px}
+.ans.show{display:flex}
+.ans .c{font-size:1.5rem;font-weight:800}
+.ans .o{font-size:1.15rem;font-weight:600}
+.ans .im{font-size:1.1rem}.ans .im b{font-size:2rem;margin-right:8px;vertical-align:middle}
+.ans .sn{display:flex;align-items:center;gap:10px;font-weight:700}
+.ans svg{width:48px;height:48px;color:var(--accent)}
+.count{color:var(--muted);font-size:.95rem;margin-top:10px}
+.hid{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>&#201;coute au hasard 1re ann&#233;e</h1>
+<p class="sub">Touche un bouton pour entendre une pi&#232;ce au hasard.</p>
+<div class="tabs">
+ <button class="tab" id="tab-h" type="button" aria-pressed="true">Pi&#232;ce au hasard</button>
+ <button class="tab" id="tab-m" type="button" aria-pressed="false">Extrait myst&#232;re</button>
+</div>
+<button class="btn main" id="go" type="button">&#127922; Pi&#232;ce au hasard</button>
+<div class="panel hid" id="panel">
+ <audio id="player" controls preload="auto"></audio>
+ <div class="mask" id="mask" aria-hidden="true">?</div>
+ <div class="ans" id="ans"></div>
+ <div class="row" style="margin-top:12px">
+  <button class="btn" id="reveal" type="button">R&#233;v&#233;ler</button>
+  <button class="btn" id="next" type="button">Suivante &#8250;</button>
+ </div>
+ <p class="count" id="count"></p>
+</div>
+</div>
+<script>
+var PIECES = [
+ {
+  "comp": "Bedřich Smetana",
+  "oeuvre": "La Moldau",
+  "image": "⛰️🌊",
+  "imageNote": "Le parcours de la rivière",
+  "son": null,
+  "code": null,
+  "audio": "/musique/audio/smetana-la-moldau.mp3"
+ },
+ {
+  "comp": "Edvard Grieg",
+  "oeuvre": "Le matin",
+  "image": "🌅",
+  "imageNote": "Un lever de soleil",
+  "son": "Crescendo",
+  "code": "crescendo",
+  "audio": "/musique/audio/grieg-le-matin.mp3"
+ },
+ {
+  "comp": "Gioachino Rossini",
+  "oeuvre": "Ouverture de Guillaume Tell",
+  "image": "⛈️",
+  "imageNote": "Un orage",
+  "son": "Fort",
+  "code": "fort",
+  "audio": "/musique/audio/rossini-guillaume-tell.mp3"
+ },
+ {
+  "comp": "Camille Saint-Saëns",
+  "oeuvre": "Le coucou au fond des bois",
+  "image": "🐦🕰️",
+  "imageNote": "Un coucou, une horloge coucou",
+  "son": "Court",
+  "code": "court",
+  "audio": "/musique/audio/saint-saens-le-coucou.mp3"
+ },
+ {
+  "comp": "Antonio Vivaldi",
+  "oeuvre": "Le Printemps",
+  "image": "🐦🌸",
+  "imageNote": "Des oiseaux avec des fleurs",
+  "son": "Aigu",
+  "code": "aigu",
+  "audio": "/musique/audio/vivaldi-le-printemps.mp3"
+ }
+];
+var CODES = {
+ crescendo:'<line x1="8" y1="24" x2="40" y2="11"/><line x1="8" y1="24" x2="40" y2="37"/>',
+ fort:'<circle cx="24" cy="24" r="18"/>',
+ court:'<line x1="8" y1="24" x2="20" y2="24"/><line x1="28" y1="24" x2="40" y2="24"/>',
+ aigu:'<line x1="6" y1="34" x2="42" y2="34"/><line x1="18" y1="8" x2="30" y2="20"/><line x1="30" y1="8" x2="18" y2="20"/>'
+};
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+var queue=[],cur=null,last=-1,mystery=false,played=0;
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function refill(){
+  queue=shuffle(PIECES.map(function(_,i){return i}));
+  if(queue.length>1&&queue[0]===last){var t=queue[0];queue[0]=queue[queue.length-1];queue[queue.length-1]=t}
+  played=0;
+}
+var $=function(id){return document.getElementById(id)};
+function showAnswer(show){
+  var p=PIECES[cur];
+  $("ans").innerHTML='<span class="c">'+esc(p.comp)+'</span><span class="o">'+esc(p.oeuvre)+'</span>'+
+   '<span class="im"><b role="img" aria-label="'+esc(p.imageNote)+'">'+p.image+'</b>'+esc(p.imageNote)+'</span>'+
+   (p.code?'<span class="sn"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="'+p.code+'">'+CODES[p.code]+'</svg>'+esc(p.son)+'</span>':'');
+  $("ans").classList.toggle("show",show);
+  $("mask").style.display=show?"none":"grid";
+  $("reveal").textContent=show?"Cacher":"Révéler";
+}
+function play(){
+  if(!queue.length)refill();
+  cur=queue.shift();last=cur;played++;
+  var a=$("player");a.src=PIECES[cur].audio;a.currentTime=0;
+  var pr=a.play();if(pr&&pr.catch)pr.catch(function(){});
+  $("panel").classList.remove("hid");
+  showAnswer(!mystery);
+  $("count").textContent="Pièce "+played+" sur "+PIECES.length+" (toutes jouées avant de recommencer)";
+}
+function setMode(m){
+  mystery=m;
+  $("tab-h").setAttribute("aria-pressed",String(!m));$("tab-m").setAttribute("aria-pressed",String(m));
+  $("go").textContent=m?"❓ Extrait mystère":"🎲 Pièce au hasard";
+  $("reveal").style.display=m?"":"none";
+  if(cur!==null)showAnswer(!m);
+}
+$("go").onclick=play;$("next").onclick=play;
+$("reveal").onclick=function(){showAnswer(!$("ans").classList.contains("show"))};
+$("tab-h").onclick=function(){setMode(false)};$("tab-m").onclick=function(){setMode(true)};
+$("player").addEventListener("ended",function(){});
+setMode(false);
+</script>
+</body>
+</html>
