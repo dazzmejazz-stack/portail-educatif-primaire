@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau d'&#233;coute 1re ann&#233;e</title>
+<style>
+@page { size: letter landscape; margin: 12mm; }
+:root {
+  --bg: #eaf4f2;
+  --card: #ffffff;
+  --fg: #12302c;
+  --muted: #4d6b66;
+  --accent: #0b7a6e;
+  --soft: #cdeae5;
+  --line: #9fc3bc;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0e1c1a; --card: #162826; --fg: #e4f2ef; --muted: #9bb8b2; --accent: #5fd0bf; --soft: #1d3b37; --line: #3a5a55; }
+}
+@media print {
+  :root { --bg: #fff; --card: #fff; --fg: #000; --muted: #333; --accent: #000; --soft: #eee; --line: #666; }
+  .actions, .listen { display: none; }
+}
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.35;
+  padding: 24px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px));
+}
+.wrap { max-width: 1150px; margin: 0 auto; }
+header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px; margin-bottom: 16px; }
+h1 { font-size: clamp(1.7rem, 5vw, 2.4rem); margin: 0; line-height: 1.1; }
+.sub { margin: 4px 0 0; color: var(--muted); }
+.btn {
+  font: inherit; font-weight: 600; color: var(--accent); background: transparent;
+  border: 2px solid var(--accent); border-radius: 10px; padding: 8px 14px; min-height: 44px; cursor: pointer;
+}
+.btn:hover { background: var(--soft); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.scroll { overflow-x: auto; }
+table { width: 100%; min-width: 760px; border-collapse: collapse; background: var(--card); border: 2px solid var(--line); table-layout: fixed; }
+th, td { border: 2px solid var(--line); padding: 8px; text-align: center; vertical-align: middle; }
+thead th { background: var(--soft); font-size: 0.9rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 10px; }
+th.num { width: 110px; }
+tbody th { background: var(--soft); font-weight: 700; color: var(--accent); }
+.listen { display: inline-block; margin-top: 4px; font-size: 0.8rem; font-weight: 600; color: var(--accent); text-decoration: none; }
+.listen:hover { text-decoration: underline; }
+td { height: 84px; padding: 0; }
+.cell {
+  font: inherit; color: inherit; width: 100%; height: 100%; min-height: 84px;
+  background: transparent; border: 0; cursor: pointer; padding: 8px;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  font-weight: 600; font-size: 1.05rem; line-height: 1.2;
+}
+.cell:hover { background: var(--soft); }
+.cell:focus-visible, .btn:focus-visible, .listen:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.cell .ans { display: none; }
+.cell.open .ans { display: inline-flex; }
+.cell.open { background: var(--soft); }
+.cell svg { width: 48px; height: 48px; color: var(--accent); }
+.stack { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.emo { font-size: 2.2rem; line-height: 1.1; }
+.none { color: var(--muted); font-size: 0.9rem; font-style: italic; }
+
+h2 { font-size: 1.1rem; margin: 28px 0 10px; }
+.bank { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.bank section { min-width: 0; }
+.bank h3 { margin: 0 0 8px; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.chips { display: flex; flex-direction: column; gap: 8px; }
+.chip {
+  background: var(--card); border: 2px solid var(--line); border-radius: 10px;
+  padding: 8px 10px; min-height: 40px; display: flex; align-items: center; justify-content: center; text-align: center;
+  font-weight: 600; overflow-wrap: anywhere;
+}
+.chip svg { width: 40px; height: 40px; color: var(--accent); }
+@media (max-width: 800px) { .bank { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Tableau d'&#233;coute 1re ann&#233;e</h1>
+      <p class="sub">&#201;coute chaque extrait, puis place les bonnes r&#233;ponses dans les cases.</p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="show" type="button">Tout r&#233;v&#233;ler</button>
+      <button class="btn" id="hide" type="button">Tout cacher</button>
+    </div>
+  </header>
+
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr><th class="num"></th><th>Compositeur</th><th>Titre</th><th>Nature</th><th>Code</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <h2>Les r&#233;ponses</h2>
+  <div class="bank" id="bank"></div>
+</div>
+
+<script>
+var P = {
+  crescendo: '<line x1="8" y1="24" x2="40" y2="11"/><line x1="8" y1="24" x2="40" y2="37"/>',
+  fort: '<circle cx="24" cy="24" r="18"/>',
+  court: '<line x1="8" y1="24" x2="20" y2="24"/><line x1="28" y1="24" x2="40" y2="24"/>',
+  aigu: '<line x1="6" y1="34" x2="42" y2="34"/><line x1="18" y1="8" x2="30" y2="20"/><line x1="30" y1="8" x2="18" y2="20"/>'
+};
+function svg(n) {
+  return '<svg viewBox="0 0 48 48" role="img" aria-label="' + n + '" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">' + P[n] + '</svg>';
+}
+var ROWS = [
+  { q: "Smetana La Moldau", comp: "Smetana", titre: "La Moldau", nature: "Le parcours de la rivière", emoji: "⛰️🌊", code: null, mot: null },
+  { q: "Grieg Peer Gynt Le matin", comp: "Grieg", titre: "Le matin", nature: "Un lever de soleil", emoji: "🌅", code: "crescendo", mot: "Crescendo" },
+  { q: "Rossini Guillaume Tell ouverture", comp: "Rossini", titre: "Ouverture de Guillaume Tell", nature: "Un orage", emoji: "⛈️", code: "fort", mot: "Fort" },
+  { q: "Saint-Saëns Le coucou au fond des bois", comp: "Saint-Saëns", titre: "Le coucou au fond des bois", nature: "Un coucou, une horloge coucou", emoji: "🐦🕰️", code: "court", mot: "Court" },
+  { q: "Vivaldi Le Printemps Quatre Saisons", comp: "Vivaldi", titre: "Le Printemps", nature: "Des oiseaux avec des fleurs", emoji: "🐦🌸", code: "aigu", mot: "Aigu" }
+];
+function natureHtml(r) {
+  return '<span class="stack"><span class="emo">' + r.emoji + '</span><span>' + r.nature + '</span></span>';
+}
+function codeHtml(c, mot) {
+  return '<span class="stack">' + svg(c) + '<span>' + mot + '</span></span>';
+}
+function cell(html) {
+  var td = document.createElement("td");
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "cell";
+  b.setAttribute("aria-label", "Révéler la réponse");
+  b.innerHTML = '<span class="ans">' + html + "</span>";
+  b.addEventListener("click", function () { b.classList.toggle("open"); });
+  td.appendChild(b);
+  return td;
+}
+var tb = document.getElementById("rows");
+ROWS.forEach(function (r, i) {
+  var tr = document.createElement("tr");
+  var th = document.createElement("th");
+  th.scope = "row";
+  th.innerHTML = "Extrait " + (i + 1) + '<br><a class="listen" target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/results?search_query=' + encodeURIComponent(r.q) + '">Écouter ↗</a>';
+  tr.appendChild(th);
+  tr.appendChild(cell(r.comp));
+  tr.appendChild(cell(r.titre));
+  tr.appendChild(cell(natureHtml(r)));
+  if (r.code) {
+    tr.appendChild(cell(codeHtml(r.code, r.mot)));
+  } else {
+    var b = document.createElement("td"); b.innerHTML = '<span class="none">pas de réponse</span>'; tr.appendChild(b);
+  }
+  tb.appendChild(tr);
+});
+
+var BANK = [
+  ["Compositeurs", ["Vivaldi", "Grieg", "Smetana", "Saint-Saëns", "Rossini"]],
+  ["Titres", ["Le coucou au fond des bois", "La Moldau", "Le Printemps", "Ouverture de Guillaume Tell", "Le matin"]],
+  ["Natures", [ROWS[3], ROWS[0], ROWS[4], ROWS[2], ROWS[1]].map(natureHtml)],
+  ["Codes", [codeHtml("fort", "Fort"), codeHtml("aigu", "Aigu"), codeHtml("crescendo", "Crescendo"), codeHtml("court", "Court")]]
+];
+var bank = document.getElementById("bank");
+BANK.forEach(function (g) {
+  var s = document.createElement("section");
+  var h = document.createElement("h3");
+  h.textContent = g[0];
+  var c = document.createElement("div");
+  c.className = "chips";
+  g[1].forEach(function (t) {
+    var d = document.createElement("div");
+    d.className = "chip";
+    d.innerHTML = t;
+    c.appendChild(d);
+  });
+  s.appendChild(h);
+  s.appendChild(c);
+  bank.appendChild(s);
+});
+
+function setAll(open) {
+  document.querySelectorAll(".cell").forEach(function (c) { c.classList.toggle("open", open); });
+}
+document.getElementById("show").addEventListener("click", function () { setAll(true); });
+document.getElementById("hide").addEventListener("click", function () { setAll(false); });
+</script>
+</body>
+</html>
