@@ -20,7 +20,7 @@ h1{margin:0;font-size:clamp(1.8rem,6vw,2.6rem);line-height:1.1}
 .btn.main{display:block;width:100%;background:var(--accent);color:var(--bg);font-size:1.5rem;padding:26px;border-radius:18px}
 .btn:focus-visible,.tab:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .panel{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:18px;margin-top:16px}
-audio{width:100%;margin:6px 0 12px}
+audio{width:100%;margin:6px 0 12px;display:none}
 .row{display:flex;gap:10px;flex-wrap:wrap}
 .mask{min-height:120px;border-radius:12px;display:grid;place-items:center;font-size:2.6rem;font-weight:800;color:var(--accent);background:repeating-linear-gradient(135deg,var(--soft) 0 8px,transparent 8px 16px)}
 .ans{background:var(--soft);border:2px solid var(--accent);border-radius:12px;padding:16px;display:none;flex-direction:column;gap:6px}
@@ -44,7 +44,7 @@ audio{width:100%;margin:6px 0 12px}
 </div>
 <button class="btn main" id="go" type="button">&#127922; Pi&#232;ce au hasard</button>
 <div class="panel hid" id="panel">
- <audio id="player" controls preload="auto"></audio>
+ <div id="players"></div>
  <div class="mask" id="mask" aria-hidden="true">?</div>
  <div class="ans" id="ans"></div>
  <div class="row" style="margin-top:12px">
@@ -117,6 +117,7 @@ function refill(){
   played=0;
 }
 var $=function(id){return document.getElementById(id)};
+var players=PIECES.map(function(p){var a=document.createElement("audio");a.controls=true;a.preload="auto";a.src=p.audio;$("players").appendChild(a);a.load();return a});
 function showAnswer(show){
   var p=PIECES[cur];
   $("ans").innerHTML='<span class="c">'+esc(p.comp)+'</span><span class="o">'+esc(p.oeuvre)+'</span>'+
@@ -129,7 +130,8 @@ function showAnswer(show){
 function play(){
   if(!queue.length)refill();
   cur=queue.shift();last=cur;played++;
-  var a=$("player");a.src=PIECES[cur].audio;a.currentTime=0;
+  players.forEach(function(x){x.pause();x.style.display="none"});
+  var a=players[cur];a.style.display="block";a.currentTime=0;
   var pr=a.play();if(pr&&pr.catch)pr.catch(function(){});
   $("panel").classList.remove("hid");
   showAnswer(!mystery);
@@ -145,7 +147,6 @@ function setMode(m){
 $("go").onclick=play;$("next").onclick=play;
 $("reveal").onclick=function(){showAnswer(!$("ans").classList.contains("show"))};
 $("tab-h").onclick=function(){setMode(false)};$("tab-m").onclick=function(){setMode(true)};
-$("player").addEventListener("ended",function(){});
 setMode(false);
 </script>
 </body>
