@@ -20,7 +20,7 @@ h1{margin:0;font-size:clamp(1.8rem,6vw,2.6rem);line-height:1.1}
 .btn.main{display:block;width:100%;background:var(--accent);color:var(--bg);font-size:1.5rem;padding:26px;border-radius:18px}
 .btn:focus-visible,.tab:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .panel{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:18px;margin-top:16px}
-audio{width:100%;margin:6px 0 12px}
+audio{width:100%;margin:6px 0 12px;display:none}
 .row{display:flex;gap:10px;flex-wrap:wrap}
 .mask{min-height:120px;border-radius:12px;display:grid;place-items:center;font-size:2.6rem;font-weight:800;color:var(--accent);background:repeating-linear-gradient(135deg,var(--soft) 0 8px,transparent 8px 16px)}
 .ans{background:var(--soft);border:2px solid var(--accent);border-radius:12px;padding:16px;display:none;flex-direction:column;gap:6px}
@@ -32,6 +32,7 @@ audio{width:100%;margin:6px 0 12px}
 .ans svg{width:48px;height:48px;color:var(--accent)}
 .count{color:var(--muted);font-size:.95rem;margin-top:10px}
 .hid{display:none}
+.cd{color:var(--accent);font-weight:700;margin-top:10px;min-height:1.4em}
 </style>
 </head>
 <body>
@@ -44,13 +45,15 @@ audio{width:100%;margin:6px 0 12px}
 </div>
 <button class="btn main" id="go" type="button">&#127922; Pi&#232;ce au hasard</button>
 <div class="panel hid" id="panel">
- <audio id="player" controls preload="auto"></audio>
+ <div id="players"></div>
  <div class="mask" id="mask" aria-hidden="true">?</div>
  <div class="ans" id="ans"></div>
  <div class="row" style="margin-top:12px">
   <button class="btn" id="reveal" type="button">R&#233;v&#233;ler</button>
   <button class="btn" id="next" type="button">Suivante &#8250;</button>
+  <button class="btn" id="auto" type="button">Arr&#234;ter l&#8217;encha&#238;nement</button>
  </div>
+ <p class="cd" id="cd"></p>
  <p class="count" id="count"></p>
 </div>
 </div>
@@ -117,6 +120,7 @@ function refill(){
   played=0;
 }
 var $=function(id){return document.getElementById(id)};
+var players=PIECES.map(function(p){var a=document.createElement("audio");a.controls=true;a.preload="auto";a.src=p.audio;$("players").appendChild(a);a.load();return a});
 function showAnswer(show){
   var p=PIECES[cur];
   $("ans").innerHTML='<span class="c">'+esc(p.comp)+'</span><span class="o">'+esc(p.oeuvre)+'</span>'+
@@ -126,26 +130,46 @@ function showAnswer(show){
   $("mask").style.display=show?"none":"grid";
   $("reveal").textContent=show?"Cacher":"Révéler";
 }
+var REVEAL_AT=10,WAIT=5,autoOn=true,timer=null;
+function clearCd(){if(timer){clearInterval(timer);timer=null}$("cd").textContent=""}
+function startCd(){
+  clearCd();var n=WAIT;
+  $("cd").textContent="Prochaine pièce dans "+n+" s…";
+  timer=setInterval(function(){
+    n--;
+    if(n<=0){clearCd();play()}else{$("cd").textContent="Prochaine pièce dans "+n+" s…"}
+  },1000);
+}
 function play(){
+  clearCd();
   if(!queue.length)refill();
   cur=queue.shift();last=cur;played++;
-  var a=$("player");a.src=PIECES[cur].audio;a.currentTime=0;
+  players.forEach(function(x){x.pause();x.style.display="none"});
+  var a=players[cur];a.style.display="block";a.currentTime=0;
   var pr=a.play();if(pr&&pr.catch)pr.catch(function(){});
   $("panel").classList.remove("hid");
   showAnswer(!mystery);
   $("count").textContent="Pièce "+played+" sur "+PIECES.length+" (toutes jouées avant de recommencer)";
 }
+players.forEach(function(a,i){
+  a.addEventListener("timeupdate",function(){
+    if(mystery&&cur===i&&a.duration&&a.duration-a.currentTime<=REVEAL_AT&&!$("ans").classList.contains("show")){showAnswer(true)}
+  });
+  a.addEventListener("ended",function(){if(mystery&&cur===i&&autoOn)startCd()});
+});
 function setMode(m){
   mystery=m;
   $("tab-h").setAttribute("aria-pressed",String(!m));$("tab-m").setAttribute("aria-pressed",String(m));
   $("go").textContent=m?"❓ Extrait mystère":"🎲 Pièce au hasard";
   $("reveal").style.display=m?"":"none";
+  $("auto").style.display=m?"":"none";
+  clearCd();
   if(cur!==null)showAnswer(!m);
 }
 $("go").onclick=play;$("next").onclick=play;
+$("auto").onclick=function(){autoOn=!autoOn;$("auto").textContent=autoOn?"Arrêter l’enchaînement":"Reprendre l’enchaînement";if(!autoOn)clearCd();else if(cur!==null&&players[cur].ended)startCd()};
 $("reveal").onclick=function(){showAnswer(!$("ans").classList.contains("show"))};
 $("tab-h").onclick=function(){setMode(false)};$("tab-m").onclick=function(){setMode(true)};
-$("player").addEventListener("ended",function(){});
 setMode(false);
 </script>
 </body>
