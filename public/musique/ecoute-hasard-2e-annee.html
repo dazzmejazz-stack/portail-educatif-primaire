@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>&#201;coute au hasard 2e ann&#233;e</title>
+<style>
+:root{--bg:#eaf4f2;--card:#fff;--fg:#12302c;--muted:#4d6b66;--accent:#0b7a6e;--soft:#cdeae5;--line:#bcd6d1}
+@media (prefers-color-scheme: dark){:root{--bg:#0e1c1a;--card:#162826;--fg:#e4f2ef;--muted:#9bb8b2;--accent:#5fd0bf;--soft:#1d3b37;--line:#2a4743}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.4;padding:24px max(16px,env(safe-area-inset-left,0px)) 40px}
+.wrap{max-width:760px;margin:0 auto}
+h1{margin:0;font-size:clamp(1.8rem,6vw,2.6rem);line-height:1.1}
+.sub{margin:6px 0 18px;color:var(--muted)}
+.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab{flex:1;font:inherit;font-weight:700;font-size:1.05rem;color:var(--accent);background:transparent;border:2px solid var(--accent);border-radius:12px;padding:12px;min-height:48px;cursor:pointer}
+.tab[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.btn{font:inherit;font-weight:700;color:var(--accent);background:transparent;border:2px solid var(--accent);border-radius:12px;padding:12px 18px;min-height:48px;cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn.main{display:block;width:100%;background:var(--accent);color:var(--bg);font-size:1.5rem;padding:26px;border-radius:18px}
+.btn:focus-visible,.tab:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:18px;margin-top:16px}
+audio{width:100%;margin:6px 0 12px;display:none}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.mask{min-height:120px;border-radius:12px;display:grid;place-items:center;font-size:2.6rem;font-weight:800;color:var(--accent);background:repeating-linear-gradient(135deg,var(--soft) 0 8px,transparent 8px 16px)}
+.ans{background:var(--soft);border:2px solid var(--accent);border-radius:12px;padding:16px;display:none;flex-direction:column;gap:6px}
+.ans.show{display:flex}
+.ans .c{font-size:1.5rem;font-weight:800}
+.ans .o{font-size:1.15rem;font-weight:600}
+.ans .im{font-size:1.1rem}.ans .im b{font-size:2rem;margin-right:8px;vertical-align:middle}
+.ans .sn{display:flex;align-items:center;gap:10px;font-weight:700}
+.ans svg{width:48px;height:48px;color:var(--accent)}
+.count{color:var(--muted);font-size:.95rem;margin-top:10px}
+.hid{display:none}
+.cd{color:var(--accent);font-weight:700;margin-top:10px;min-height:1.4em}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>&#201;coute au hasard 2e ann&#233;e</h1>
+<p class="sub">Touche un bouton pour entendre une pi&#232;ce au hasard.</p>
+<div class="tabs">
+ <button class="tab" id="tab-h" type="button" aria-pressed="true">Pi&#232;ce au hasard</button>
+ <button class="tab" id="tab-m" type="button" aria-pressed="false">Extrait myst&#232;re</button>
+</div>
+<button class="btn main" id="go" type="button">&#127922; Pi&#232;ce au hasard</button>
+<div class="panel hid" id="panel">
+ <div id="players"></div>
+ <div class="mask" id="mask" aria-hidden="true">?</div>
+ <div class="ans" id="ans"></div>
+ <div class="row" style="margin-top:12px">
+  <button class="btn" id="reveal" type="button">R&#233;v&#233;ler</button>
+  <button class="btn" id="next" type="button">Suivante &#8250;</button>
+  <button class="btn" id="auto" type="button">Arr&#234;ter l&#8217;encha&#238;nement</button>
+ </div>
+ <p class="cd" id="cd"></p>
+ <p class="count" id="count"></p>
+</div>
+</div>
+<script>
+var PIECES = [
+ {
+  "comp": "Jean-Sébastien Bach",
+  "oeuvre": "Double concerto pour hautbois et violon",
+  "image": "😌",
+  "imageNote": "Paisible, sérénité",
+  "son": null,
+  "code": null,
+  "audio": "/musique/audio/bach-double-concerto.mp3"
+ },
+ {
+  "comp": "Georg Friedrich Haendel",
+  "oeuvre": "Water Music",
+  "image": "😄",
+  "imageNote": "Joyeuse",
+  "son": "Famille d’instruments : Percussions · Vents · Cordes",
+  "code": null,
+  "audio": "/musique/audio/haendel-water-music.mp3"
+ },
+ {
+  "comp": "Igor Stravinsky",
+  "oeuvre": "L’Oiseau de feu",
+  "image": "🐺",
+  "imageNote": "Mystérieuse et menaçante",
+  "son": "Grave",
+  "code": "grave",
+  "audio": "/musique/audio/stravinski-oiseau-de-feu.mp3"
+ },
+ {
+  "comp": "Frédéric Chopin",
+  "oeuvre": "Valse op. 64 n° 2 en do dièse mineur",
+  "image": "😢",
+  "imageNote": "Triste",
+  "son": "Doux",
+  "code": "doux",
+  "audio": "/musique/audio/chopin-valse.mp3"
+ },
+ {
+  "comp": "Anton Bruckner",
+  "oeuvre": "Symphonie n° 9",
+  "image": "😠",
+  "imageNote": "Colère",
+  "son": "Sons ascendants",
+  "code": "ascendant",
+  "audio": "/musique/audio/bruckner-symphonie-9.mp3"
+ }
+];
+var CODES = {
+ grave:'<line x1="6" y1="16" x2="42" y2="16"/><line x1="18" y1="27" x2="30" y2="39"/><line x1="30" y1="27" x2="18" y2="39"/>',
+ doux:'<circle cx="24" cy="24" r="6"/>',
+ ascendant:'<line x1="8" y1="40" x2="40" y2="8"/><polyline points="25,8 40,8 40,23"/>'
+};
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+var queue=[],cur=null,last=-1,mystery=false,played=0;
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function refill(){
+  queue=shuffle(PIECES.map(function(_,i){return i}));
+  if(queue.length>1&&queue[0]===last){var t=queue[0];queue[0]=queue[queue.length-1];queue[queue.length-1]=t}
+  played=0;
+}
+var $=function(id){return document.getElementById(id)};
+var players=PIECES.map(function(p){var a=document.createElement("audio");a.controls=true;a.preload="auto";a.src=p.audio;$("players").appendChild(a);a.load();return a});
+function showAnswer(show){
+  var p=PIECES[cur];
+  $("ans").innerHTML='<span class="c">'+esc(p.comp)+'</span><span class="o">'+esc(p.oeuvre)+'</span>'+
+   '<span class="im"><b role="img" aria-label="'+esc(p.imageNote)+'">'+p.image+'</b>'+esc(p.imageNote)+'</span>'+
+   (p.son?'<span class="sn">'+(p.code?'<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="'+p.code+'">'+CODES[p.code]+'</svg>':'')+esc(p.son)+'</span>':'');
+  $("ans").classList.toggle("show",show);
+  $("mask").style.display=show?"none":"grid";
+  $("reveal").textContent=show?"Cacher":"Révéler";
+}
+var REVEAL_AT=10,WAIT=5,autoOn=true,timer=null;
+function clearCd(){if(timer){clearInterval(timer);timer=null}$("cd").textContent=""}
+function startCd(){
+  clearCd();var n=WAIT;
+  $("cd").textContent="Prochaine pièce dans "+n+" s…";
+  timer=setInterval(function(){
+    n--;
+    if(n<=0){clearCd();play()}else{$("cd").textContent="Prochaine pièce dans "+n+" s…"}
+  },1000);
+}
+function play(){
+  clearCd();
+  if(!queue.length)refill();
+  cur=queue.shift();last=cur;played++;
+  players.forEach(function(x){x.pause();x.style.display="none"});
+  var a=players[cur];a.style.display="block";a.currentTime=0;
+  var pr=a.play();if(pr&&pr.catch)pr.catch(function(){});
+  $("panel").classList.remove("hid");
+  showAnswer(!mystery);
+  $("count").textContent="Pièce "+played+" sur "+PIECES.length+" (toutes jouées avant de recommencer)";
+}
+players.forEach(function(a,i){
+  a.addEventListener("timeupdate",function(){
+    if(mystery&&cur===i&&a.duration&&a.duration-a.currentTime<=REVEAL_AT&&!$("ans").classList.contains("show")){showAnswer(true)}
+  });
+  a.addEventListener("ended",function(){if(mystery&&cur===i&&autoOn)startCd()});
+});
+function setMode(m){
+  mystery=m;
+  $("tab-h").setAttribute("aria-pressed",String(!m));$("tab-m").setAttribute("aria-pressed",String(m));
+  $("go").textContent=m?"❓ Extrait mystère":"🎲 Pièce au hasard";
+  $("reveal").style.display=m?"":"none";
+  $("auto").style.display=m?"":"none";
+  clearCd();
+  if(cur!==null)showAnswer(!m);
+}
+$("go").onclick=play;$("next").onclick=play;
+$("auto").onclick=function(){autoOn=!autoOn;$("auto").textContent=autoOn?"Arrêter l’enchaînement":"Reprendre l’enchaînement";if(!autoOn)clearCd();else if(cur!==null&&players[cur].ended)startCd()};
+$("reveal").onclick=function(){showAnswer(!$("ans").classList.contains("show"))};
+$("tab-h").onclick=function(){setMode(false)};$("tab-m").onclick=function(){setMode(true)};
+setMode(false);
+</script>
+</body>
+</html>
