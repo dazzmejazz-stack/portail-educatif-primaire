@@ -71,14 +71,47 @@ h2 { font-size:1.1rem; margin:28px 0 10px; }
 var COLS = ["Qui", "Pièce", "Période", "Quand", "Où", "Avec quoi"];
 var ROWS = [
  {
-  "q": "Jimi Hendrix Foxey Lady",
+  "q": "Chuck Berry Johnny B. Goode",
+  "cells": [
+   "Chuck Berry",
+   "Johnny B. Goode (1958)",
+   "Début du rock’n’roll",
+   "1955-2017",
+   "Saint-Louis, États-Unis",
+   "<span class=\"stack\"><span>Chant</span><span>Guitare électrique</span></span>"
+  ]
+ },
+ {
+  "q": "The Beatles I Want to Hold Your Hand",
+  "cells": [
+   "Les Beatles",
+   "I Want to Hold Your Hand (1963)",
+   "Rock pop britannique",
+   "1960-1970",
+   "Liverpool, Angleterre",
+   "<span class=\"stack\"><span>John Lennon : chant, guitare</span><span>Paul McCartney : chant, basse</span><span>George Harrison : chant, guitare</span><span>Ringo Starr : chant, batterie</span></span>"
+  ]
+ },
+ {
+  "q": "Bob Dylan Like a Rolling Stone",
+  "cells": [
+   "Bob Dylan",
+   "Like a Rolling Stone (1965)",
+   "Folk rock",
+   "1962 à aujourd’hui",
+   "Minnesota, États-Unis",
+   "<span class=\"stack\"><span>Chant</span><span>Guitare</span><span>Harmonica</span><span>Piano</span></span>"
+  ]
+ },
+ {
+  "q": "Jimi Hendrix Foxy Lady",
   "cells": [
    "Jimi Hendrix",
    "Foxy Lady (1967)",
-   "Rock électrique",
-   "1965-1970",
-   "États-Unis et en Angleterre",
-   "<span class=\"stack\"><span>Chanteur</span><span>Guitariste (guitare électrique)</span><span>Pédales à effet</span></span>"
+   "Rock psychédélique",
+   "1966-1970",
+   "États-Unis et Angleterre",
+   "<span class=\"stack\"><span>Chant</span><span>Guitare électrique</span><span>Pédales d’effets</span></span>"
   ]
  },
  {
@@ -87,20 +120,20 @@ var ROWS = [
    "Deep Purple",
    "Smoke on the Water (1972)",
    "Hard rock",
-   "1968-1976",
-   "Grande-Bretagne",
-   "<span class=\"stack\"><span>Un chanteur</span><span>Un guitariste</span><span>Un bassiste</span><span>Un batteur</span><span>Un claviériste</span></span>"
+   "1968 à aujourd’hui",
+   "Angleterre",
+   "<span class=\"stack\"><span>Chant</span><span>Guitare</span><span>Basse</span><span>Batterie</span><span>Clavier</span></span>"
   ]
  },
  {
-  "q": "The Clash Should I stay or should I go",
+  "q": "The Clash Should I Stay or Should I Go",
   "cells": [
    "The Clash",
    "Should I Stay or Should I Go (1982)",
    "Punk rock",
-   "1976",
-   "Royaume-Uni, à Londres",
-   "<span class=\"stack\"><span>Un chanteur et guitariste</span><span>Un guitariste et chanteur</span><span>Un bassiste</span><span>Un batteur</span></span>"
+   "1976-1986",
+   "Londres, Angleterre",
+   "<span class=\"stack\"><span>Deux guitaristes-chanteurs</span><span>Basse</span><span>Batterie</span></span>"
   ]
  },
  {
@@ -108,14 +141,47 @@ var ROWS = [
   "cells": [
    "Depeche Mode",
    "Just Can’t Get Enough (1981)",
-   "Pop rock synthétique (synthpop)",
-   "1981",
-   "Angleterre",
-   "<span class=\"stack\"><span>Dave Gahan : chant</span><span>Martin Gore : guitare électrique, synthétiseur, chant et chœurs</span><span>Andy Fletcher : synthétiseur, guitare basse</span></span>"
+   "Synthpop",
+   "1980 à aujourd’hui",
+   "Basildon, Angleterre",
+   "<span class=\"stack\"><span>Chant</span><span>Synthétiseurs</span><span>Guitare</span><span>Basse</span></span>"
+  ]
+ },
+ {
+  "q": "Michael Jackson Beat It",
+  "cells": [
+   "Michael Jackson",
+   "Beat It (1983)",
+   "Pop rock",
+   "1971-2009 (carrière solo)",
+   "Indiana, États-Unis",
+   "<span class=\"stack\"><span>Chant</span><span>Danse</span></span>"
+  ]
+ },
+ {
+  "q": "U2 Where the Streets Have No Name",
+  "cells": [
+   "U2",
+   "Where the Streets Have No Name (1987)",
+   "Rock alternatif",
+   "1976 à aujourd’hui",
+   "Dublin, Irlande",
+   "<span class=\"stack\"><span>Chant</span><span>Guitare</span><span>Basse</span><span>Batterie</span></span>"
+  ]
+ },
+ {
+  "q": "Nirvana Smells Like Teen Spirit",
+  "cells": [
+   "Nirvana",
+   "Smells Like Teen Spirit (1991)",
+   "Grunge",
+   "1987-1994",
+   "Seattle, États-Unis",
+   "<span class=\"stack\"><span>Chant</span><span>Guitare</span><span>Basse</span><span>Batterie</span></span>"
   ]
  }
 ];
-var PERM = [2, 0, 3, 1];
+var PERM = [6, 2, 8, 0, 4, 9, 1, 7, 3, 5];
 function cell(html) {
   var td = document.createElement("td");
   var b = document.createElement("button");
