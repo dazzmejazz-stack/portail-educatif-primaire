@@ -71,39 +71,6 @@ h2 { font-size:1.1rem; margin:28px 0 10px; }
 var COLS = ["Qui", "Pièce", "Période", "Quand", "Où", "Avec quoi"];
 var ROWS = [
  {
-  "q": "Chuck Berry Johnny B. Goode",
-  "cells": [
-   "Chuck Berry",
-   "Johnny B. Goode (1958)",
-   "Début du rock’n’roll",
-   "1955-2017",
-   "Saint-Louis, États-Unis",
-   "<span class=\"stack\"><span>Chant</span><span>Guitare électrique</span></span>"
-  ]
- },
- {
-  "q": "The Beatles I Want to Hold Your Hand",
-  "cells": [
-   "Les Beatles",
-   "I Want to Hold Your Hand (1963)",
-   "Rock pop britannique",
-   "1960-1970",
-   "Liverpool, Angleterre",
-   "<span class=\"stack\"><span>John Lennon : chant, guitare</span><span>Paul McCartney : chant, basse</span><span>George Harrison : chant, guitare</span><span>Ringo Starr : chant, batterie</span></span>"
-  ]
- },
- {
-  "q": "Bob Dylan Like a Rolling Stone",
-  "cells": [
-   "Bob Dylan",
-   "Like a Rolling Stone (1965)",
-   "Folk rock",
-   "1962 à aujourd’hui",
-   "Minnesota, États-Unis",
-   "<span class=\"stack\"><span>Chant</span><span>Guitare</span><span>Harmonica</span><span>Piano</span></span>"
-  ]
- },
- {
   "q": "Jimi Hendrix Foxy Lady",
   "cells": [
    "Jimi Hendrix",
@@ -146,42 +113,9 @@ var ROWS = [
    "Basildon, Angleterre",
    "<span class=\"stack\"><span>Chant</span><span>Synthétiseurs</span><span>Guitare</span><span>Basse</span></span>"
   ]
- },
- {
-  "q": "Michael Jackson Beat It",
-  "cells": [
-   "Michael Jackson",
-   "Beat It (1983)",
-   "Pop rock",
-   "1971-2009 (carrière solo)",
-   "Indiana, États-Unis",
-   "<span class=\"stack\"><span>Chant</span><span>Danse</span></span>"
-  ]
- },
- {
-  "q": "U2 Where the Streets Have No Name",
-  "cells": [
-   "U2",
-   "Where the Streets Have No Name (1987)",
-   "Rock alternatif",
-   "1976 à aujourd’hui",
-   "Dublin, Irlande",
-   "<span class=\"stack\"><span>Chant</span><span>Guitare</span><span>Basse</span><span>Batterie</span></span>"
-  ]
- },
- {
-  "q": "Nirvana Smells Like Teen Spirit",
-  "cells": [
-   "Nirvana",
-   "Smells Like Teen Spirit (1991)",
-   "Grunge",
-   "1987-1994",
-   "Seattle, États-Unis",
-   "<span class=\"stack\"><span>Chant</span><span>Guitare</span><span>Basse</span><span>Batterie</span></span>"
-  ]
  }
 ];
-var PERM = [6, 2, 8, 0, 4, 9, 1, 7, 3, 5];
+var PERM = [2, 0, 3, 1];
 function cell(html) {
   var td = document.createElement("td");
   var b = document.createElement("button");
