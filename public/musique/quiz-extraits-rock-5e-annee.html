@@ -20,6 +20,7 @@ h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute
 .nx{display:block;width:100%;text-align:center;font:inherit;font-weight:700;color:#fff;background:var(--accent);border:0;border-radius:12px;padding:14px;cursor:pointer}
 .listen{display:inline-block;margin:0 0 12px;font-weight:600;font-size:.9rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:10px;padding:6px 12px}
 .end{text-align:center}.big{font-size:3rem;font-weight:800;color:var(--accent);margin:8px 0}
+.snd{font:inherit;font-size:.85rem;color:var(--muted);background:var(--card);border:2px solid var(--line);border-radius:10px;padding:4px 10px;cursor:pointer}.snd:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -34,7 +35,7 @@ h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute
     <button class="a mode" type="button" data-n="40"><b>Long : 40 questions</b><br><small>environ 40 minutes</small></button>
   </div>
   <div id="game" hidden>
-    <div class="top"><span id="num"></span><span id="score"></span></div>
+    <div class="top"><span id="num"></span><button type="button" id="snd" class="snd" aria-pressed="true">&#128266; Sons : oui</button><span id="score"></span></div>
     <div class="bar"><i id="prog"></i></div>
     <h1>Le rock</h1>
     <p class="q" id="q"></p>
@@ -97,6 +98,12 @@ var players=A.map(function(p,k){var a=document.createElement("audio");a.controls
   a.addEventListener("play",function(){if(a.currentTime<ST[k]-0.5||a.currentTime>=ST[k]+LEN){a.currentTime=ST[k]}});
   a.addEventListener("timeupdate",function(){if(a.currentTime>=ST[k]+LEN){a.pause();a.currentTime=ST[k]}});
   $("players").appendChild(a);return a});
+var sndOn=true,AC=null;
+function tone(f,t0,d,type,vol){var c=AC,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,c.currentTime+t0);g.gain.setValueAtTime(0.0001,c.currentTime+t0);g.gain.exponentialRampToValueAtTime(vol,c.currentTime+t0+0.02);g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+t0+d);o.connect(g);g.connect(c.destination);o.start(c.currentTime+t0);o.stop(c.currentTime+t0+d+0.05)}
+function sfx(good){if(!sndOn)return;try{if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(!C)return;AC=new C()}if(AC.state==="suspended")AC.resume();
+  if(good){tone(523,0,0.16,"triangle",0.25);tone(659,0.12,0.16,"triangle",0.25);tone(784,0.24,0.3,"triangle",0.25)}
+  else{tone(220,0,0.22,"sawtooth",0.12);tone(150,0.2,0.4,"sawtooth",0.12)}}catch(e){}}
+$("snd").addEventListener("click",function(){sndOn=!sndOn;this.setAttribute("aria-pressed",sndOn);this.innerHTML=sndOn?"&#128266; Sons : oui":"&#128263; Sons : non"});
 var Q,i,score;
 function start(n){Q=build(n);i=0;score=0;$("start").hidden=true;$("end").hidden=true;$("game").hidden=false;show()}
 function show(){
@@ -107,7 +114,7 @@ function show(){
   shuffle(q.opts).forEach(function(o){var b=document.createElement("button");b.type="button";b.className="a";b.textContent=o;b.addEventListener("click",function(){pick(b,o)});box.appendChild(b)});
 }
 function pick(b,o){
-  var q=Q[i],good=o===q.ok;if(good)score++;
+  var q=Q[i],good=o===q.ok;if(good)score++;sfx(good);
   Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true;if(x.textContent===q.ok){x.classList.add("ok");if(x===b)x.textContent="✔ "+x.textContent}});
   if(!good){b.classList.add("no");b.textContent="✘ "+o}
   $("fb").textContent=(good?"Bravo ! ":"Pas tout à fait. La bonne réponse : "+q.ok+". ")+q.fb;$("fb").hidden=false;
