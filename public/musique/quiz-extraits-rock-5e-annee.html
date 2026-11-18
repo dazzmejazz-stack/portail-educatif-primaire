@@ -53,17 +53,26 @@ var A = [
 ];
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 function build(){
-  var AQ=[],Q=[];
+  var AQ=[],Q=[],O=A.map(function(o){return o.n}),P=A.map(function(o){return o.p}),R=A.map(function(o){return o.per}),Y=A.map(function(o){return String(o.y)});
   A.forEach(function(x,k){
-    AQ.push({t:"Écoute l’extrait. Quel est le groupe ou l’artiste ?", opts:A.map(function(o){return o.n}), ok:x.n, fb:x.info+" C’était « "+x.p+" » ("+x.y+").", au:k});
-    AQ.push({t:"Écoute l’extrait. Quelle est la pièce ?", opts:A.map(function(o){return o.p}), ok:x.p, fb:"« "+x.p+" », de "+x.n+" ("+x.y+").", au:k});
-    AQ.push({t:"Écoute l’extrait. Quelle est la période ?", opts:A.map(function(o){return o.per}), ok:x.per, fb:x.info, au:k});
-    Q.push({t:"En quelle année est sortie « "+x.p+" » ?", opts:A.map(function(o){return String(o.y)}), ok:String(x.y), fb:"« "+x.p+" » de "+x.n+", "+x.y+"."});
-    Q.push({t:"Quel artiste ou groupe a commencé en "+x.debut+" ?", opts:A.map(function(o){return o.n}), ok:x.n, fb:x.info});
+    AQ.push({t:"Écoute l’extrait. Quel est le groupe ou l’artiste ?", opts:O, ok:x.n, fb:x.info+" C’était « "+x.p+" » ("+x.y+").", au:k});
+    AQ.push({t:"Écoute l’extrait. Quelle est la pièce ?", opts:P, ok:x.p, fb:"« "+x.p+" », de "+x.n+" ("+x.y+").", au:k});
+    AQ.push({t:"Écoute l’extrait. Quelle est la période ?", opts:R, ok:x.per, fb:x.info, au:k});
+    Q.push({t:"En quelle année est sortie « "+x.p+" » ?", opts:Y, ok:String(x.y), fb:"« "+x.p+" » de "+x.n+", "+x.y+"."});
+    Q.push({t:"Quelle pièce est sortie en "+x.y+" ?", opts:P, ok:x.p, fb:"« "+x.p+" », de "+x.n+", "+x.y+"."});
+    Q.push({t:"Quel artiste ou groupe a commencé en "+x.debut+" ?", opts:O, ok:x.n, fb:x.info});
+    Q.push({t:"Quel artiste ou groupe joue du "+x.per.toLowerCase()+" ?", opts:O, ok:x.n, fb:x.info});
+    Q.push({t:"À quelle période appartient « "+x.p+" » ?", opts:R, ok:x.per, fb:x.info});
+    Q.push({t:"Qui a joué « "+x.p+" » ?", opts:O, ok:x.n, fb:x.info});
   });
   Q.push({t:"Quel instrument est très important chez Depeche Mode ?", opts:["Les synthétiseurs","Le violon","L’harmonica","Le saxophone"], ok:"Les synthétiseurs", fb:"Depeche Mode joue du synthpop : beaucoup de synthétiseurs."});
   Q.push({t:"Jimi Hendrix a surtout joué…", opts:["Aux États-Unis et en Angleterre","Seulement en Irlande","Seulement en Italie","En Australie"], ok:"Aux États-Unis et en Angleterre", fb:"Hendrix est américain, mais sa carrière a décollé à Londres."});
-  return shuffle(shuffle(AQ).slice(0,6).concat(shuffle(Q).slice(0,4)));
+  Q.push({t:"Quel groupe vient de Basildon, en Angleterre ?", opts:O, ok:"Depeche Mode", fb:A[3].info});
+  Q.push({t:"Quel groupe est né à Londres, en 1976 ?", opts:O, ok:"The Clash", fb:A[2].info});
+  Q.push({t:"Quel guitariste est connu pour ses pédales d’effets ?", opts:O, ok:"Jimi Hendrix", fb:A[0].info});
+  Q.push({t:"Laquelle de ces pièces est la plus ancienne ?", opts:P, ok:"Foxy Lady", fb:"« Foxy Lady » date de 1967."});
+  Q.push({t:"Laquelle de ces pièces est la plus récente ?", opts:P, ok:"Should I Stay or Should I Go", fb:"« Should I Stay or Should I Go » date de 1982."});
+  return shuffle(shuffle(AQ).slice(0,10).concat(shuffle(Q).slice(0,10)));
 }
 var players=A.map(function(p){var a=document.createElement("audio");a.controls=true;a.preload="auto";a.src=p.au;a.style.display="none";a.style.width="100%";a.style.margin="0 0 14px";$("players").appendChild(a);a.load();return a});
 var Q, i, score;
@@ -84,7 +93,7 @@ function pick(b,o){
 }
 $("next").addEventListener("click",function(){i++;if(i>=Q.length){end()}else{show()}});
 function end(){players.forEach(function(a){a.pause()});$("game").hidden=true;$("end").hidden=false;$("final").textContent=score+" / "+Q.length;
-  $("msg").textContent=score>=9?"Excellent ! Tu connais bien le rock.":score>=6?"Bien joué ! Encore un essai pour faire mieux ?":"Réécoute les extraits et réessaie !"}
+  $("msg").textContent=score>=18?"Excellent ! Tu connais bien le rock.":score>=12?"Bien joué ! Encore un essai pour faire mieux ?":"Réécoute les extraits et réessaie !"}
 $("again").addEventListener("click",start);
 start();
 </script>
