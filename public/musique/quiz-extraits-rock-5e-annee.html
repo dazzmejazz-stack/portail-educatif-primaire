@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quiz avec extraits &#8211; Le rock 5e ann&#233;e</title>
+<title>Quiz avec extraits &#8211; Le rock</title>
 <style>
 :root{--bg:#f2eeee;--card:#fff;--fg:#2b1d17;--muted:#6e5a50;--accent:#b34a1e;--soft:#f3d9cc;--line:#ddd0ca;--ok:#d8efd6;--okb:#2f8a3a;--no:#f6d5d0;--nob:#c0392b}
 @media (prefers-color-scheme:dark){:root{--bg:#1d1411;--card:#2a1d18;--fg:#f4e9e4;--muted:#c4aea3;--accent:#f08a5d;--soft:#43291f;--line:#553a2f;--ok:#1f3a22;--okb:#6fcf7a;--no:#4a2420;--nob:#ff8a7a}}
@@ -25,10 +25,18 @@ h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute
 </head>
 <body>
 <div class="wrap">
-  <div id="game">
+  <div id="start">
+    <h1>Le rock</h1>
+    <p class="q">Quiz avec extraits</p>
+    <p style="color:var(--muted);margin:0 0 16px">Choisis la longueur de la partie.</p>
+    <button class="a mode" type="button" data-n="10"><b>Court : 10 questions</b><br><small>environ 10 minutes</small></button>
+    <button class="a mode" type="button" data-n="20"><b>Moyen : 20 questions</b><br><small>environ 20 minutes</small></button>
+    <button class="a mode" type="button" data-n="40"><b>Long : 40 questions</b><br><small>environ 40 minutes</small></button>
+  </div>
+  <div id="game" hidden>
     <div class="top"><span id="num"></span><span id="score"></span></div>
     <div class="bar"><i id="prog"></i></div>
-    <h1>Le rock &#8211; 5e ann&#233;e</h1>
+    <h1>Le rock</h1>
     <p class="q" id="q"></p>
     <div id="players"></div>
     <div id="answers"></div>
@@ -36,7 +44,7 @@ h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute
     <button class="nx" id="next" type="button" hidden>Question suivante &#8594;</button>
   </div>
   <div class="end" id="end" hidden>
-    <h1>Le rock &#8211; 5e ann&#233;e</h1>
+    <h1>Le rock</h1>
     <p class="q">Quiz termin&#233; !</p>
     <div class="big" id="final"></div>
     <p id="msg"></p>
@@ -45,38 +53,47 @@ h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute
 </div>
 <script>
 var $=function(id){return document.getElementById(id)};
-var A = [
- {n:"Jimi Hendrix", p:"Foxy Lady", y:1967, per:"Rock psychédélique", debut:1966, info:"Jimi Hendrix : rock psychédélique, guitare électrique et pédales d’effets, de 1966 à 1970.", q:"Jimi Hendrix Foxy Lady", au:"/musique/audio/rock5-hendrix-foxy-lady.mp3"},
- {n:"Deep Purple", p:"Smoke on the Water", y:1972, per:"Hard rock", debut:1968, info:"Deep Purple : hard rock, groupe formé en 1968 en Angleterre.", q:"Deep Purple Smoke on the Water", au:"/musique/audio/rock5-deep-purple-smoke-on-the-water.mp3"},
- {n:"The Clash", p:"Should I Stay or Should I Go", y:1982, per:"Punk rock", debut:1976, info:"The Clash : punk rock, groupe formé à Londres en 1976.", q:"The Clash Should I Stay or Should I Go", au:"/musique/audio/rock5-the-clash-should-i-stay-or-should-i-go.mp3"},
- {n:"Depeche Mode", p:"Just Can’t Get Enough", y:1981, per:"Synthpop", debut:1980, info:"Depeche Mode : synthpop, groupe formé en 1980 à Basildon, en Angleterre.", q:"Depeche Mode Just Can't Get Enough", au:"/musique/audio/rock5-depeche-mode-just-cant-get-enough.mp3"}
+var A=[
+ {n:"Chuck Berry",p:"Johnny B. Goode",y:1958,per:"Début du rock’n’roll",debut:1955,lieu:"Saint-Louis, aux États-Unis",au:"/musique/audio/rock5-chuck-berry-johnny-b-goode.mp3",info:"Chuck Berry : début du rock’n’roll, chant et guitare électrique, premier disque en 1955."},
+ {n:"Les Beatles",p:"I Want to Hold Your Hand",y:1963,per:"Rock pop britannique",debut:1960,lieu:"Liverpool, en Angleterre",au:"/musique/audio/rock5-beatles-i-want-to-hold-your-hand.mp3",info:"Les Beatles : rock pop britannique, groupe de Liverpool actif de 1960 à 1970."},
+ {n:"Bob Dylan",p:"Like a Rolling Stone",y:1965,per:"Folk rock",debut:1962,lieu:"le Minnesota, aux États-Unis",au:"/musique/audio/rock5-bob-dylan-like-a-rolling-stone.mp3",info:"Bob Dylan : folk rock, né au Minnesota, premier album en 1962."},
+ {n:"Jimi Hendrix",p:"Foxy Lady",y:1967,per:"Rock psychédélique",debut:1966,lieu:"les États-Unis et l’Angleterre",au:"/musique/audio/rock5-hendrix-foxy-lady.mp3",info:"Jimi Hendrix : rock psychédélique, guitare électrique et pédales d’effets, de 1966 à 1970."},
+ {n:"Deep Purple",p:"Smoke on the Water",y:1972,per:"Hard rock",debut:1968,lieu:"l’Angleterre",au:"/musique/audio/rock5-deep-purple-smoke-on-the-water.mp3",info:"Deep Purple : hard rock, groupe formé en 1968 en Angleterre."},
+ {n:"The Clash",p:"Should I Stay or Should I Go",y:1982,per:"Punk rock",debut:1976,lieu:"Londres, en Angleterre",au:"/musique/audio/rock5-the-clash-should-i-stay-or-should-i-go.mp3",info:"The Clash : punk rock, groupe formé à Londres en 1976."},
+ {n:"Depeche Mode",p:"Just Can’t Get Enough",y:1981,per:"Synthpop",debut:1980,lieu:"Basildon, en Angleterre",au:"/musique/audio/rock5-depeche-mode-just-cant-get-enough.mp3",info:"Depeche Mode : synthpop, groupe formé en 1980 à Basildon, en Angleterre."},
+ {n:"Michael Jackson",p:"Beat It",y:1983,per:"Pop rock",debut:1971,lieu:"l’Indiana, aux États-Unis",au:"/musique/audio/rock5-michael-jackson-beat-it.mp3",info:"Michael Jackson : pop rock, carrière solo dès 1971, né en Indiana."}
 ];
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
-function build(){
-  var AQ=[],Q=[],O=A.map(function(o){return o.n}),P=A.map(function(o){return o.p}),R=A.map(function(o){return o.per}),Y=A.map(function(o){return String(o.y)});
+function opts(list,ok){var others=shuffle(list.filter(function(v,i,s){return v!==ok&&s.indexOf(v)===i})).slice(0,3);return others.concat([ok])}
+var O=A.map(function(o){return o.n}),P=A.map(function(o){return o.p}),R=A.map(function(o){return o.per}),Y=A.map(function(o){return String(o.y)}),D=A.map(function(o){return String(o.debut)});
+function build(n){
+  var AQ=[],Q=[];
   A.forEach(function(x,k){
-    AQ.push({t:"Écoute l’extrait. Quel est le groupe ou l’artiste ?", opts:O, ok:x.n, fb:x.info+" C’était « "+x.p+" » ("+x.y+").", au:k});
-    AQ.push({t:"Écoute l’extrait. Quelle est la pièce ?", opts:P, ok:x.p, fb:"« "+x.p+" », de "+x.n+" ("+x.y+").", au:k});
-    AQ.push({t:"Écoute l’extrait. Quelle est la période ?", opts:R, ok:x.per, fb:x.info, au:k});
-    Q.push({t:"En quelle année est sortie « "+x.p+" » ?", opts:Y, ok:String(x.y), fb:"« "+x.p+" » de "+x.n+", "+x.y+"."});
-    Q.push({t:"Quelle pièce est sortie en "+x.y+" ?", opts:P, ok:x.p, fb:"« "+x.p+" », de "+x.n+", "+x.y+"."});
-    Q.push({t:"Quel artiste ou groupe a commencé en "+x.debut+" ?", opts:O, ok:x.n, fb:x.info});
-    Q.push({t:"Quel artiste ou groupe joue du "+x.per.toLowerCase()+" ?", opts:O, ok:x.n, fb:x.info});
-    Q.push({t:"À quelle période appartient « "+x.p+" » ?", opts:R, ok:x.per, fb:x.info});
-    Q.push({t:"Qui a joué « "+x.p+" » ?", opts:O, ok:x.n, fb:x.info});
+    AQ.push({t:"Écoute l’extrait. Quel est le groupe ou l’artiste ?",opts:opts(O,x.n),ok:x.n,fb:x.info+" C’était « "+x.p+" » ("+x.y+").",au:k});
+    AQ.push({t:"Écoute l’extrait. Quelle est la pièce ?",opts:opts(P,x.p),ok:x.p,fb:"« "+x.p+" », de "+x.n+" ("+x.y+").",au:k});
+    AQ.push({t:"Écoute l’extrait. Quelle est la période ?",opts:opts(R,x.per),ok:x.per,fb:x.info,au:k});
+    AQ.push({t:"Écoute l’extrait. En quelle année cette pièce est-elle sortie ?",opts:opts(Y,String(x.y)),ok:String(x.y),fb:"« "+x.p+" » de "+x.n+", "+x.y+".",au:k});
+    Q.push({t:"En quelle année est sortie « "+x.p+" » ?",opts:opts(Y,String(x.y)),ok:String(x.y),fb:"« "+x.p+" » de "+x.n+", "+x.y+"."});
+    Q.push({t:"Quelle pièce est sortie en "+x.y+" ?",opts:opts(P,x.p),ok:x.p,fb:"« "+x.p+" », de "+x.n+", "+x.y+"."});
+    Q.push({t:"Qui a joué « "+x.p+" » ?",opts:opts(O,x.n),ok:x.n,fb:x.info});
+    Q.push({t:"Quelle est la période de "+x.n+" ?",opts:opts(R,x.per),ok:x.per,fb:x.info});
+    Q.push({t:"À quelle période appartient « "+x.p+" » ?",opts:opts(R,x.per),ok:x.per,fb:x.info});
+    Q.push({t:"Quel artiste ou groupe a commencé en "+x.debut+" ?",opts:opts(O,x.n),ok:x.n,fb:x.info});
+    Q.push({t:"Quel artiste ou groupe est lié à : "+x.lieu+" ?",opts:opts(O,x.n),ok:x.n,fb:x.info});
   });
-  Q.push({t:"Quel instrument est très important chez Depeche Mode ?", opts:["Les synthétiseurs","Le violon","L’harmonica","Le saxophone"], ok:"Les synthétiseurs", fb:"Depeche Mode joue du synthpop : beaucoup de synthétiseurs."});
-  Q.push({t:"Jimi Hendrix a surtout joué…", opts:["Aux États-Unis et en Angleterre","Seulement en Irlande","Seulement en Italie","En Australie"], ok:"Aux États-Unis et en Angleterre", fb:"Hendrix est américain, mais sa carrière a décollé à Londres."});
-  Q.push({t:"Quel groupe vient de Basildon, en Angleterre ?", opts:O, ok:"Depeche Mode", fb:A[3].info});
-  Q.push({t:"Quel groupe est né à Londres, en 1976 ?", opts:O, ok:"The Clash", fb:A[2].info});
-  Q.push({t:"Quel guitariste est connu pour ses pédales d’effets ?", opts:O, ok:"Jimi Hendrix", fb:A[0].info});
-  Q.push({t:"Laquelle de ces pièces est la plus ancienne ?", opts:P, ok:"Foxy Lady", fb:"« Foxy Lady » date de 1967."});
-  Q.push({t:"Laquelle de ces pièces est la plus récente ?", opts:P, ok:"Should I Stay or Should I Go", fb:"« Should I Stay or Should I Go » date de 1982."});
-  return shuffle(shuffle(AQ).slice(0,10).concat(shuffle(Q).slice(0,10)));
+  Q.push({t:"Quel instrument est très important chez Depeche Mode ?",opts:["Les synthétiseurs","Le violon","L’harmonica","Le saxophone"],ok:"Les synthétiseurs",fb:"Depeche Mode joue du synthpop : beaucoup de synthétiseurs."});
+  Q.push({t:"Quel guitariste est connu pour ses pédales d’effets ?",opts:opts(O,"Jimi Hendrix"),ok:"Jimi Hendrix",fb:A[3].info});
+  Q.push({t:"Quel instrument joue Bob Dylan en plus de la guitare, dans ses chansons ?",opts:["L’harmonica","La flûte","Le violoncelle","La trompette"],ok:"L’harmonica",fb:"Bob Dylan : chant, guitare, harmonica et piano."});
+  for(var r=0;r<3;r++){var four=shuffle(A).slice(0,4);
+    var old=four.slice().sort(function(a,b){return a.y-b.y})[0],rec=four.slice().sort(function(a,b){return b.y-a.y})[0];
+    Q.push({t:"Laquelle de ces pièces est la plus ancienne ?",opts:four.map(function(o){return o.p}),ok:old.p,fb:"« "+old.p+" » date de "+old.y+"."});
+    Q.push({t:"Laquelle de ces pièces est la plus récente ?",opts:four.map(function(o){return o.p}),ok:rec.p,fb:"« "+rec.p+" » date de "+rec.y+"."});}
+  var na=Math.round(n/2),nq=n-na,seen={},pick=function(arr,m){var out=[];shuffle(arr).forEach(function(q){var key=q.t+"|"+q.au;if(out.length<m&&!seen[key]){seen[key]=1;out.push(q)}});return out};
+  return shuffle(pick(AQ,na).concat(pick(Q,nq)));
 }
 var players=A.map(function(p){var a=document.createElement("audio");a.controls=true;a.preload="auto";a.src=p.au;a.style.display="none";a.style.width="100%";a.style.margin="0 0 14px";$("players").appendChild(a);a.load();return a});
-var Q, i, score;
-function start(){Q=build();i=0;score=0;$("game").hidden=false;$("end").hidden=true;show()}
+var Q,i,score;
+function start(n){Q=build(n);i=0;score=0;$("start").hidden=true;$("end").hidden=true;$("game").hidden=false;show()}
 function show(){
   var q=Q[i];$("num").textContent="Question "+(i+1)+" / "+Q.length;$("score").textContent="Score : "+score;
   $("prog").style.width=(i/Q.length*100)+"%";$("q").textContent=q.t;
@@ -92,10 +109,10 @@ function pick(b,o){
   $("score").textContent="Score : "+score;$("next").textContent=i===Q.length-1?"Voir mon résultat":"Question suivante →";$("next").hidden=false;$("next").focus();
 }
 $("next").addEventListener("click",function(){i++;if(i>=Q.length){end()}else{show()}});
-function end(){players.forEach(function(a){a.pause()});$("game").hidden=true;$("end").hidden=false;$("final").textContent=score+" / "+Q.length;
-  $("msg").textContent=score>=18?"Excellent ! Tu connais bien le rock.":score>=12?"Bien joué ! Encore un essai pour faire mieux ?":"Réécoute les extraits et réessaie !"}
-$("again").addEventListener("click",start);
-start();
+function end(){players.forEach(function(a){a.pause()});$("game").hidden=true;$("end").hidden=false;$("final").textContent=score+" / "+Q.length;var p=score/Q.length;
+  $("msg").textContent=p>=0.9?"Excellent ! Tu connais bien le rock.":p>=0.6?"Bien joué ! Encore un essai pour faire mieux ?":"Réécoute les extraits et réessaie !"}
+$("again").addEventListener("click",function(){players.forEach(function(a){a.pause()});$("end").hidden=true;$("start").hidden=false});
+Array.prototype.forEach.call(document.querySelectorAll(".mode"),function(b){b.addEventListener("click",function(){start(parseInt(b.getAttribute("data-n"),10))})});
 </script>
 </body>
 </html>
