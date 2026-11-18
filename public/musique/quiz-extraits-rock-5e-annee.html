@@ -91,13 +91,18 @@ function build(n){
   var na=Math.round(n/2),nq=n-na,seen={},pick=function(arr,m){var out=[];shuffle(arr).forEach(function(q){var key=q.t+"|"+q.au;if(out.length<m&&!seen[key]){seen[key]=1;out.push(q)}});return out};
   return shuffle(pick(AQ,na).concat(pick(Q,nq)));
 }
-var players=A.map(function(p){var a=document.createElement("audio");a.controls=true;a.preload="auto";a.src=p.au;a.style.display="none";a.style.width="100%";a.style.margin="0 0 14px";$("players").appendChild(a);a.load();return a});
+var ST=[0,0,0,10,0,0,15,25],LEN=30;
+var players=A.map(function(p,k){var a=document.createElement("audio");a.controls=true;a.preload="metadata";a.src=p.au;a.style.display="none";a.style.width="100%";a.style.margin="0 0 14px";
+  a.addEventListener("loadedmetadata",function(){try{a.currentTime=ST[k]}catch(e){}});
+  a.addEventListener("play",function(){if(a.currentTime<ST[k]-0.5||a.currentTime>=ST[k]+LEN){a.currentTime=ST[k]}});
+  a.addEventListener("timeupdate",function(){if(a.currentTime>=ST[k]+LEN){a.pause();a.currentTime=ST[k]}});
+  $("players").appendChild(a);return a});
 var Q,i,score;
 function start(n){Q=build(n);i=0;score=0;$("start").hidden=true;$("end").hidden=true;$("game").hidden=false;show()}
 function show(){
   var q=Q[i];$("num").textContent="Question "+(i+1)+" / "+Q.length;$("score").textContent="Score : "+score;
   $("prog").style.width=(i/Q.length*100)+"%";$("q").textContent=q.t;
-  players.forEach(function(a,k){a.pause();a.style.display=(q.au===k)?"block":"none"});if(q.au!==undefined){players[q.au].currentTime=0}
+  players.forEach(function(a,k){a.pause();a.style.display=(q.au===k)?"block":"none"});if(q.au!==undefined){try{players[q.au].currentTime=ST[q.au]}catch(e){}}
   $("fb").hidden=true;$("next").hidden=true;var box=$("answers");box.innerHTML="";
   shuffle(q.opts).forEach(function(o){var b=document.createElement("button");b.type="button";b.className="a";b.textContent=o;b.addEventListener("click",function(){pick(b,o)});box.appendChild(b)});
 }
