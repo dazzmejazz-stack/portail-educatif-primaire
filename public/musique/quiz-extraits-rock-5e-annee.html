@@ -66,6 +66,7 @@ var A=[
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 function opts(list,ok){var others=shuffle(list.filter(function(v,i,s){return v!==ok&&s.indexOf(v)===i})).slice(0,3);return others.concat([ok])}
 var O=A.map(function(o){return o.n}),P=A.map(function(o){return o.p}),R=A.map(function(o){return o.per}),Y=A.map(function(o){return String(o.y)}),D=A.map(function(o){return String(o.debut)});
+var LIEU_OK={"Chuck Berry":1,"Les Beatles":1,"The Clash":1};
 function build(n){
   var AQ=[],Q=[];
   A.forEach(function(x,k){
@@ -78,8 +79,7 @@ function build(n){
     Q.push({t:"Qui a joué « "+x.p+" » ?",opts:opts(O,x.n),ok:x.n,fb:x.info});
     Q.push({t:"Quelle est la période de "+x.n+" ?",opts:opts(R,x.per),ok:x.per,fb:x.info});
     Q.push({t:"À quelle période appartient « "+x.p+" » ?",opts:opts(R,x.per),ok:x.per,fb:x.info});
-    Q.push({t:"Quel artiste ou groupe a commencé en "+x.debut+" ?",opts:opts(O,x.n),ok:x.n,fb:x.info});
-    Q.push({t:"Quel artiste ou groupe est lié à : "+x.lieu+" ?",opts:opts(O,x.n),ok:x.n,fb:x.info});
+    if(LIEU_OK[x.n])Q.push({t:"Quel artiste ou groupe est lié à : "+x.lieu+" ?",opts:opts(O,x.n),ok:x.n,fb:x.info});
   });
   Q.push({t:"Quel instrument est très important chez Depeche Mode ?",opts:["Les synthétiseurs","Le violon","L’harmonica","Le saxophone"],ok:"Les synthétiseurs",fb:"Depeche Mode joue du synthpop : beaucoup de synthétiseurs."});
   Q.push({t:"Quel guitariste est connu pour ses pédales d’effets ?",opts:opts(O,"Jimi Hendrix"),ok:"Jimi Hendrix",fb:A[3].info});
