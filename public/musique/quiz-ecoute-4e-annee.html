@@ -60,7 +60,7 @@ body{background-image:radial-gradient(circle at 10% 6%,#e5dcf5 0 58px,transparen
     <h1>4e année · Asie et monde arabe</h1>
     <p class="q" id="q"></p>
     <div class="ban" id="warn" hidden style="background:#b3261e"></div>
-    <div id="players"></div>
+    <div id="players"></div><div id="scwrap" hidden></div>
     <div class="bz" id="bz" hidden></div>
     <div class="ban" id="ban" hidden></div>
     <button class="skip" id="skip" type="button" hidden>Personne n’a buzzé : voir la réponse</button>
@@ -82,6 +82,14 @@ var P=[{"n": "Camille Saint-Saëns", "p": "Bacchanale de Samson et Dalila", "f":
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 function opts(list,ok){var others=shuffle(list.filter(function(v,i,s){return v!==ok&&s.indexOf(v)===i})).slice(0,3);return others.concat([ok])}
 var OE=P.map(function(p){return p.p}),CO=P.map(function(p){return p.n}),DEC=P.map(function(p){return p.dec}),FAC=[];P.forEach(function(p){p.f.forEach(function(x){FAC.push(x)})});OE=OE.concat(["Danse macabre","Clair de lune","Boléro","Le Carnaval des animaux"]);CO=CO.concat(["Maurice Ravel","Georges Bizet","Hector Berlioz"]);DEC=DEC.concat(["Comparaison entre le rythme binaire et le rythme ternaire","Les instruments à vent : cuivres et bois","Comparaison entre un son aigu et un son grave"]);FAC=FAC.concat(["le souffle puissant de l’héroïsme","l’ambiance d’une fête de village","la tempête qui gronde sur la mer"]);
+
+var SCS={maj:[0,2,4,5,7,9,11,12],harm:[0,2,3,5,7,8,11,12],pent:[0,2,4,7,9,12]},scAct=[];
+function stopScale(){var n=AC?AC.currentTime:0;scAct.forEach(function(x){try{x.g.gain.cancelScheduledValues(n);x.g.gain.setValueAtTime(Math.max(0.0001,x.g.gain.value),n);x.g.gain.exponentialRampToValueAtTime(0.0001,n+0.05);x.o.stop(n+0.06)}catch(e){}});scAct=[]}
+function playScale(key,dir){stopScale();try{if(!AC){var C=window.AudioContext||window.webkitAudioContext;AC=new C()}if(AC.state==="suspended")AC.resume();
+  var a=SCS[key].slice();if(dir==="down")a.reverse();
+  a.forEach(function(st,j){var o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime+j*0.55;o.type="triangle";o.frequency.value=261.63*Math.pow(2,st/12);
+   g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.35,t+0.03);g.gain.exponentialRampToValueAtTime(0.0001,t+0.7);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+0.75);
+   var x={o:o,g:g};scAct.push(x);o.onended=function(){var k=scAct.indexOf(x);if(k>=0)scAct.splice(k,1)}})}catch(e){}}
 function cap(x){return x.charAt(0).toUpperCase()+x.slice(1)}
 function describe(c){for(var k=0;k<P.length;k++){var x=P[k];
   if(x.p===c)return "« "+x.p+" » est de "+x.n+".";
@@ -108,6 +116,10 @@ function build(n){
   gq("Dans « Pagodes », quelle gamme entend-on ?",GP,all,"« Pagodes » utilise la gamme pentatonique.");
   gq("Combien de notes différentes y a-t-il dans la gamme pentatonique ?","5 notes",["3 notes","4 notes","5 notes","7 notes"],"La gamme pentatonique a 5 notes : Do Ré Mi Sol La (il n’y a ni Fa ni Si).");
   gq("En partant de Do, quelle gamme contient Mi♭ et La♭ ?",GH,all,"La gamme mineure harmonique : Do Ré Mi♭ Fa Sol La♭ Si Do.");
+  var NM={maj:GM,harm:GH,pent:GP},AMB={maj:"Joyeuse",harm:"Arabe",pent:"Asiatique"},AL=["Joyeuse","Arabe","Asiatique","Triste"];
+  ["maj","harm","pent"].forEach(function(k){var d=Math.random()<0.5?"up":"down";
+    Q.push({t:"Écoute cette gamme ("+(d==="up"?"montante":"descendante")+"). Laquelle est-ce ?",opts:shuffle([GM,GH,GP]),ok:NM[k],fb:"C’était la "+NM[k].toLowerCase()+".",sc:k,dir:d});
+    Q.push({t:"Écoute cette gamme ("+(d==="up"?"montante":"descendante")+"). Quelle ambiance donne-t-elle ?",opts:shuffle(AL),ok:AMB[k],fb:"C’était la "+NM[k].toLowerCase()+" : ambiance "+AMB[k].toLowerCase()+".",sc:k,dir:d})});
   return shuffle(Q).slice(0,n);
 }
 var LEN=10,segStart=P.map(function(){return 0}),segq=P.map(function(){return []});
@@ -130,7 +142,7 @@ function renderSB(){var sb=$("sb");sb.innerHTML="";sb.hidden=!T;if(!T)return;sb.
     d.innerHTML="<small>Équipe "+(k+1)+"</small><b>"+TS[k]+"</b>";var pm=document.createElement("div");pm.className="pm";
     [-1,1].forEach(function(v){var b=document.createElement("button");b.type="button";b.textContent=v<0?"−":"+";b.setAttribute("aria-label",(v<0?"Retirer":"Ajouter")+" un point à l’équipe "+(k+1));b.addEventListener("click",function(){TS[k]+=v;renderSB()});pm.appendChild(b)});
     d.appendChild(pm);sb.appendChild(d)})(k)}}
-function buzz(k){if(buz>=0||!T||k===lock||cdOn)return;buz=k;sfxBuzz();players.forEach(function(a){a.pause()});
+function buzz(k){if(buz>=0||!T||k===lock||cdOn)return;buz=k;sfxBuzz();stopScale();players.forEach(function(a){a.pause()});
   var ban=$("ban");ban.textContent="🔔 Équipe "+(k+1)+(rp?" a buzzé pour la réplique !":" a buzzé en premier !");ban.style.background=TC[k];ban.hidden=false;
   Array.prototype.forEach.call($("bz").children,function(b,j){b.disabled=true;if(j===k)b.classList.add("first")});
   Array.prototype.forEach.call($("answers").children,function(b){b.disabled=!!b.dataset.w});$("skip").hidden=true;startAT()}
@@ -145,7 +157,7 @@ function startAT(){stopAT();if(!T||!AT)return;var n=AT,ban=$("ban"),base=ban.tex
   paint();atIv=setInterval(function(){n--;if(n>0){paint();if(sndOn){try{if(AC){tone(660,0,0.07,"square",0.08)}}catch(e){}}}
     else{stopAT();tmo=1;pick(document.createElement("button"),"");tmo=0}},1000)}
 Array.prototype.forEach.call(document.querySelectorAll(".atc"),function(c){c.addEventListener("click",function(){AT=parseInt(c.getAttribute("data-a"),10);Array.prototype.forEach.call(document.querySelectorAll(".atc"),function(o){o.classList.toggle("on",o===c)})})});
-function playQ(){var q=Q[i];if(q&&q.au!==undefined){try{var pr=players[q.au].play();if(pr&&pr.catch)pr.catch(function(){})}catch(e){}}}
+function playQ(){var q=Q[i];if(q&&q.sc){playScale(q.sc,q.dir);return}if(q&&q.au!==undefined){try{var pr=players[q.au].play();if(pr&&pr.catch)pr.catch(function(){})}catch(e){}}}
 function stopCD(){if(cdIv){clearInterval(cdIv);cdIv=null}cdOn=false}
 function startCD(){stopCD();if(!T)return;if(!CD){playQ();return}var n=(Q[i]&&Q[i].au!==undefined)?Math.min(CD,3):CD,bn=$("ban");cdOn=true;
   Array.prototype.forEach.call($("bz").children,function(b){b.disabled=true});$("skip").hidden=true;
@@ -160,6 +172,7 @@ function show(){
   stopAT();var q=Q[i];$("num").textContent="Question "+(i+1)+" / "+Q.length;$("score").textContent=T?"":"Score : "+score;
   $("prog").style.width=(i/Q.length*100)+"%";$("q").textContent=q.t;
   players.forEach(function(a,k){a.pause();a.style.display=(q.au===k)?"block":"none"});if(q.au!==undefined){try{players[q.au].currentTime=pickSeg(q.au)}catch(e){}}
+  stopScale();var sw=$("scwrap");sw.innerHTML="";sw.hidden=!q.sc;if(q.sc){var sb=document.createElement("button");sb.type="button";sb.className="nx";sb.style.marginBottom="12px";sb.textContent="▶ Écouter la gamme";sb.addEventListener("click",function(){playScale(q.sc,q.dir)});sw.appendChild(sb)}
   $("fb").hidden=true;$("next").hidden=true;var box=$("answers");box.innerHTML="";
   shuffle(q.opts).forEach(function(o){var b=document.createElement("button");b.type="button";b.className="a";b.textContent=o;b.addEventListener("click",function(){pick(b,o)});box.appendChild(b);if(T)b.disabled=true});
   buz=-1;rp=0;lock=-1;var wn=$("warn");wn.hidden=!pen();if(pen())wn.textContent=i===Math.floor(Q.length/2)?"⚠️ DÉFI ! Attention : à partir de maintenant, une mauvaise réponse = −1 point":"⚠️ Attention : mauvaise réponse = −1 point";renderBZ();startCD();
@@ -177,10 +190,10 @@ function pick(b,o){
   $("score").textContent=T?"":"Score : "+score;$("next").textContent=i===Q.length-1?"Voir mon résultat":"Question suivante →";$("next").hidden=false;$("next").focus();
 }
 $("next").addEventListener("click",function(){i++;if(i>=Q.length){end()}else{show()}});
-function end(){stopCD();stopAT();players.forEach(function(a){a.pause()});$("game").hidden=true;$("end").hidden=false;var p=score/Q.length;if(T){var mx=Math.max.apply(null,TS),w=[];TS.forEach(function(v,k){if(v===mx)w.push(k+1)});$("final").textContent=w.length>1?"Égalité !":"🏆 Équipe "+w[0];$("msg").textContent=TS.map(function(v,k){return "Équipe "+(k+1)+" : "+v}).join(" · ");$("sb").hidden=true;$("warn").hidden=true;return}
+function end(){stopCD();stopAT();stopScale();players.forEach(function(a){a.pause()});$("game").hidden=true;$("end").hidden=false;var p=score/Q.length;if(T){var mx=Math.max.apply(null,TS),w=[];TS.forEach(function(v,k){if(v===mx)w.push(k+1)});$("final").textContent=w.length>1?"Égalité !":"🏆 Équipe "+w[0];$("msg").textContent=TS.map(function(v,k){return "Équipe "+(k+1)+" : "+v}).join(" · ");$("sb").hidden=true;$("warn").hidden=true;return}
   $("final").textContent=score+" / "+Q.length;
   $("msg").textContent=p>=0.9?"Excellent ! Tu reconnais bien la musique.":p>=0.6?"Bien joué ! Encore un essai pour faire mieux ?":"Réécoute les extraits et réessaie !"}
-$("again").addEventListener("click",function(){stopCD();stopAT();players.forEach(function(a){a.pause()});$("end").hidden=true;$("start").hidden=false});
+$("again").addEventListener("click",function(){stopCD();stopAT();stopScale();players.forEach(function(a){a.pause()});$("end").hidden=true;$("start").hidden=false});
 Array.prototype.forEach.call(document.querySelectorAll(".mode"),function(b){b.addEventListener("click",function(){start(parseInt(b.getAttribute("data-n"),10))})});
 </script>
 </body>
