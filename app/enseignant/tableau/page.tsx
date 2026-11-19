@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Plus, LogOut } from 'lucide-react'
+import { Plus, LogOut, Home } from 'lucide-react'
 import { isTeacher } from '@/lib/auth'
 import { getAllActivities } from '@/lib/activities'
 import { logoutAction } from '@/app/actions/teacher'
@@ -13,6 +13,15 @@ export default async function DashboardPage() {
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col px-5 pb-20 pt-8">
+      <div className="mb-4">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-base font-semibold text-card-foreground shadow-sm ring-2 ring-primary transition-transform duration-150 active:scale-95"
+        >
+          <Home className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
+          Accueil
+        </Link>
+      </div>
       <header className="flex items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl font-extrabold text-foreground">
