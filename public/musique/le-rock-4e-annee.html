@@ -153,7 +153,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem
   <main class="board" id="board"></main>
 </div>
 <script>
-var BLANKS = ["populaire", "américaine", "1950", "blues"];
+var BLANKS = ["populaire", "États-Unis", "1950", "blues"];
 
 var ARTISTES = [
   { q: "Chuck Berry Johnny B Goode", qui: "Chuck Berry", quand: "1953 à 2017", ou: "Saint-Louis aux États-Unis", periode: "Début du rock’n’roll",
@@ -209,15 +209,20 @@ function toggle(el, force) {
     b.addEventListener("click", function () { toggle(b); });
     return b;
   }
-  p.appendChild(document.createTextNode("Musique "));
+  function T(t) { p.appendChild(document.createTextNode(t)); }
+  T("Le rock est un genre musical ");
   p.appendChild(blank(0));
-  p.appendChild(document.createTextNode(" d’origine "));
+  T(" apparu aux ");
   p.appendChild(blank(1));
-  p.appendChild(document.createTextNode(" apparue dans les années "));
+  T(" dans les années ");
   p.appendChild(blank(2));
-  p.appendChild(document.createTextNode(", issue du jazz, du "));
+  T(". Il est né du mélange du ");
   p.appendChild(blank(3));
-  p.appendChild(document.createTextNode(", du rhythm and blues et de la musique folklorique anglo-américaine."));
+  T(", du rhythm and blues (R&B), de la musique country et du gospel.");
+  var intro = document.createElement("div");
+  intro.style.cssText = "margin-top:10px;line-height:1.6";
+  intro.innerHTML = "<p style='line-height:1.6;margin:0 0 4px'>Le rock se caractérise généralement par :</p><ul style='margin:0;padding-left:22px;font-size:1.1rem'><li>la présence de la guitare électrique;</li><li>une basse et une batterie;</li><li>un rythme énergique;</li><li>des chansons interprétées par un chanteur ou un groupe.</li></ul>";
+  p.parentNode.insertBefore(intro, p.nextSibling);
 })();
 
 var board = document.getElementById("board");
