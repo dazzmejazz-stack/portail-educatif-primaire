@@ -152,12 +152,13 @@ function renderBZ(){var bz=$("bz");bz.innerHTML="";bz.hidden=!T;$("ban").hidden=
 Array.prototype.forEach.call(document.querySelectorAll("#teams .chip"),function(c){c.addEventListener("click",function(){T=parseInt(c.getAttribute("data-t"),10);Array.prototype.forEach.call(document.querySelectorAll("#teams .chip"),function(o){o.classList.toggle("on",o===c)})})});
 $("skip").addEventListener("click",function(){var q=Q[i];buz=-2;Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true;if(x.textContent===q.ok)x.classList.add("ok")});
   Array.prototype.forEach.call($("bz").children,function(b){b.disabled=true});$("skip").hidden=true;$("fb").textContent=(rp?"Personne n’a pris la réplique.":"Personne n’a buzzé.")+" La bonne réponse : "+q.ok+". "+q.fb;$("fb").hidden=false;$("next").textContent=i===Q.length-1?"Voir mon résultat":"Question suivante →";$("next").hidden=false});
+function playQ(){var q=Q[i];if(q&&q.au!==undefined){try{var pr=players[q.au].play();if(pr&&pr.catch)pr.catch(function(){})}catch(e){}}}
 function stopCD(){if(cdIv){clearInterval(cdIv);cdIv=null}cdOn=false}
-function startCD(){stopCD();if(!T||!CD)return;var n=CD,bn=$("ban");cdOn=true;
+function startCD(){stopCD();if(!T)return;if(!CD){playQ();return}var n=CD,bn=$("ban");cdOn=true;
   Array.prototype.forEach.call($("bz").children,function(b){b.disabled=true});$("skip").hidden=true;
   function paint(){bn.textContent="⏳ Lis la question… "+n;bn.style.background="#444";bn.hidden=false}
   paint();cdIv=setInterval(function(){n--;if(n>0){paint();if(sndOn){try{if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(C)AC=new C()}if(AC){if(AC.state==="suspended")AC.resume();tone(660,0,0.07,"square",0.08)}}catch(e){}}}
-    else{stopCD();Array.prototype.forEach.call($("bz").children,function(b){b.disabled=false});bn.textContent="🔔 Buzz ! Le premier qui touche son bouton répond";bn.style.background="#b34a1e";$("skip").hidden=false;if(sndOn){try{if(AC){tone(1047,0,0.25,"square",0.12)}}catch(e){}}}},1000)}
+    else{stopCD();Array.prototype.forEach.call($("bz").children,function(b){b.disabled=false});bn.textContent="🔔 Buzz ! Le premier qui touche son bouton répond";bn.style.background="#b34a1e";$("skip").hidden=false;if(sndOn){try{if(AC){tone(1047,0,0.25,"square",0.12)}}catch(e){}}playQ()}},1000)}
 Array.prototype.forEach.call(document.querySelectorAll(".cdc"),function(c){c.addEventListener("click",function(){CD=parseInt(c.getAttribute("data-c"),10);Array.prototype.forEach.call(document.querySelectorAll(".cdc"),function(o){o.classList.toggle("on",o===c)})})});
 var Q,i,score;
 function pen(){return T>0&&i>=Math.floor(Q.length/2)}
