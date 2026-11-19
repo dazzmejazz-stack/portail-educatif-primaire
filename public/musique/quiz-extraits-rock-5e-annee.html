@@ -42,6 +42,8 @@ h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute
     <div id="teams"><button type="button" class="chip on" data-t="0">Sans équipes</button><button type="button" class="chip" data-t="2">2 équipes</button><button type="button" class="chip" data-t="3">3 équipes</button><button type="button" class="chip" data-t="4">4 équipes</button><button type="button" class="chip" data-t="5">5 équipes</button><button type="button" class="chip" data-t="6">6 équipes</button></div>
     <p class="lbl" style="margin-top:8px">Décompte avant le buzz (3 secondes au maximum pour les extraits musicaux) :</p>
     <div id="cds"><button type="button" class="chip cdc" data-c="0">Sans décompte</button><button type="button" class="chip cdc on" data-c="5">5 secondes</button><button type="button" class="chip cdc" data-c="10">10 secondes</button></div>
+    <p class="lbl" style="margin-top:8px">Temps pour répondre après avoir buzzé :</p>
+    <div id="ats"><button type="button" class="chip atc" data-a="0">Sans limite</button><button type="button" class="chip atc on" data-a="3">3 secondes</button><button type="button" class="chip atc" data-a="5">5 secondes</button><button type="button" class="chip atc" data-a="10">10 secondes</button></div>
     <p class="lbl" style="margin:0 0 8px;font-size:.85rem">Points : 2 pour une bonne réponse du premier coup, 1 en réplique. Défi : dans la 2e moitié du quiz, une mauvaise réponse fait perdre 1 point.</p>
     <p class="lbl" style="margin-top:8px">Choisis la longueur de la partie.</p>
     <button class="a mode" type="button" data-n="10"><b>Court : 10 questions</b><br><small>environ 10 minutes</small></button>
@@ -136,7 +138,7 @@ function sfx(good){if(!sndOn)return;try{if(!AC){var C=window.AudioContext||windo
   if(good){tone(523,0,0.16,"triangle",0.25);tone(659,0.12,0.16,"triangle",0.25);tone(784,0.24,0.3,"triangle",0.25)}
   else{tone(220,0,0.22,"sawtooth",0.12);tone(150,0.2,0.4,"sawtooth",0.12)}}catch(e){}}
 $("snd").addEventListener("click",function(){sndOn=!sndOn;this.setAttribute("aria-pressed",sndOn);this.innerHTML=sndOn?"&#128266; Sons : oui":"&#128263; Sons : non"});
-var CD=5,cdIv=null,cdOn=false,T=0,TS=[],buz=-1,rp=0,lock=-1,gain=-1,TC=["#c0392b","#2e6da4","#2f8a3a","#7a3e9d","#b9770e","#0e8a9c"];
+var AT=3,atIv=null,tmo=0,CD=5,cdIv=null,cdOn=false,T=0,TS=[],buz=-1,rp=0,lock=-1,gain=-1,TC=["#c0392b","#2e6da4","#2f8a3a","#7a3e9d","#b9770e","#0e8a9c"];
 function sfxBuzz(){if(!sndOn)return;try{if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(!C)return;AC=new C()}if(AC.state==="suspended")AC.resume();tone(880,0,0.12,"square",0.15);tone(1175,0.1,0.28,"square",0.15)}catch(e){}}
 function renderSB(){var sb=$("sb");sb.innerHTML="";sb.hidden=!T;if(!T)return;sb.style.gridTemplateColumns="repeat("+(T<=4?T:3)+",1fr)";var mx=Math.max.apply(null,TS);
   for(var k=0;k<T;k++){(function(k){var d=document.createElement("div");d.className="tm"+(mx>0&&TS[k]===mx?" win":"")+(k===gain?" pop":"");d.style.background=TC[k];
@@ -146,12 +148,18 @@ function renderSB(){var sb=$("sb");sb.innerHTML="";sb.hidden=!T;if(!T)return;sb.
 function buzz(k){if(buz>=0||!T||k===lock||cdOn)return;buz=k;sfxBuzz();players.forEach(function(a){a.pause()});
   var ban=$("ban");ban.textContent="🔔 Équipe "+(k+1)+(rp?" a buzzé pour la réplique !":" a buzzé en premier !");ban.style.background=TC[k];ban.hidden=false;
   Array.prototype.forEach.call($("bz").children,function(b,j){b.disabled=true;if(j===k)b.classList.add("first")});
-  Array.prototype.forEach.call($("answers").children,function(b){b.disabled=!!b.dataset.w});$("skip").hidden=true}
+  Array.prototype.forEach.call($("answers").children,function(b){b.disabled=!!b.dataset.w});$("skip").hidden=true;startAT()}
 function renderBZ(){var bz=$("bz");bz.innerHTML="";bz.hidden=!T;$("ban").hidden=true;$("skip").hidden=!T;if(!T)return;bz.style.gridTemplateColumns="repeat("+(T<=4?T:3)+",1fr)";
   for(var k=0;k<T;k++){(function(k){var b=document.createElement("button");b.type="button";b.className="bzb";b.style.background=TC[k];b.innerHTML="🔔<br>Équipe "+(k+1);b.addEventListener("pointerdown",function(e){e.preventDefault();buzz(k)});b.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();buzz(k)}});bz.appendChild(b)})(k)}}
 Array.prototype.forEach.call(document.querySelectorAll("#teams .chip"),function(c){c.addEventListener("click",function(){T=parseInt(c.getAttribute("data-t"),10);Array.prototype.forEach.call(document.querySelectorAll("#teams .chip"),function(o){o.classList.toggle("on",o===c)})})});
-$("skip").addEventListener("click",function(){var q=Q[i];buz=-2;Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true;if(x.textContent===q.ok)x.classList.add("ok")});
+$("skip").addEventListener("click",function(){stopAT();var q=Q[i];buz=-2;Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true;if(x.textContent===q.ok)x.classList.add("ok")});
   Array.prototype.forEach.call($("bz").children,function(b){b.disabled=true});$("skip").hidden=true;$("fb").textContent=(rp?"Personne n’a pris la réplique.":"Personne n’a buzzé.")+" La bonne réponse : "+q.ok+". "+q.fb;$("fb").hidden=false;$("next").textContent=i===Q.length-1?"Voir mon résultat":"Question suivante →";$("next").hidden=false});
+function stopAT(){if(atIv){clearInterval(atIv);atIv=null}}
+function startAT(){stopAT();if(!T||!AT)return;var n=AT,ban=$("ban"),base=ban.textContent;
+  function paint(){ban.textContent=base+"  ⏱️ "+n}
+  paint();atIv=setInterval(function(){n--;if(n>0){paint();if(sndOn){try{if(AC){tone(660,0,0.07,"square",0.08)}}catch(e){}}}
+    else{stopAT();tmo=1;pick(document.createElement("button"),"");tmo=0}},1000)}
+Array.prototype.forEach.call(document.querySelectorAll(".atc"),function(c){c.addEventListener("click",function(){AT=parseInt(c.getAttribute("data-a"),10);Array.prototype.forEach.call(document.querySelectorAll(".atc"),function(o){o.classList.toggle("on",o===c)})})});
 function playQ(){var q=Q[i];if(q&&q.au!==undefined){try{var pr=players[q.au].play();if(pr&&pr.catch)pr.catch(function(){})}catch(e){}}}
 function stopCD(){if(cdIv){clearInterval(cdIv);cdIv=null}cdOn=false}
 function startCD(){stopCD();if(!T)return;if(!CD){playQ();return}var n=(Q[i]&&Q[i].au!==undefined)?Math.min(CD,3):CD,bn=$("ban");cdOn=true;
@@ -164,7 +172,7 @@ var Q,i,score;
 function pen(){return T>0&&i>=Math.floor(Q.length/2)}
 function start(n){Q=build(n);i=0;score=0;TS=[];for(var t=0;t<T;t++)TS.push(0);renderSB();$("start").hidden=true;$("end").hidden=true;$("game").hidden=false;show()}
 function show(){
-  var q=Q[i];$("num").textContent="Question "+(i+1)+" / "+Q.length;$("score").textContent=T?"":"Score : "+score;
+  stopAT();var q=Q[i];$("num").textContent="Question "+(i+1)+" / "+Q.length;$("score").textContent=T?"":"Score : "+score;
   $("prog").style.width=(i/Q.length*100)+"%";$("q").textContent=q.t;
   players.forEach(function(a,k){a.pause();a.style.display=(q.au===k)?"block":"none"});if(q.au!==undefined){try{players[q.au].currentTime=pickSeg(q.au)}catch(e){}}
   $("fb").hidden=true;$("next").hidden=true;var box=$("answers");box.innerHTML="";
@@ -172,11 +180,11 @@ function show(){
   buz=-1;rp=0;lock=-1;var wn=$("warn");wn.hidden=!pen();if(pen())wn.textContent=i===Math.floor(Q.length/2)?"⚠️ DÉFI ! Attention : à partir de maintenant, une mauvaise réponse = −1 point":"⚠️ Attention : mauvaise réponse = −1 point";renderBZ();startCD();
 }
 function pick(b,o){
-  var q=Q[i],good=o===q.ok;
+  stopAT();var q=Q[i],good=o===q.ok;
   if(T&&!good&&!rp&&buz>=0){sfx(false);b.classList.add("no");b.textContent="✘ "+o;b.dataset.w="1";if(pen()){TS[buz]-=1;gain=buz;renderSB();gain=-1}rp=1;lock=buz;buz=-1;
     Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true});
     Array.prototype.forEach.call($("bz").children,function(x,j){x.classList.remove("first");x.disabled=(j===lock)});
-    var bn=$("ban");bn.textContent="✘ Équipe "+(lock+1)+" s’est trompée"+(pen()?" (−1 point)":"")+". Droit de réplique : les autres équipes peuvent buzzer !";bn.style.background="#444";bn.hidden=false;$("skip").hidden=false;return}
+    var bn=$("ban");bn.textContent=(tmo?"⏱️ Temps écoulé ! Équipe "+(lock+1)+" n’a pas répondu":"✘ Équipe "+(lock+1)+" s’est trompée")+(pen()?" (−1 point)":"")+". Droit de réplique : les autres équipes peuvent buzzer !";bn.style.background="#444";bn.hidden=false;$("skip").hidden=false;return}
   if(good){score++;if(T&&buz>=0){TS[buz]+=rp?1:2;gain=buz;renderSB();gain=-1}}else if(pen()&&buz>=0){TS[buz]-=1;gain=buz;renderSB();gain=-1}if(T)Array.prototype.forEach.call($("bz").children,function(x){x.disabled=true});sfx(good);
   Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true;if(x.textContent===q.ok){x.classList.add("ok");if(x===b)x.textContent="✔ "+x.textContent}});
   if(!good){b.classList.add("no");b.textContent="✘ "+o}
@@ -184,10 +192,10 @@ function pick(b,o){
   $("score").textContent=T?"":"Score : "+score;$("next").textContent=i===Q.length-1?"Voir mon résultat":"Question suivante →";$("next").hidden=false;$("next").focus();
 }
 $("next").addEventListener("click",function(){i++;if(i>=Q.length){end()}else{show()}});
-function end(){stopCD();players.forEach(function(a){a.pause()});$("game").hidden=true;$("end").hidden=false;var p=score/Q.length;if(T){var mx=Math.max.apply(null,TS),w=[];TS.forEach(function(v,k){if(v===mx)w.push(k+1)});$("final").textContent=w.length>1?"Égalité !":"🏆 Équipe "+w[0];$("msg").textContent=TS.map(function(v,k){return "Équipe "+(k+1)+" : "+v}).join(" · ");$("sb").hidden=true;$("warn").hidden=true;return}
+function end(){stopCD();stopAT();players.forEach(function(a){a.pause()});$("game").hidden=true;$("end").hidden=false;var p=score/Q.length;if(T){var mx=Math.max.apply(null,TS),w=[];TS.forEach(function(v,k){if(v===mx)w.push(k+1)});$("final").textContent=w.length>1?"Égalité !":"🏆 Équipe "+w[0];$("msg").textContent=TS.map(function(v,k){return "Équipe "+(k+1)+" : "+v}).join(" · ");$("sb").hidden=true;$("warn").hidden=true;return}
   $("final").textContent=score+" / "+Q.length;
   $("msg").textContent=p>=0.9?"Excellent ! Tu connais bien le rock.":p>=0.6?"Bien joué ! Encore un essai pour faire mieux ?":"Réécoute les extraits et réessaie !"}
-$("again").addEventListener("click",function(){stopCD();players.forEach(function(a){a.pause()});$("end").hidden=true;$("start").hidden=false});
+$("again").addEventListener("click",function(){stopCD();stopAT();players.forEach(function(a){a.pause()});$("end").hidden=true;$("start").hidden=false});
 Array.prototype.forEach.call(document.querySelectorAll(".mode"),function(b){b.addEventListener("click",function(){start(parseInt(b.getAttribute("data-n"),10))})});
 </script>
 </body>
