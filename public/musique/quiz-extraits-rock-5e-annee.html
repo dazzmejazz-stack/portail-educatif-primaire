@@ -23,8 +23,9 @@ h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute
 .snd{font:inherit;font-size:.85rem;color:var(--muted);background:var(--card);border:2px solid var(--line);border-radius:10px;padding:4px 10px;cursor:pointer}.snd:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .chip{font:inherit;font-weight:600;color:inherit;background:var(--card);border:2px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;margin:0 6px 8px 0;min-height:44px}.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .lbl{color:var(--muted);margin:0 0 6px;font-size:.95rem}
-.sb{display:grid;gap:8px;margin-bottom:12px}.tm{border-radius:12px;padding:8px 4px;text-align:center;color:#fff;font-weight:700}.tm b{display:block;font-size:1.7rem;line-height:1.1}.tm small{font-weight:600}
-.tm.win{outline:4px solid var(--fg);outline-offset:2px}.pm{display:flex;gap:6px;justify-content:center;margin-top:4px}.pm button{font:inherit;font-size:1.1rem;font-weight:700;color:#fff;background:rgba(0,0,0,.28);border:0;border-radius:8px;min-width:40px;min-height:36px;cursor:pointer}
+.sb{display:grid;gap:6px;margin:0 0 10px;position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0}.tm{border-radius:12px;padding:5px 4px;text-align:center;color:#fff;font-weight:700}.tm b{display:block;font-size:1.5rem;line-height:1.05}.tm small{font-weight:600}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:scale(1)}}.tm.pop{animation:pop .6s ease}
+.tm.win{outline:4px solid var(--fg);outline-offset:2px}.pm{display:flex;gap:6px;justify-content:center;margin-top:4px}.pm button{font:inherit;font-size:1.05rem;font-weight:700;color:#fff;background:rgba(0,0,0,.28);border:0;border-radius:8px;min-width:40px;min-height:32px;cursor:pointer}
 .bz{display:grid;gap:8px;margin:0 0 12px}.bzb{font:inherit;font-weight:800;font-size:1.05rem;color:#fff;border:0;border-radius:14px;padding:22px 4px;cursor:pointer;touch-action:manipulation}.bzb:disabled{opacity:.35}.bzb.first{opacity:1;outline:4px solid var(--fg);outline-offset:2px}
 .ban{border-radius:12px;padding:10px;text-align:center;font-weight:700;color:#fff;margin:0 0 12px}
 .skip{display:block;width:100%;font:inherit;font-weight:600;color:var(--muted);background:transparent;border:2px dashed var(--line);border-radius:12px;padding:10px;margin:0 0 12px;cursor:pointer}
@@ -37,8 +38,11 @@ h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute
   <div id="start">
     <h1>Le rock</h1>
     <p class="q">Quiz avec extraits</p>
-    <p class="lbl">Jouer avec des &#233;quipes (buzzer et points) ?</p>
-    <div id="teams"><button type="button" class="chip on" data-t="0">Sans &#233;quipes</button><button type="button" class="chip" data-t="2">2 &#233;quipes</button><button type="button" class="chip" data-t="3">3 &#233;quipes</button><button type="button" class="chip" data-t="4">4 &#233;quipes</button><button type="button" class="chip" data-t="5">5 &#233;quipes</button><button type="button" class="chip" data-t="6">6 &#233;quipes</button></div>
+    <p class="lbl">Jouer avec des équipes (buzzer et points) ?</p>
+    <div id="teams"><button type="button" class="chip on" data-t="0">Sans équipes</button><button type="button" class="chip" data-t="2">2 équipes</button><button type="button" class="chip" data-t="3">3 équipes</button><button type="button" class="chip" data-t="4">4 équipes</button><button type="button" class="chip" data-t="5">5 équipes</button><button type="button" class="chip" data-t="6">6 équipes</button></div>
+    <p class="lbl" style="margin-top:8px">Décompte avant le buzz (temps pour lire la question) :</p>
+    <div id="cds"><button type="button" class="chip cdc" data-c="0">Sans décompte</button><button type="button" class="chip cdc on" data-c="5">5 secondes</button><button type="button" class="chip cdc" data-c="10">10 secondes</button></div>
+    <p class="lbl" style="margin:0 0 8px;font-size:.85rem">Points : 2 pour une bonne réponse du premier coup, 1 en réplique.</p>
     <p class="lbl" style="margin-top:8px">Choisis la longueur de la partie.</p>
     <button class="a mode" type="button" data-n="10"><b>Court : 10 questions</b><br><small>environ 10 minutes</small></button>
     <button class="a mode" type="button" data-n="20"><b>Moyen : 20 questions</b><br><small>environ 20 minutes</small></button>
@@ -53,7 +57,7 @@ h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute
     <div id="players"></div>
     <div class="bz" id="bz" hidden></div>
     <div class="ban" id="ban" hidden></div>
-    <button class="skip" id="skip" type="button" hidden>Personne n&#8217;a buzz&#233; : voir la r&#233;ponse</button>
+    <button class="skip" id="skip" type="button" hidden>Personne n’a buzzé : voir la réponse</button>
     <div id="answers"></div>
     <div class="fb" id="fb" hidden></div>
     <button class="nx" id="next" type="button" hidden>Question suivante &#8594;</button>
@@ -131,22 +135,29 @@ function sfx(good){if(!sndOn)return;try{if(!AC){var C=window.AudioContext||windo
   if(good){tone(523,0,0.16,"triangle",0.25);tone(659,0.12,0.16,"triangle",0.25);tone(784,0.24,0.3,"triangle",0.25)}
   else{tone(220,0,0.22,"sawtooth",0.12);tone(150,0.2,0.4,"sawtooth",0.12)}}catch(e){}}
 $("snd").addEventListener("click",function(){sndOn=!sndOn;this.setAttribute("aria-pressed",sndOn);this.innerHTML=sndOn?"&#128266; Sons : oui":"&#128263; Sons : non"});
-var T=0,TS=[],buz=-1,rp=0,lock=-1,TC=["#c0392b","#2e6da4","#2f8a3a","#7a3e9d","#b9770e","#0e8a9c"];
+var CD=5,cdIv=null,cdOn=false,T=0,TS=[],buz=-1,rp=0,lock=-1,gain=-1,TC=["#c0392b","#2e6da4","#2f8a3a","#7a3e9d","#b9770e","#0e8a9c"];
 function sfxBuzz(){if(!sndOn)return;try{if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(!C)return;AC=new C()}if(AC.state==="suspended")AC.resume();tone(880,0,0.12,"square",0.15);tone(1175,0.1,0.28,"square",0.15)}catch(e){}}
 function renderSB(){var sb=$("sb");sb.innerHTML="";sb.hidden=!T;if(!T)return;sb.style.gridTemplateColumns="repeat("+(T<=4?T:3)+",1fr)";var mx=Math.max.apply(null,TS);
-  for(var k=0;k<T;k++){(function(k){var d=document.createElement("div");d.className="tm"+(mx>0&&TS[k]===mx?" win":"");d.style.background=TC[k];
+  for(var k=0;k<T;k++){(function(k){var d=document.createElement("div");d.className="tm"+(mx>0&&TS[k]===mx?" win":"")+(k===gain?" pop":"");d.style.background=TC[k];
     d.innerHTML="<small>Équipe "+(k+1)+"</small><b>"+TS[k]+"</b>";var pm=document.createElement("div");pm.className="pm";
     [-1,1].forEach(function(v){var b=document.createElement("button");b.type="button";b.textContent=v<0?"−":"+";b.setAttribute("aria-label",(v<0?"Retirer":"Ajouter")+" un point à l’équipe "+(k+1));b.addEventListener("click",function(){TS[k]+=v;renderSB()});pm.appendChild(b)});
     d.appendChild(pm);sb.appendChild(d)})(k)}}
-function buzz(k){if(buz>=0||!T||k===lock)return;buz=k;sfxBuzz();players.forEach(function(a){a.pause()});
+function buzz(k){if(buz>=0||!T||k===lock||cdOn)return;buz=k;sfxBuzz();players.forEach(function(a){a.pause()});
   var ban=$("ban");ban.textContent="🔔 Équipe "+(k+1)+(rp?" a buzzé pour la réplique !":" a buzzé en premier !");ban.style.background=TC[k];ban.hidden=false;
   Array.prototype.forEach.call($("bz").children,function(b,j){b.disabled=true;if(j===k)b.classList.add("first")});
   Array.prototype.forEach.call($("answers").children,function(b){b.disabled=!!b.dataset.w});$("skip").hidden=true}
 function renderBZ(){var bz=$("bz");bz.innerHTML="";bz.hidden=!T;$("ban").hidden=true;$("skip").hidden=!T;if(!T)return;bz.style.gridTemplateColumns="repeat("+(T<=4?T:3)+",1fr)";
   for(var k=0;k<T;k++){(function(k){var b=document.createElement("button");b.type="button";b.className="bzb";b.style.background=TC[k];b.innerHTML="🔔<br>Équipe "+(k+1);b.addEventListener("pointerdown",function(e){e.preventDefault();buzz(k)});b.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();buzz(k)}});bz.appendChild(b)})(k)}}
-Array.prototype.forEach.call(document.querySelectorAll(".chip"),function(c){c.addEventListener("click",function(){T=parseInt(c.getAttribute("data-t"),10);Array.prototype.forEach.call(document.querySelectorAll(".chip"),function(o){o.classList.toggle("on",o===c)})})});
+Array.prototype.forEach.call(document.querySelectorAll("#teams .chip"),function(c){c.addEventListener("click",function(){T=parseInt(c.getAttribute("data-t"),10);Array.prototype.forEach.call(document.querySelectorAll("#teams .chip"),function(o){o.classList.toggle("on",o===c)})})});
 $("skip").addEventListener("click",function(){var q=Q[i];buz=-2;Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true;if(x.textContent===q.ok)x.classList.add("ok")});
   Array.prototype.forEach.call($("bz").children,function(b){b.disabled=true});$("skip").hidden=true;$("fb").textContent=(rp?"Personne n’a pris la réplique.":"Personne n’a buzzé.")+" La bonne réponse : "+q.ok+". "+q.fb;$("fb").hidden=false;$("next").textContent=i===Q.length-1?"Voir mon résultat":"Question suivante →";$("next").hidden=false});
+function stopCD(){if(cdIv){clearInterval(cdIv);cdIv=null}cdOn=false}
+function startCD(){stopCD();if(!T||!CD)return;var n=CD,bn=$("ban");cdOn=true;
+  Array.prototype.forEach.call($("bz").children,function(b){b.disabled=true});$("skip").hidden=true;
+  function paint(){bn.textContent="⏳ Lis la question… "+n;bn.style.background="#444";bn.hidden=false}
+  paint();cdIv=setInterval(function(){n--;if(n>0){paint();if(sndOn){try{if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(C)AC=new C()}if(AC){if(AC.state==="suspended")AC.resume();tone(660,0,0.07,"square",0.08)}}catch(e){}}}
+    else{stopCD();Array.prototype.forEach.call($("bz").children,function(b){b.disabled=false});bn.textContent="🔔 Buzz ! Le premier qui touche son bouton répond";bn.style.background="#b34a1e";$("skip").hidden=false;if(sndOn){try{if(AC){tone(1047,0,0.25,"square",0.12)}}catch(e){}}}},1000)}
+Array.prototype.forEach.call(document.querySelectorAll(".cdc"),function(c){c.addEventListener("click",function(){CD=parseInt(c.getAttribute("data-c"),10);Array.prototype.forEach.call(document.querySelectorAll(".cdc"),function(o){o.classList.toggle("on",o===c)})})});
 var Q,i,score;
 function start(n){Q=build(n);i=0;score=0;TS=[];for(var t=0;t<T;t++)TS.push(0);renderSB();$("start").hidden=true;$("end").hidden=true;$("game").hidden=false;show()}
 function show(){
@@ -155,7 +166,7 @@ function show(){
   players.forEach(function(a,k){a.pause();a.style.display=(q.au===k)?"block":"none"});if(q.au!==undefined){try{players[q.au].currentTime=pickSeg(q.au)}catch(e){}}
   $("fb").hidden=true;$("next").hidden=true;var box=$("answers");box.innerHTML="";
   shuffle(q.opts).forEach(function(o){var b=document.createElement("button");b.type="button";b.className="a";b.textContent=o;b.addEventListener("click",function(){pick(b,o)});box.appendChild(b);if(T)b.disabled=true});
-  buz=-1;rp=0;lock=-1;renderBZ();
+  buz=-1;rp=0;lock=-1;renderBZ();startCD();
 }
 function pick(b,o){
   var q=Q[i],good=o===q.ok;
@@ -163,17 +174,17 @@ function pick(b,o){
     Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true});
     Array.prototype.forEach.call($("bz").children,function(x,j){x.classList.remove("first");x.disabled=(j===lock)});
     var bn=$("ban");bn.textContent="✘ Équipe "+(lock+1)+" s’est trompée. Droit de réplique : les autres équipes peuvent buzzer !";bn.style.background="#444";bn.hidden=false;$("skip").hidden=false;return}
-  if(good){score++;if(T&&buz>=0){TS[buz]++;renderSB()}}if(T)Array.prototype.forEach.call($("bz").children,function(x){x.disabled=true});sfx(good);
+  if(good){score++;if(T&&buz>=0){TS[buz]+=rp?1:2;gain=buz;renderSB();gain=-1}}if(T)Array.prototype.forEach.call($("bz").children,function(x){x.disabled=true});sfx(good);
   Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true;if(x.textContent===q.ok){x.classList.add("ok");if(x===b)x.textContent="✔ "+x.textContent}});
   if(!good){b.classList.add("no");b.textContent="✘ "+o}
-  var dd=good?"":describe(o);var pre=T&&buz>=0?(good?"Bravo ! +1 point pour l’équipe "+(buz+1)+(rp?" (réplique)":"")+". ":"Pas tout à fait (0 point pour l’équipe "+(buz+1)+"). La bonne réponse : "+q.ok+". "):(good?"Bravo ! ":"Pas tout à fait. La bonne réponse : "+q.ok+". ");$("fb").textContent=pre+q.fb+(dd?" Ton choix, « "+o+" » → "+dd:"");$("fb").hidden=false;
+  var dd=good?"":describe(o);var pre=T&&buz>=0?(good?"Bravo ! +"+(rp?"1 point":"2 points")+" pour l’équipe "+(buz+1)+(rp?" (réplique)":"")+". ":"Pas tout à fait (0 point pour l’équipe "+(buz+1)+"). La bonne réponse : "+q.ok+". "):(good?"Bravo ! ":"Pas tout à fait. La bonne réponse : "+q.ok+". ");$("fb").textContent=pre+q.fb+(dd?" Ton choix, « "+o+" » → "+dd:"");$("fb").hidden=false;
   $("score").textContent=T?"":"Score : "+score;$("next").textContent=i===Q.length-1?"Voir mon résultat":"Question suivante →";$("next").hidden=false;$("next").focus();
 }
 $("next").addEventListener("click",function(){i++;if(i>=Q.length){end()}else{show()}});
-function end(){players.forEach(function(a){a.pause()});$("game").hidden=true;$("end").hidden=false;var p=score/Q.length;if(T){var mx=Math.max.apply(null,TS),w=[];TS.forEach(function(v,k){if(v===mx)w.push(k+1)});$("final").textContent=w.length>1?"Égalité !":"🏆 Équipe "+w[0];$("msg").textContent=TS.map(function(v,k){return "Équipe "+(k+1)+" : "+v}).join(" · ");$("sb").hidden=true;return}
+function end(){stopCD();players.forEach(function(a){a.pause()});$("game").hidden=true;$("end").hidden=false;var p=score/Q.length;if(T){var mx=Math.max.apply(null,TS),w=[];TS.forEach(function(v,k){if(v===mx)w.push(k+1)});$("final").textContent=w.length>1?"Égalité !":"🏆 Équipe "+w[0];$("msg").textContent=TS.map(function(v,k){return "Équipe "+(k+1)+" : "+v}).join(" · ");$("sb").hidden=true;return}
   $("final").textContent=score+" / "+Q.length;
   $("msg").textContent=p>=0.9?"Excellent ! Tu connais bien le rock.":p>=0.6?"Bien joué ! Encore un essai pour faire mieux ?":"Réécoute les extraits et réessaie !"}
-$("again").addEventListener("click",function(){players.forEach(function(a){a.pause()});$("end").hidden=true;$("start").hidden=false});
+$("again").addEventListener("click",function(){stopCD();players.forEach(function(a){a.pause()});$("end").hidden=true;$("start").hidden=false});
 Array.prototype.forEach.call(document.querySelectorAll(".mode"),function(b){b.addEventListener("click",function(){start(parseInt(b.getAttribute("data-n"),10))})});
 </script>
 </body>
