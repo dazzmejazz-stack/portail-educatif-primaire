@@ -82,12 +82,14 @@ h1{color:#f6c75b}
   <div class="bank" id="bank"></div>
 </div>
 
+<script src="liens-4e.js"></script>
 <script>
+var L4 = window.LIENS4E || {};
 var COLS = ["Compositeur", "Titre", "Met en lumière…", "Nous a fait découvrir…"];
 var ROWS = [
  {
   "q": "Saint-Saëns Bacchanale Samson et Dalila",
-  "url": "https://youtu.be/8o0NglR3eZs?t=401",
+  "url": L4.bacchanale,
   "cells": [
    "Saint-Saëns",
    "Bacchanale de Samson et Dalila",
@@ -97,7 +99,7 @@ var ROWS = [
  },
  {
   "q": "Debussy Pagodes",
-  "url": "https://www.youtube.com/watch?v=lswHSnJ0Rlw&t=120s",
+  "url": L4.pagodes,
   "cells": [
    "Debussy",
    "Pagodes",
