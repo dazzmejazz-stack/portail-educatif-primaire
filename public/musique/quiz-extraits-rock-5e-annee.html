@@ -40,7 +40,7 @@ h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute
     <p class="q">Quiz avec extraits</p>
     <p class="lbl">Jouer avec des équipes (buzzer et points) ?</p>
     <div id="teams"><button type="button" class="chip on" data-t="0">Sans équipes</button><button type="button" class="chip" data-t="2">2 équipes</button><button type="button" class="chip" data-t="3">3 équipes</button><button type="button" class="chip" data-t="4">4 équipes</button><button type="button" class="chip" data-t="5">5 équipes</button><button type="button" class="chip" data-t="6">6 équipes</button></div>
-    <p class="lbl" style="margin-top:8px">Décompte avant le buzz (temps pour lire la question) :</p>
+    <p class="lbl" style="margin-top:8px">Décompte avant le buzz (3 secondes au maximum pour les extraits musicaux) :</p>
     <div id="cds"><button type="button" class="chip cdc" data-c="0">Sans décompte</button><button type="button" class="chip cdc on" data-c="5">5 secondes</button><button type="button" class="chip cdc" data-c="10">10 secondes</button></div>
     <p class="lbl" style="margin:0 0 8px;font-size:.85rem">Points : 2 pour une bonne réponse du premier coup, 1 en réplique. Défi : dans la 2e moitié du quiz, une mauvaise réponse fait perdre 1 point.</p>
     <p class="lbl" style="margin-top:8px">Choisis la longueur de la partie.</p>
@@ -154,7 +154,7 @@ $("skip").addEventListener("click",function(){var q=Q[i];buz=-2;Array.prototype.
   Array.prototype.forEach.call($("bz").children,function(b){b.disabled=true});$("skip").hidden=true;$("fb").textContent=(rp?"Personne n’a pris la réplique.":"Personne n’a buzzé.")+" La bonne réponse : "+q.ok+". "+q.fb;$("fb").hidden=false;$("next").textContent=i===Q.length-1?"Voir mon résultat":"Question suivante →";$("next").hidden=false});
 function playQ(){var q=Q[i];if(q&&q.au!==undefined){try{var pr=players[q.au].play();if(pr&&pr.catch)pr.catch(function(){})}catch(e){}}}
 function stopCD(){if(cdIv){clearInterval(cdIv);cdIv=null}cdOn=false}
-function startCD(){stopCD();if(!T)return;if(!CD){playQ();return}var n=CD,bn=$("ban");cdOn=true;
+function startCD(){stopCD();if(!T)return;if(!CD){playQ();return}var n=(Q[i]&&Q[i].au!==undefined)?Math.min(CD,3):CD,bn=$("ban");cdOn=true;
   Array.prototype.forEach.call($("bz").children,function(b){b.disabled=true});$("skip").hidden=true;
   function paint(){bn.textContent="⏳ Lis la question… "+n;bn.style.background="#444";bn.hidden=false}
   paint();cdIv=setInterval(function(){n--;if(n>0){paint();if(sndOn){try{if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(C)AC=new C()}if(AC){if(AC.state==="suspended")AC.resume();tone(660,0,0.07,"square",0.08)}}catch(e){}}}
