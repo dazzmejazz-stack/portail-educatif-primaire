@@ -98,6 +98,16 @@ function build(n){
     Q.push({t:"Écoute l’extrait. Cette pièce met en lumière…",opts:opts(other,f).slice(0,3).concat([f]).filter(function(v,i,a){return a.indexOf(v)===i}),ok:f,fb:fb,au:k});
     Q.push({t:"Écoute l’extrait. Cette pièce nous a fait découvrir…",opts:opts(DEC,x.dec),ok:x.dec,fb:fb,au:k});
   });
+  var GM="Gamme majeure",GH="Gamme mineure harmonique",GP="Gamme pentatonique",GC="Gamme chromatique";
+  function gq(t,ok,list,fb){Q.push({t:t,opts:shuffle(list.filter(function(v){return v!==ok})).slice(0,3).concat([ok]),ok:ok,fb:fb})}
+  var all=[GM,GH,GP,GC];
+  gq("Quelle gamme donne une ambiance arabe ?",GH,all,"La gamme mineure harmonique donne l’ambiance arabe, comme dans « Bacchanale de Samson et Dalila ».");
+  gq("Quelle gamme donne une ambiance asiatique ?",GP,all,"La gamme pentatonique donne l’ambiance asiatique, comme dans « Pagodes ».");
+  gq("Quelle gamme donne une ambiance joyeuse ?",GM,all,"La gamme majeure sonne joyeuse.");
+  gq("Dans « Bacchanale de Samson et Dalila », quelle gamme entend-on ?",GH,all,"« Bacchanale de Samson et Dalila » utilise la gamme mineure harmonique.");
+  gq("Dans « Pagodes », quelle gamme entend-on ?",GP,all,"« Pagodes » utilise la gamme pentatonique.");
+  gq("Combien de notes différentes y a-t-il dans la gamme pentatonique ?","5 notes",["3 notes","4 notes","5 notes","7 notes"],"La gamme pentatonique a 5 notes : Do Ré Mi Sol La (il n’y a ni Fa ni Si).");
+  gq("En partant de Do, quelle gamme contient Mi♭ et La♭ ?",GH,all,"La gamme mineure harmonique : Do Ré Mi♭ Fa Sol La♭ Si Do.");
   return shuffle(Q).slice(0,n);
 }
 var LEN=10,segStart=P.map(function(){return 0}),segq=P.map(function(){return []});

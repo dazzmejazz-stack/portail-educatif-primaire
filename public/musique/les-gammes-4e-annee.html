@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Les gammes · 4e année</title>
+<style>
+:root{--bg:#13243d;--card:#1d3558;--fg:#fdf3dc;--muted:#cdbf9c;--accent:#f6c75b;--soft:#2c4a78;--line:#d9a441;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.4;padding:64px 16px 32px}
+.wrap{max-width:600px;margin:0 auto}
+h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+h2.t{font-size:1.6rem;margin:0 0 6px;line-height:1.15}
+.intro{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px;margin:0 0 16px}
+.card h3{margin:0 0 2px;font-size:1.25rem}
+.mood{font-weight:700;color:var(--accent);margin:0 0 10px}
+.notes{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.n{font:inherit;font-weight:700;color:var(--fg);background:var(--soft);border:2px solid var(--line);border-radius:10px;min-width:48px;min-height:48px;padding:6px 8px;cursor:pointer}
+.n.on{background:var(--accent);color:#13243d}
+.n.alt{border-style:dashed;border-color:#ff9a8a}
+.prow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}.prow .play:last-child{grid-column:1/-1}.play{display:block;width:100%;font:inherit;font-weight:800;color:#13243d;background:var(--accent);border:0;border-radius:12px;padding:14px;cursor:pointer;margin:0}
+.play:focus-visible,.n:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.piece{background:var(--soft);border-radius:12px;padding:10px;font-size:.98rem;margin:0}
+.key{margin:10px 0 0;color:var(--muted);font-size:.95rem}
+.scene{font-size:2rem;letter-spacing:.2em;margin:0 0 6px}
+.cmp{background:var(--card);border:2px dashed var(--line);border-radius:16px;padding:14px;margin:0 0 16px}
+.cmp h3{margin:0 0 6px}
+.cmp ul{margin:0;padding-left:20px}
+</style>
+</head>
+<body><a id="btn-accueil" href="https://portail-educatif-primaire.vercel.app/" style="position:fixed;top:10px;left:10px;z-index:9999;background:#fff;color:#222;border:2px solid #555;border-radius:999px;padding:8px 14px;font:700 15px system-ui,sans-serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">🏠 Accueil</a>
+<div class="wrap">
+<h1>4e année · Asie et monde arabe</h1>
+<h2 class="t">Les gammes</h2>
+<p class="intro">Les trois gammes partent de la même note : Do. Touche une note pour l’entendre, ou écoute toute la gamme en montant, en descendant, ou les deux. Chaque gamme donne une ambiance différente.</p>
+<div id="cards"></div>
+<div class="cmp">
+<h3>Qu’est-ce qui change ?</h3>
+<ul>
+<li>Majeure → mineure harmonique : la 3e et la 6e note descendent d’un demi-ton (Mi devient Mi♭, La devient La♭). Le Si reste. Ça sonne arabe.</li>
+<li>Majeure → pentatonique : on enlève 2 notes (le Fa et le Si). Il reste 5 notes. Ça sonne asiatique.</li>
+</ul>
+</div>
+</div>
+<script>
+var NAMES=["Do","Do#","Ré","Mi♭","Mi","Fa","Fa#","Sol","La♭","La","La#","Si"];
+function freq(semi){return 261.63*Math.pow(2,semi/12)} // semi = demi-tons depuis le Do central
+var G=[
+ {t:"Gamme majeure",scene:"☀️ 🎈 🎉",mood:"Ambiance joyeuse",
+  s:[0,2,4,5,7,9,11,12],
+  piece:"Écoute-la d’abord : c’est la gamme de référence. Elle sert à comparer avec les deux autres.",
+  key:"8 notes : Do Ré Mi Fa Sol La Si Do"},
+ {t:"Gamme mineure harmonique",scene:"🏜️ 🐪 🪔",mood:"Ambiance arabe",
+  s:[0,2,3,5,7,8,11,12],alt:[3,8],
+  piece:"Dans « Bacchanale de Samson et Dalila » (Saint-Saëns), on entend cette gamme. Remarque le grand saut entre La♭ et Si.",
+  key:"8 notes : Do Ré Mi♭ Fa Sol La♭ Si Do (les notes en pointillé sont celles qui changent)"},
+ {t:"Gamme pentatonique",scene:"🏯 🎋 ⛩️",mood:"Ambiance asiatique",
+  s:[0,2,4,7,9,12],
+  piece:"Dans « Pagodes » (Debussy), on entend cette gamme. Elle n’a que 5 notes différentes : il n’y a ni Fa ni Si.",
+  key:"5 notes : Do Ré Mi Sol La (puis le Do plus aigu)"}
+];
+var AC=null;
+function tone(f,t0,d){
+ if(!AC){var C=window.AudioContext||window.webkitAudioContext;AC=new C()}
+ if(AC.state==="suspended")AC.resume();
+ var o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime+t0;
+ o.type="triangle";o.frequency.value=f;
+ g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.35,t+0.03);g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+ o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+0.05);
+ ACT.push({o:o,g:g});
+ o.onended=function(){var i=ACT.findIndex(function(x){return x.o===o});if(i>=0)ACT.splice(i,1)};
+}
+var ACT=[];
+function stopAll(){var now=AC?AC.currentTime:0;ACT.forEach(function(x){try{x.g.gain.cancelScheduledValues(now);x.g.gain.setValueAtTime(Math.max(0.0001,x.g.gain.value),now);x.g.gain.exponentialRampToValueAtTime(0.0001,now+0.05);x.o.stop(now+0.06)}catch(e){}});ACT=[]}
+var timers=[];
+function flash(btns,k,ms){timers.push(setTimeout(function(){btns.forEach(function(b){b.classList.remove("on")});if(btns[k])btns[k].classList.add("on")},ms))}
+function clearFlash(btns){stopAll();document.querySelectorAll('.n.on').forEach(function(b){b.classList.remove('on')});timers.forEach(clearTimeout);timers=[];btns.forEach(function(b){b.classList.remove("on")})}
+var root=document.getElementById("cards");
+G.forEach(function(g){
+ var c=document.createElement("div");c.className="card";
+ c.innerHTML='<p class="scene" aria-hidden="true">'+g.scene+'</p><h3>'+g.t+'</h3><p class="mood">'+g.mood+'</p>';
+ var nd=document.createElement("div");nd.className="notes";
+ var btns=[];
+ g.s.forEach(function(s,k){
+  var b=document.createElement("button");b.type="button";b.className="n"+((g.alt&&g.alt.indexOf(s)>=0)?" alt":"");
+  b.textContent=NAMES[((s%12)+12)%12];
+  b.setAttribute("aria-label","Note "+b.textContent);
+  b.addEventListener("click",function(){clearFlash(btns);tone(freq(s),0,0.9);b.classList.add("on");setTimeout(function(){b.classList.remove("on")},500)});
+  nd.appendChild(b);btns.push(b)});
+ c.appendChild(nd);
+ var row=document.createElement("div");row.className="prow";
+ function seq(order){clearFlash(btns);order.forEach(function(k,j){tone(freq(g.s[k]),j*0.55,0.7);flash(btns,k,j*550)});timers.push(setTimeout(function(){btns.forEach(function(b){b.classList.remove("on")})},order.length*550+400))}
+ var idx=g.s.map(function(_,k){return k});
+ [["▲ Ascendante",function(){return idx}],["▼ Descendante",function(){return idx.slice().reverse()}],["↕ Les deux",function(){return idx.concat(idx.slice(0,-1).reverse())}]].forEach(function(d){
+  var p=document.createElement("button");p.type="button";p.className="play";p.textContent=d[0];
+  p.addEventListener("click",function(){seq(d[1]())});row.appendChild(p)});
+ c.appendChild(row);
+ var pc=document.createElement("p");pc.className="piece";pc.textContent=g.piece;c.appendChild(pc);
+ var k=document.createElement("p");k.className="key";k.textContent=g.key;c.appendChild(k);
+ root.appendChild(c);
+});
+</script>
+</body>
+</html>
