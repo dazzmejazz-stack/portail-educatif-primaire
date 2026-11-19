@@ -87,6 +87,7 @@ var COLS = ["Compositeur", "Titre", "Met en lumière…", "Nous a fait découvri
 var ROWS = [
  {
   "q": "Saint-Saëns Bacchanale Samson et Dalila",
+  "url": "https://youtu.be/8o0NglR3eZs?t=392",
   "cells": [
    "Saint-Saëns",
    "Bacchanale de Samson et Dalila",
@@ -121,7 +122,7 @@ ROWS.forEach(function (r, i) {
   var tr = document.createElement("tr");
   var th = document.createElement("th");
   th.scope = "row";
-  th.innerHTML = "Extrait " + (i + 1) + '<br><a class="listen" target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/results?search_query=' + encodeURIComponent(r.q) + '">Écouter ↗</a>';
+  th.innerHTML = "Extrait " + (i + 1) + '<br><a class="listen" target="_blank" rel="noopener noreferrer" href="' + (r.url || ('https://www.youtube.com/results?search_query=' + encodeURIComponent(r.q))) + '">Écouter ↗</a>';
   tr.appendChild(th);
   r.cells.forEach(function (c) { tr.appendChild(cell(c)); });
   tb.appendChild(tr);
