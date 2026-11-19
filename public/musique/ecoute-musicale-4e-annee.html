@@ -101,8 +101,20 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem
   .cards { grid-template-columns: 1fr; }
 }
 </style>
-</head>
-<body>
+<style>body{padding-top:64px!important}@media (prefers-color-scheme:dark){#btn-accueil{background:#222!important;color:#fff!important;border-color:#aaa!important}}</style><style id="theme4">
+@media screen{
+:root:root{--bg:#13243d;--card:#1d3558;--fg:#fdf3dc;--muted:#cdbf9c;--accent:#f6c75b;--accent-soft:#2c4a78;--soft:#2c4a78;--line:#d9a441;color-scheme:dark}
+body{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60'><path d='M30 4l6 14 14-6-6 14 14 6-14 6 6 14-14-6-6 14-6-14-14 6 6-14-14-6 14-6-6-14 14 6z' fill='none' stroke='%23d9a441' stroke-opacity='.16' stroke-width='1.5'/></svg>")}
+h1{color:#f6c75b}
+}
+.scenes4{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 20px}
+.scenes4 figure{margin:0;position:relative;border:2px solid #d9a441;border-radius:16px;overflow:hidden}
+.scenes4 svg{display:block;width:100%;height:auto}
+.scenes4 figcaption{position:absolute;left:8px;bottom:6px;background:#000a;color:#fdf3dc;border-radius:999px;padding:3px 10px;font:800 13px system-ui,sans-serif}
+@media (max-width:480px){.scenes4 figcaption{font-size:11px;padding:2px 8px}}
+@media print{.scenes4{display:none}}
+</style></head>
+<body><a id="btn-accueil" href="https://portail-educatif-primaire.vercel.app/" style="position:fixed;top:10px;left:10px;z-index:9999;background:#fff;color:#222;border:2px solid #555;border-radius:999px;padding:8px 14px;font:700 15px system-ui,sans-serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">🏠 Accueil</a>
 
 <div class="wrap">
   <header>
@@ -115,13 +127,19 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem
       <button class="btn" id="hide-all" type="button">Tout cacher</button>
     </div>
   </header>
+  <div class="scenes4" aria-hidden="true">
+<figure><svg viewBox="0 0 360 150"><defs><linearGradient id="s4a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7d1a1a"/><stop offset="1" stop-color="#e8704a"/></linearGradient></defs><rect width="360" height="150" fill="url(#s4a)"/><circle cx="290" cy="40" r="22" fill="#ffe9b0"/><g fill="#2b0d0d"><path d="M0 130 Q60 100 120 125 T240 120 T360 125 V150 H0z"/><rect x="150" y="100" width="60" height="30"/><path d="M140 100 L180 86 L220 100 Z"/><rect x="156" y="72" width="48" height="14"/><path d="M148 72 L180 60 L212 72 Z"/><rect x="162" y="46" width="36" height="12"/><path d="M156 46 L180 36 L204 46 Z"/><rect x="178" y="22" width="4" height="16"/></g><g fill="#ffb7c5"><circle cx="40" cy="60" r="6"/><circle cx="55" cy="72" r="5"/><circle cx="30" cy="80" r="5"/><circle cx="85" cy="50" r="4"/><circle cx="310" cy="90" r="5"/><circle cx="330" cy="75" r="4"/></g></svg><figcaption>🏯 Asie</figcaption></figure>
+<figure><svg viewBox="0 0 360 150"><defs><linearGradient id="s4b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b1f5e"/><stop offset="1" stop-color="#f0a14a"/></linearGradient></defs><rect width="360" height="150" fill="url(#s4b)"/><path d="M262 20a18 18 0 1 0 14 28a14 14 0 1 1 -14 -28z" fill="#ffe9b0"/><g fill="#fff" opacity=".8"><circle cx="40" cy="25" r="1.5"/><circle cx="90" cy="15" r="1.5"/><circle cx="150" cy="30" r="1.5"/><circle cx="210" cy="12" r="1.5"/></g><path d="M110 120 L165 52 L220 120z" fill="#c98a3a"/><path d="M165 52 L220 120 L165 120z" fill="#a8702a"/><path d="M180 120 L215 76 L250 120z" fill="#c98a3a"/><path d="M0 118 Q70 98 140 120 T290 118 T360 120 V150 H0z" fill="#e8b45a"/><path d="M0 135 Q90 118 180 136 T360 132 V150 H0z" fill="#d49a40"/><g fill="#4a2a0c"><path d="M40 126 q4 -20 14 -22 q2 -10 8 -8 l4 6 q8 0 10 10 l-2 14 h-4 l-1 -12 h-12 l-1 12 h-4 l-1 -12 q-6 6 -11 12z"/></g><g><rect x="318" y="86" width="4" height="40" fill="#5a3a1a"/><path fill="#3a7a2a" d="M320 88 q-22 -8 -28 6 M320 88 q22 -8 28 6 M320 88 q-10 -22 -22 -14 M320 88 q10 -22 22 -14"/></g></svg><figcaption>🪔 Monde arabe</figcaption></figure></div>
   <main class="board" id="board"></main>
 </div>
 
+<script src="liens-4e.js"></script>
 <script>
+var L4 = window.LIENS4E || {};
 var EXTRAITS = [
   {
     q: "Saint-Saëns Bacchanale Samson et Dalila",
+    url: L4.bacchanale,
     comp: "Saint-Saëns",
     oeuvre: "Bacchanale de Samson et Dalila",
     lumiere: "Ambiance arabe grâce à la gamme mineure harmonique",
@@ -129,6 +147,7 @@ var EXTRAITS = [
   },
   {
     q: "Debussy Pagodes",
+    url: L4.pagodes,
     comp: "Debussy",
     oeuvre: "Pagodes",
     lumiere: "Ambiance asiatique grâce à la gamme pentatonique",

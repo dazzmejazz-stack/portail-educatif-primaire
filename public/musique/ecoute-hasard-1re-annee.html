@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>&#201;coute au hasard 1re ann&#233;e</title>
 <style>
-:root{--bg:#eaf4f2;--card:#fff;--fg:#12302c;--muted:#4d6b66;--accent:#0b7a6e;--soft:#cdeae5;--line:#bcd6d1}
-@media (prefers-color-scheme: dark){:root{--bg:#0e1c1a;--card:#162826;--fg:#e4f2ef;--muted:#9bb8b2;--accent:#5fd0bf;--soft:#1d3b37;--line:#2a4743}}
+:root{--bg:#eef6e4;--card:#ffffff;--fg:#1d3318;--muted:#4f6b45;--accent:#2f7d32;--soft:#d6ecc0;--line:#b9d6a0}
+@media (prefers-color-scheme: dark){:root{--bg:#101c0e;--card:#1a2b17;--fg:#e6f4de;--muted:#a3bd98;--accent:#8fd67f;--soft:#243a20;--line:#33502d}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.4;padding:24px max(16px,env(safe-area-inset-left,0px)) 40px}
 .wrap{max-width:760px;margin:0 auto}
@@ -33,10 +33,22 @@ audio{width:100%;margin:6px 0 12px;display:none}
 .count{color:var(--muted);font-size:.95rem;margin-top:10px}
 .hid{display:none}
 .cd{color:var(--accent);font-weight:700;margin-top:10px;min-height:1.4em}
+body{background-image:radial-gradient(circle at 12% 8%,#d6ecc0 0 60px,transparent 61px),radial-gradient(circle at 92% 3%,#f9e7a6 0 46px,transparent 47px);background-repeat:no-repeat}
+.hero{font-size:2.4rem;letter-spacing:.2em;margin:0 0 4px}
+.tagp{display:inline-block;background:var(--soft);color:var(--accent);font-weight:800;border-radius:999px;padding:4px 14px;margin:0 0 10px}
+h1{font-size:clamp(2rem,7vw,2.8rem)!important}
+.tab{font-size:1.15rem!important;min-height:56px!important;border-radius:16px!important}
+.btn.main{font-size:1.7rem!important;padding:32px!important;border-radius:24px!important;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+.btn{min-height:54px!important;border-radius:16px!important}
+.panel{border-radius:24px!important}
+.ans{border-radius:18px!important}
+.ans .c{font-size:1.7rem!important}.ans .o{font-size:1.3rem!important}
+.mask{min-height:150px!important;font-size:3.4rem!important;border-radius:18px!important}
 </style>
-</head>
-<body>
+<style>body{padding-top:64px!important}@media (prefers-color-scheme:dark){#btn-accueil{background:#222!important;color:#fff!important;border-color:#aaa!important}}</style></head>
+<body><a id="btn-accueil" href="https://portail-educatif-primaire.vercel.app/" style="position:fixed;top:10px;left:10px;z-index:9999;background:#fff;color:#222;border:2px solid #555;border-radius:999px;padding:8px 14px;font:700 15px system-ui,sans-serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">🏠 Accueil</a>
 <div class="wrap">
+<div class="hero" aria-hidden="true">🌿 🦋 🐦 🌻</div><span class="tagp">Thème : la nature</span>
 <h1>&#201;coute au hasard 1re ann&#233;e</h1>
 <p class="sub">Touche un bouton pour entendre une pi&#232;ce au hasard.</p>
 <div class="tabs">

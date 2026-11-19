@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz avec extraits &#8211; Le rock</title>
+<style>
+:root{--bg:#f2eeee;--card:#fff;--fg:#2b1d17;--muted:#6e5a50;--accent:#b34a1e;--soft:#f3d9cc;--line:#ddd0ca;--ok:#d8efd6;--okb:#2f8a3a;--no:#f6d5d0;--nob:#c0392b}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1411;--card:#2a1d18;--fg:#f4e9e4;--muted:#c4aea3;--accent:#f08a5d;--soft:#43291f;--line:#553a2f;--ok:#1f3a22;--okb:#6fcf7a;--no:#4a2420;--nob:#ff8a7a}}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.35;padding:16px}
+.wrap{max-width:560px;margin:0 auto}
+.top{display:flex;justify-content:space-between;color:var(--muted);font-size:.95rem;margin-bottom:8px}
+.bar{height:8px;background:var(--line);border-radius:6px;margin-bottom:16px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.q{font-size:1.45rem;font-weight:700;line-height:1.2;margin:0 0 16px}
+.a{display:block;width:100%;text-align:left;font:inherit;font-weight:600;color:inherit;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;min-height:48px;cursor:pointer}
+.a:hover:not(:disabled){border-color:var(--accent)}.a:focus-visible,.nx:focus-visible,.listen:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.a.ok{background:var(--ok);border-color:var(--okb)}.a.no{background:var(--no);border-color:var(--nob)}
+.fb{background:var(--soft);border-radius:12px;padding:12px;margin:6px 0 12px;font-size:1rem}
+.nx{display:block;width:100%;text-align:center;font:inherit;font-weight:700;color:#fff;background:var(--accent);border:0;border-radius:12px;padding:14px;cursor:pointer}
+.listen{display:inline-block;margin:0 0 12px;font-weight:600;font-size:.9rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:10px;padding:6px 12px}
+.end{text-align:center}.big{font-size:3rem;font-weight:800;color:var(--accent);margin:8px 0}
+.snd{font:inherit;font-size:.85rem;color:var(--muted);background:var(--card);border:2px solid var(--line);border-radius:10px;padding:4px 10px;cursor:pointer}.snd:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chip{font:inherit;font-weight:600;color:inherit;background:var(--card);border:2px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;margin:0 6px 8px 0;min-height:44px}.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.lbl{color:var(--muted);margin:0 0 6px;font-size:.95rem}
+.sb{display:grid;gap:6px;margin:0 0 10px;position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0}.tm{border-radius:12px;padding:5px 4px;text-align:center;color:#fff;font-weight:700}.tm b{display:block;font-size:1.5rem;line-height:1.05}.tm small{font-weight:600}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:scale(1)}}.tm.pop{animation:pop .6s ease}
+.tm.win{outline:4px solid var(--fg);outline-offset:2px}.pm{display:flex;gap:6px;justify-content:center;margin-top:4px}.pm button{font:inherit;font-size:1.05rem;font-weight:700;color:#fff;background:rgba(0,0,0,.28);border:0;border-radius:8px;min-width:40px;min-height:32px;cursor:pointer}
+.bz{display:grid;gap:8px;margin:0 0 12px}.bzb{font:inherit;font-weight:800;font-size:1.05rem;color:#fff;border:0;border-radius:14px;padding:22px 4px;cursor:pointer;touch-action:manipulation}.bzb:disabled{opacity:.35}.bzb.first{opacity:1;outline:4px solid var(--fg);outline-offset:2px}
+.ban{border-radius:12px;padding:10px;text-align:center;font-weight:700;color:#fff;margin:0 0 12px}
+.skip{display:block;width:100%;font:inherit;font-weight:600;color:var(--muted);background:transparent;border:2px dashed var(--line);border-radius:12px;padding:10px;margin:0 0 12px;cursor:pointer}
+.a:disabled{opacity:.55;cursor:default}.a.ok:disabled,.a.no:disabled{opacity:1}
+[hidden]{display:none!important}
+</style>
+<style>body{padding-top:64px!important}@media (prefers-color-scheme:dark){#btn-accueil{background:#222!important;color:#fff!important;border-color:#aaa!important}}</style></head>
+<body><a id="btn-accueil" href="https://portail-educatif-primaire.vercel.app/" style="position:fixed;top:10px;left:10px;z-index:9999;background:#fff;color:#222;border:2px solid #555;border-radius:999px;padding:8px 14px;font:700 15px system-ui,sans-serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">🏠 Accueil</a>
+<div class="wrap">
+  <div id="start">
+    <h1>Le rock</h1>
+    <p class="q">Quiz avec extraits</p>
+    <p class="lbl">Jouer avec des équipes (buzzer et points) ?</p>
+    <div id="teams"><button type="button" class="chip on" data-t="0">Sans équipes</button><button type="button" class="chip" data-t="2">2 équipes</button><button type="button" class="chip" data-t="3">3 équipes</button><button type="button" class="chip" data-t="4">4 équipes</button><button type="button" class="chip" data-t="5">5 équipes</button><button type="button" class="chip" data-t="6">6 équipes</button></div>
+    <p class="lbl" style="margin-top:8px">Décompte avant le buzz (3 secondes au maximum pour les extraits musicaux) :</p>
+    <div id="cds"><button type="button" class="chip cdc" data-c="0">Sans décompte</button><button type="button" class="chip cdc on" data-c="5">5 secondes</button><button type="button" class="chip cdc" data-c="10">10 secondes</button></div>
+    <p class="lbl" style="margin-top:8px">Temps pour répondre après avoir buzzé :</p>
+    <div id="ats"><button type="button" class="chip atc" data-a="0">Sans limite</button><button type="button" class="chip atc on" data-a="3">3 secondes</button><button type="button" class="chip atc" data-a="5">5 secondes</button><button type="button" class="chip atc" data-a="10">10 secondes</button></div>
+    <p class="lbl" style="margin:0 0 8px;font-size:.85rem">Points : 2 pour une bonne réponse du premier coup, 1 en réplique. Défi : dans la 2e moitié du quiz, une mauvaise réponse fait perdre 1 point.</p>
+    <p class="lbl" style="margin-top:8px">Choisis la longueur de la partie.</p>
+    <button class="a mode" type="button" data-n="10"><b>Court : 10 questions</b><br><small>environ 10 minutes</small></button>
+    <button class="a mode" type="button" data-n="20"><b>Moyen : 20 questions</b><br><small>environ 20 minutes</small></button>
+    <button class="a mode" type="button" data-n="40"><b>Long : 40 questions</b><br><small>environ 40 minutes</small></button>
+  </div>
+  <div id="game" hidden>
+    <div class="sb" id="sb" hidden></div>
+    <div class="top"><span id="num"></span><button type="button" id="snd" class="snd" aria-pressed="true">&#128266; Sons : oui</button><span id="score"></span></div>
+    <div class="bar"><i id="prog"></i></div>
+    <h1>Le rock</h1>
+    <p class="q" id="q"></p>
+    <div class="ban" id="warn" hidden style="background:#b3261e"></div>
+    <div id="players"></div>
+    <div class="bz" id="bz" hidden></div>
+    <div class="ban" id="ban" hidden></div>
+    <button class="skip" id="skip" type="button" hidden>Personne n’a buzzé : voir la réponse</button>
+    <div id="answers"></div>
+    <div class="fb" id="fb" hidden></div>
+    <button class="nx" id="next" type="button" hidden>Question suivante &#8594;</button>
+  </div>
+  <div class="end" id="end" hidden>
+    <h1>Le rock</h1>
+    <p class="q">Quiz termin&#233; !</p>
+    <div class="big" id="final"></div>
+    <p id="msg"></p>
+    <button class="nx" id="again" type="button">Rejouer</button>
+  </div>
+</div>
+<script>
+var $=function(id){return document.getElementById(id)};
+var A=[
+ {n:"Chuck Berry",p:"Johnny B. Goode",y:1958,per:"Début du rock’n’roll",debut:1955,lieu:"Saint-Louis, aux États-Unis",au:"/musique/audio/rock5-chuck-berry-johnny-b-goode.mp3",info:"Chuck Berry : début du rock’n’roll, chant et guitare électrique, premier disque en 1955."},
+ {n:"Les Beatles",p:"I Want to Hold Your Hand",y:1963,per:"Rock pop britannique",debut:1960,lieu:"Liverpool, en Angleterre",au:"/musique/audio/rock5-beatles-i-want-to-hold-your-hand.mp3",info:"Les Beatles : rock pop britannique, groupe de Liverpool actif de 1960 à 1970."},
+ {n:"Bob Dylan",p:"Like a Rolling Stone",y:1965,per:"Folk rock",debut:1962,lieu:"le Minnesota, aux États-Unis",au:"/musique/audio/rock5-bob-dylan-like-a-rolling-stone.mp3",info:"Bob Dylan : folk rock, né au Minnesota, premier album en 1962."},
+ {n:"Jimi Hendrix",p:"Foxy Lady",y:1967,per:"Rock psychédélique",debut:1966,lieu:"les États-Unis et l’Angleterre",au:"/musique/audio/rock5-hendrix-foxy-lady.mp3",info:"Jimi Hendrix : rock psychédélique, guitare électrique et pédales d’effets, de 1966 à 1970."},
+ {n:"Deep Purple",p:"Smoke on the Water",y:1972,per:"Hard rock",debut:1968,lieu:"l’Angleterre",au:"/musique/audio/rock5-deep-purple-smoke-on-the-water.mp3",info:"Deep Purple : hard rock, groupe formé en 1968 en Angleterre."},
+ {n:"The Clash",p:"Should I Stay or Should I Go",y:1982,per:"Punk rock",debut:1976,lieu:"Londres, en Angleterre",au:"/musique/audio/rock5-the-clash-should-i-stay-or-should-i-go.mp3",info:"The Clash : punk rock, groupe formé à Londres en 1976."},
+ {n:"Depeche Mode",p:"Just Can’t Get Enough",y:1981,per:"Synthpop",debut:1980,lieu:"Basildon, en Angleterre",au:"/musique/audio/rock5-depeche-mode-just-cant-get-enough.mp3",info:"Depeche Mode : synthpop, groupe formé en 1980 à Basildon, en Angleterre."},
+ {n:"Michael Jackson",p:"Beat It",y:1983,per:"Pop rock",debut:1971,lieu:"l’Indiana, aux États-Unis",au:"/musique/audio/rock5-michael-jackson-beat-it.mp3",info:"Michael Jackson : pop rock, carrière solo dès 1971, né en Indiana."}
+];
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function opts(list,ok){var others=shuffle(list.filter(function(v,i,s){return v!==ok&&s.indexOf(v)===i})).slice(0,3);return others.concat([ok])}
+var O=A.map(function(o){return o.n}),P=A.map(function(o){return o.p}),R=A.map(function(o){return o.per}),Y=A.map(function(o){return String(o.y)}),D=A.map(function(o){return String(o.debut)});
+var LIEU_OK={"Chuck Berry":1,"Les Beatles":1,"The Clash":1};
+
+var W={"Chuck Berry":"rock ’n’ roll, guitare électrique et chant, né à Saint-Louis","Les Beatles":"rock pop britannique, groupe de Liverpool","Bob Dylan":"folk rock, chante en s’accompagnant à la guitare et à l’harmonica","Jimi Hendrix":"rock psychédélique, nombreux effets de guitare","Deep Purple":"hard rock, groupe britannique, guitares distordues","The Clash":"punk rock, groupe de Londres, musique rapide et énergique","Depeche Mode":"synthpop, groupe anglais, beaucoup de synthétiseurs","Michael Jackson":"pop rock, le « Roi de la pop », chanteur et danseur"};
+var INS={"Le violon":"le violon est plutôt un instrument classique, pas typique du rock.","L’harmonica":"l’harmonica, c’est l’instrument de Bob Dylan.","Le saxophone":"le saxophone n’est pas un instrument typique de ces artistes.","Les synthétiseurs":"les synthétiseurs, c’est la marque de Depeche Mode.","La flûte":"la flûte n’est pas un instrument typique de Bob Dylan.","Le violoncelle":"le violoncelle n’est pas un instrument typique de Bob Dylan.","La trompette":"la trompette n’est pas un instrument typique de Bob Dylan."};
+function describe(c){var x,k;
+  for(k=0;k<A.length;k++){x=A[k];
+    if(x.n===c)return x.n+" : "+W[x.n]+". Pièce célèbre : « "+x.p+" » ("+x.y+").";
+    if(x.p===c)return "« "+x.p+" » est de "+x.n+" ("+x.y+").";
+    if(x.per===c)return "« "+x.per+" », c’est le style de "+x.n+".";
+    if(String(x.y)===c)return c+" : « "+x.p+" », de "+x.n+".";}
+  return INS[c]?INS[c].charAt(0).toUpperCase()+INS[c].slice(1):""}
+A.forEach(function(x){x.info=x.n+" : "+W[x.n]+"."});
+function build(n){
+  var AQ=[],Q=[];
+  A.forEach(function(x,k){
+    AQ.push({t:"Écoute l’extrait. Quel est le groupe ou l’artiste ?",opts:opts(O,x.n),ok:x.n,fb:x.info+" C’était « "+x.p+" » ("+x.y+").",au:k});
+    AQ.push({t:"Écoute l’extrait. Quelle est la pièce ?",opts:opts(P,x.p),ok:x.p,fb:"« "+x.p+" », de "+x.n+" ("+x.y+").",au:k});
+    AQ.push({t:"Écoute l’extrait. Quelle est la période ?",opts:opts(R,x.per),ok:x.per,fb:x.info,au:k});
+    AQ.push({t:"Écoute l’extrait. En quelle année cette pièce est-elle sortie ?",opts:opts(Y,String(x.y)),ok:String(x.y),fb:"« "+x.p+" » de "+x.n+", "+x.y+".",au:k});
+    Q.push({t:"En quelle année est sortie « "+x.p+" » ?",opts:opts(Y,String(x.y)),ok:String(x.y),fb:"« "+x.p+" » de "+x.n+", "+x.y+"."});
+    Q.push({t:"Quelle pièce est sortie en "+x.y+" ?",opts:opts(P,x.p),ok:x.p,fb:"« "+x.p+" », de "+x.n+", "+x.y+"."});
+    Q.push({t:"Qui a joué « "+x.p+" » ?",opts:opts(O,x.n),ok:x.n,fb:x.info});
+    Q.push({t:"Quelle est la période de "+x.n+" ?",opts:opts(R,x.per),ok:x.per,fb:x.info});
+    Q.push({t:"À quelle période appartient « "+x.p+" » ?",opts:opts(R,x.per),ok:x.per,fb:x.info});
+    if(LIEU_OK[x.n])Q.push({t:"Quel artiste ou groupe est lié à : "+x.lieu+" ?",opts:opts(O,x.n),ok:x.n,fb:x.info});
+  });
+  Q.push({t:"Quel instrument est très important chez Depeche Mode ?",opts:["Les synthétiseurs","Le violon","L’harmonica","Le saxophone"],ok:"Les synthétiseurs",fb:"Depeche Mode joue du synthpop : beaucoup de synthétiseurs."});
+  Q.push({t:"Quel guitariste est connu pour ses nombreux effets de guitare ?",opts:opts(O,"Jimi Hendrix"),ok:"Jimi Hendrix",fb:A[3].info});
+  Q.push({t:"Quel instrument joue Bob Dylan en plus de la guitare, dans ses chansons ?",opts:["L’harmonica","La flûte","Le violoncelle","La trompette"],ok:"L’harmonica",fb:"Bob Dylan chante en s’accompagnant à la guitare et à l’harmonica."});
+  for(var r=0;r<3;r++){var four=shuffle(A).slice(0,4);
+    var old=four.slice().sort(function(a,b){return a.y-b.y})[0],rec=four.slice().sort(function(a,b){return b.y-a.y})[0];
+    Q.push({t:"Laquelle de ces pièces est la plus ancienne ?",opts:four.map(function(o){return o.p}),ok:old.p,fb:"« "+old.p+" » date de "+old.y+"."});
+    Q.push({t:"Laquelle de ces pièces est la plus récente ?",opts:four.map(function(o){return o.p}),ok:rec.p,fb:"« "+rec.p+" » date de "+rec.y+"."});}
+  var na=Math.round(n/2),nq=n-na,seen={},pick=function(arr,m){var out=[];shuffle(arr).forEach(function(q){var key=q.t+"|"+q.au;if(out.length<m&&!seen[key]){seen[key]=1;out.push(q)}});return out};
+  return shuffle(pick(AQ,na).concat(pick(Q,nq)));
+}
+var ST=[[17,67,104,145],[30,42,75,117],[89,168,236,342],[45,87,129,176],[49,89,177,252],[28,78,96,162],[14,101,145,174],[57,128,177,256]],LEN=10,cur=A.map(function(){return 0}),segq=A.map(function(){return []});
+function pickSeg(k){if(!segq[k].length)segq[k]=shuffle([0,1,2,3]);cur[k]=segq[k].pop();return ST[k][cur[k]]}
+var players=A.map(function(p,k){var a=document.createElement("audio");a.controls=true;a.preload="metadata";a.src=p.au;a.style.display="none";a.style.width="100%";a.style.margin="0 0 14px";
+  a.addEventListener("loadedmetadata",function(){try{a.currentTime=ST[k][cur[k]]}catch(e){}});
+  var iv=null;function clr(){if(iv){clearInterval(iv);iv=null}try{a.volume=1}catch(e){}}
+  a.addEventListener("play",function(){var st=ST[k][cur[k]];if(a.currentTime<st-0.5||a.currentTime>=st+LEN-0.4){a.currentTime=st}clr();iv=setInterval(function(){var t=a.currentTime-ST[k][cur[k]];if(t>=LEN-0.15){a.pause()}else if(t>LEN-1.65){try{a.volume=Math.max(0,(LEN-0.15-t)/1.5)}catch(e){}}},50)});
+  a.addEventListener("pause",clr);a.addEventListener("ended",clr);
+  $("players").appendChild(a);return a});
+var sndOn=true,AC=null;
+function tone(f,t0,d,type,vol){var c=AC,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,c.currentTime+t0);g.gain.setValueAtTime(0.0001,c.currentTime+t0);g.gain.exponentialRampToValueAtTime(vol,c.currentTime+t0+0.02);g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+t0+d);o.connect(g);g.connect(c.destination);o.start(c.currentTime+t0);o.stop(c.currentTime+t0+d+0.05)}
+function sfx(good){if(!sndOn)return;try{if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(!C)return;AC=new C()}if(AC.state==="suspended")AC.resume();
+  if(good){tone(523,0,0.16,"triangle",0.25);tone(659,0.12,0.16,"triangle",0.25);tone(784,0.24,0.3,"triangle",0.25)}
+  else{tone(220,0,0.22,"sawtooth",0.12);tone(150,0.2,0.4,"sawtooth",0.12)}}catch(e){}}
+$("snd").addEventListener("click",function(){sndOn=!sndOn;this.setAttribute("aria-pressed",sndOn);this.innerHTML=sndOn?"&#128266; Sons : oui":"&#128263; Sons : non"});
+var AT=3,atIv=null,tmo=0,CD=5,cdIv=null,cdOn=false,T=0,TS=[],buz=-1,rp=0,lock=-1,gain=-1,TC=["#c0392b","#2e6da4","#2f8a3a","#7a3e9d","#b9770e","#0e8a9c"];
+function sfxBuzz(){if(!sndOn)return;try{if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(!C)return;AC=new C()}if(AC.state==="suspended")AC.resume();tone(880,0,0.12,"square",0.15);tone(1175,0.1,0.28,"square",0.15)}catch(e){}}
+function renderSB(){var sb=$("sb");sb.innerHTML="";sb.hidden=!T;if(!T)return;sb.style.gridTemplateColumns="repeat("+(T<=4?T:3)+",1fr)";var mx=Math.max.apply(null,TS);
+  for(var k=0;k<T;k++){(function(k){var d=document.createElement("div");d.className="tm"+(mx>0&&TS[k]===mx?" win":"")+(k===gain?" pop":"");d.style.background=TC[k];
+    d.innerHTML="<small>Équipe "+(k+1)+"</small><b>"+TS[k]+"</b>";var pm=document.createElement("div");pm.className="pm";
+    [-1,1].forEach(function(v){var b=document.createElement("button");b.type="button";b.textContent=v<0?"−":"+";b.setAttribute("aria-label",(v<0?"Retirer":"Ajouter")+" un point à l’équipe "+(k+1));b.addEventListener("click",function(){TS[k]+=v;renderSB()});pm.appendChild(b)});
+    d.appendChild(pm);sb.appendChild(d)})(k)}}
+function buzz(k){if(buz>=0||!T||k===lock||cdOn)return;buz=k;sfxBuzz();players.forEach(function(a){a.pause()});
+  var ban=$("ban");ban.textContent="🔔 Équipe "+(k+1)+(rp?" a buzzé pour la réplique !":" a buzzé en premier !");ban.style.background=TC[k];ban.hidden=false;
+  Array.prototype.forEach.call($("bz").children,function(b,j){b.disabled=true;if(j===k)b.classList.add("first")});
+  Array.prototype.forEach.call($("answers").children,function(b){b.disabled=!!b.dataset.w});$("skip").hidden=true;startAT()}
+function renderBZ(){var bz=$("bz");bz.innerHTML="";bz.hidden=!T;$("ban").hidden=true;$("skip").hidden=!T;if(!T)return;bz.style.gridTemplateColumns="repeat("+(T<=4?T:3)+",1fr)";
+  for(var k=0;k<T;k++){(function(k){var b=document.createElement("button");b.type="button";b.className="bzb";b.style.background=TC[k];b.innerHTML="🔔<br>Équipe "+(k+1);b.addEventListener("pointerdown",function(e){e.preventDefault();buzz(k)});b.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();buzz(k)}});bz.appendChild(b)})(k)}}
+Array.prototype.forEach.call(document.querySelectorAll("#teams .chip"),function(c){c.addEventListener("click",function(){T=parseInt(c.getAttribute("data-t"),10);Array.prototype.forEach.call(document.querySelectorAll("#teams .chip"),function(o){o.classList.toggle("on",o===c)})})});
+$("skip").addEventListener("click",function(){stopAT();var q=Q[i];buz=-2;Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true;if(x.textContent===q.ok)x.classList.add("ok")});
+  Array.prototype.forEach.call($("bz").children,function(b){b.disabled=true});$("skip").hidden=true;$("fb").textContent=(rp?"Personne n’a pris la réplique.":"Personne n’a buzzé.")+" La bonne réponse : "+q.ok+". "+q.fb;$("fb").hidden=false;$("next").textContent=i===Q.length-1?"Voir mon résultat":"Question suivante →";$("next").hidden=false});
+function stopAT(){if(atIv){clearInterval(atIv);atIv=null}}
+function startAT(){stopAT();if(!T||!AT)return;var n=AT,ban=$("ban"),base=ban.textContent;
+  function paint(){ban.textContent=base+"  ⏱️ "+n}
+  paint();atIv=setInterval(function(){n--;if(n>0){paint();if(sndOn){try{if(AC){tone(660,0,0.07,"square",0.08)}}catch(e){}}}
+    else{stopAT();tmo=1;pick(document.createElement("button"),"");tmo=0}},1000)}
+Array.prototype.forEach.call(document.querySelectorAll(".atc"),function(c){c.addEventListener("click",function(){AT=parseInt(c.getAttribute("data-a"),10);Array.prototype.forEach.call(document.querySelectorAll(".atc"),function(o){o.classList.toggle("on",o===c)})})});
+function playQ(){var q=Q[i];if(q&&q.au!==undefined){try{var pr=players[q.au].play();if(pr&&pr.catch)pr.catch(function(){})}catch(e){}}}
+function stopCD(){if(cdIv){clearInterval(cdIv);cdIv=null}cdOn=false}
+function startCD(){stopCD();if(!T)return;if(!CD){playQ();return}var n=(Q[i]&&Q[i].au!==undefined)?Math.min(CD,3):CD,bn=$("ban");cdOn=true;
+  Array.prototype.forEach.call($("bz").children,function(b){b.disabled=true});$("skip").hidden=true;
+  function paint(){bn.textContent="⏳ Lis la question… "+n;bn.style.background="#444";bn.hidden=false}
+  paint();cdIv=setInterval(function(){n--;if(n>0){paint();if(sndOn){try{if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(C)AC=new C()}if(AC){if(AC.state==="suspended")AC.resume();tone(660,0,0.07,"square",0.08)}}catch(e){}}}
+    else{stopCD();Array.prototype.forEach.call($("bz").children,function(b){b.disabled=false});bn.textContent="🔔 Buzz ! Le premier qui touche son bouton répond";bn.style.background="#b34a1e";$("skip").hidden=false;if(sndOn){try{if(AC){tone(1047,0,0.25,"square",0.12)}}catch(e){}}playQ()}},1000)}
+Array.prototype.forEach.call(document.querySelectorAll(".cdc"),function(c){c.addEventListener("click",function(){CD=parseInt(c.getAttribute("data-c"),10);Array.prototype.forEach.call(document.querySelectorAll(".cdc"),function(o){o.classList.toggle("on",o===c)})})});
+var Q,i,score;
+function pen(){return T>0&&i>=Math.floor(Q.length/2)}
+function start(n){Q=build(n);i=0;score=0;TS=[];for(var t=0;t<T;t++)TS.push(0);renderSB();$("start").hidden=true;$("end").hidden=true;$("game").hidden=false;show()}
+function show(){
+  stopAT();var q=Q[i];$("num").textContent="Question "+(i+1)+" / "+Q.length;$("score").textContent=T?"":"Score : "+score;
+  $("prog").style.width=(i/Q.length*100)+"%";$("q").textContent=q.t;
+  players.forEach(function(a,k){a.pause();a.style.display=(q.au===k)?"block":"none"});if(q.au!==undefined){try{players[q.au].currentTime=pickSeg(q.au)}catch(e){}}
+  $("fb").hidden=true;$("next").hidden=true;var box=$("answers");box.innerHTML="";
+  shuffle(q.opts).forEach(function(o){var b=document.createElement("button");b.type="button";b.className="a";b.textContent=o;b.addEventListener("click",function(){pick(b,o)});box.appendChild(b);if(T)b.disabled=true});
+  buz=-1;rp=0;lock=-1;var wn=$("warn");wn.hidden=!pen();if(pen())wn.textContent=i===Math.floor(Q.length/2)?"⚠️ DÉFI ! Attention : à partir de maintenant, une mauvaise réponse = −1 point":"⚠️ Attention : mauvaise réponse = −1 point";renderBZ();startCD();
+}
+function pick(b,o){
+  stopAT();var q=Q[i],good=o===q.ok;
+  if(T&&!good&&!rp&&buz>=0){sfx(false);b.classList.add("no");b.textContent="✘ "+o;b.dataset.w="1";if(pen()){TS[buz]-=1;gain=buz;renderSB();gain=-1}rp=1;lock=buz;buz=-1;
+    Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true});
+    Array.prototype.forEach.call($("bz").children,function(x,j){x.classList.remove("first");x.disabled=(j===lock)});
+    var bn=$("ban");bn.textContent=(tmo?"⏱️ Temps écoulé ! Équipe "+(lock+1)+" n’a pas répondu":"✘ Équipe "+(lock+1)+" s’est trompée")+(pen()?" (−1 point)":"")+". Droit de réplique : les autres équipes peuvent buzzer !";bn.style.background="#444";bn.hidden=false;$("skip").hidden=false;return}
+  if(good){score++;if(T&&buz>=0){TS[buz]+=rp?1:2;gain=buz;renderSB();gain=-1}}else if(pen()&&buz>=0){TS[buz]-=1;gain=buz;renderSB();gain=-1}if(T)Array.prototype.forEach.call($("bz").children,function(x){x.disabled=true});sfx(good);
+  Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true;if(x.textContent===q.ok){x.classList.add("ok");if(x===b)x.textContent="✔ "+x.textContent}});
+  if(!good){b.classList.add("no");b.textContent="✘ "+o}
+  var dd=good?"":describe(o);var pre=T&&buz>=0?(good?"Bravo ! +"+(rp?"1 point":"2 points")+" pour l’équipe "+(buz+1)+(rp?" (réplique)":"")+". ":"Pas tout à fait ("+(pen()?"−1 point":"0 point")+" pour l’équipe "+(buz+1)+"). La bonne réponse : "+q.ok+". "):(good?"Bravo ! ":"Pas tout à fait. La bonne réponse : "+q.ok+". ");$("fb").textContent=pre+q.fb+(dd?" Ton choix, « "+o+" » → "+dd:"");$("fb").hidden=false;
+  $("score").textContent=T?"":"Score : "+score;$("next").textContent=i===Q.length-1?"Voir mon résultat":"Question suivante →";$("next").hidden=false;$("next").focus();
+}
+$("next").addEventListener("click",function(){i++;if(i>=Q.length){end()}else{show()}});
+function end(){stopCD();stopAT();players.forEach(function(a){a.pause()});$("game").hidden=true;$("end").hidden=false;var p=score/Q.length;if(T){var mx=Math.max.apply(null,TS),w=[];TS.forEach(function(v,k){if(v===mx)w.push(k+1)});$("final").textContent=w.length>1?"Égalité !":"🏆 Équipe "+w[0];$("msg").textContent=TS.map(function(v,k){return "Équipe "+(k+1)+" : "+v}).join(" · ");$("sb").hidden=true;$("warn").hidden=true;return}
+  $("final").textContent=score+" / "+Q.length;
+  $("msg").textContent=p>=0.9?"Excellent ! Tu connais bien le rock.":p>=0.6?"Bien joué ! Encore un essai pour faire mieux ?":"Réécoute les extraits et réessaie !"}
+$("again").addEventListener("click",function(){stopCD();stopAT();players.forEach(function(a){a.pause()});$("end").hidden=true;$("start").hidden=false});
+Array.prototype.forEach.call(document.querySelectorAll(".mode"),function(b){b.addEventListener("click",function(){start(parseInt(b.getAttribute("data-n"),10))})});
+</script>
+</body>
+</html>

@@ -127,8 +127,8 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem
 .vids a { font-weight:600; font-size:.9rem; color:var(--accent); border:2px solid var(--accent); border-radius:10px; padding:8px 12px; text-decoration:none; }
 .vids a:hover { background:var(--accent-soft); }
 </style>
-</head>
-<body>
+<style>body{padding-top:64px!important}@media (prefers-color-scheme:dark){#btn-accueil{background:#222!important;color:#fff!important;border-color:#aaa!important}}</style></head>
+<body><a id="btn-accueil" href="https://portail-educatif-primaire.vercel.app/" style="position:fixed;top:10px;left:10px;z-index:9999;background:#fff;color:#222;border:2px solid #555;border-radius:999px;padding:8px 14px;font:700 15px system-ui,sans-serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">🏠 Accueil</a>
 <div class="wrap">
   <header>
     <div>
@@ -153,14 +153,14 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem
   <main class="board" id="board"></main>
 </div>
 <script>
-var BLANKS = ["populaire", "américaine", "1950", "blues"];
+var BLANKS = ["populaire", "États-Unis", "1950", "blues"];
 
 var ARTISTES = [
   { q: "Chuck Berry Johnny B Goode", qui: "Chuck Berry", quand: "1953 à 2017", ou: "Saint-Louis aux États-Unis", periode: "Début du rock’n’roll",
-    avec: [["Sa voix"], ["Son jeu de guitare électrique"]], pieces: ["Johnny B Good"] },
-  { q: "The Beatles I want to hold your hand", qui: "Les Beatles", quand: "1960-1970", ou: "Grande-Bretagne", periode: "Rock pop britannique",
+    avec: [["Sa voix"], ["Son jeu de guitare électrique"]], pieces: ["Johnny B. Goode (1958)"] },
+  { q: "The Beatles I want to hold your hand", qui: "Les Beatles", quand: "1960-1970", ou: "Liverpool, Angleterre", periode: "Rock pop britannique",
     avec: [["John Lennon", "chanteur, guitariste"], ["Paul McCartney", "chanteur, bassiste"], ["George Harrison", "guitariste, chanteur"], ["Ringo Starr", "batteur, chanteur"]],
-    pieces: ["I want to hold your hand (1961)"] },
+    pieces: ["I Want to Hold Your Hand (1963)"] },
   { q: "Bob Dylan Like a Rolling Stone", qui: "Bob Dylan", quand: "1959 à ce jour", ou: "États-Unis", periode: "Rock folklorique",
     avec: [["Chanteur"], ["Guitariste"], ["Harmoniciste"], ["Pianiste"]], pieces: ["Like a Rolling Stone (1965)"] }
 ];
@@ -209,15 +209,20 @@ function toggle(el, force) {
     b.addEventListener("click", function () { toggle(b); });
     return b;
   }
-  p.appendChild(document.createTextNode("Musique "));
+  function T(t) { p.appendChild(document.createTextNode(t)); }
+  T("Le rock est un genre musical ");
   p.appendChild(blank(0));
-  p.appendChild(document.createTextNode(" d’origine "));
+  T(" apparu aux ");
   p.appendChild(blank(1));
-  p.appendChild(document.createTextNode(" apparue dans les années "));
+  T(" dans les années ");
   p.appendChild(blank(2));
-  p.appendChild(document.createTextNode(", issue du jazz, du "));
+  T(". Il est né du mélange du ");
   p.appendChild(blank(3));
-  p.appendChild(document.createTextNode(", du rhythm and blues et de la musique folklorique anglo-américaine."));
+  T(", du rhythm and blues (R&B), de la musique country et du gospel.");
+  var intro = document.createElement("div");
+  intro.style.cssText = "margin-top:10px;line-height:1.6";
+  intro.innerHTML = "<p style='line-height:1.6;margin:0 0 4px'>Le rock se caractérise généralement par :</p><ul style='margin:0;padding-left:22px;font-size:1.1rem'><li>la présence de la guitare électrique;</li><li>une basse et une batterie;</li><li>un rythme énergique;</li><li>des chansons interprétées par un chanteur ou un groupe.</li></ul>";
+  p.parentNode.insertBefore(intro, p.nextSibling);
 })();
 
 var board = document.getElementById("board");

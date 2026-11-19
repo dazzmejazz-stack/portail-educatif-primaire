@@ -40,8 +40,8 @@ h2 { font-size:1.1rem; margin:28px 0 10px; }
 .chips { display:flex; flex-direction:column; gap:8px; }
 .chip { background:var(--card); border:2px solid var(--line); border-radius:10px; padding:8px 10px; min-height:40px; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:600; font-size:0.9rem; overflow-wrap:anywhere; }
 </style>
-</head>
-<body>
+<style>body{padding-top:64px!important}@media (prefers-color-scheme:dark){#btn-accueil{background:#222!important;color:#fff!important;border-color:#aaa!important}}</style></head>
+<body><a id="btn-accueil" href="https://portail-educatif-primaire.vercel.app/" style="position:fixed;top:10px;left:10px;z-index:9999;background:#fff;color:#222;border:2px solid #555;border-radius:999px;padding:8px 14px;font:700 15px system-ui,sans-serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">🏠 Accueil</a>
 <div class="wrap">
   <header>
     <div>
@@ -74,7 +74,7 @@ var ROWS = [
   "q": "Michael Jackson Beat It",
   "cells": [
    "Michael Jackson",
-   "Beat It",
+   "Beat It (1983)",
    "Pop rock",
    "1983",
    "États-Unis",
@@ -85,8 +85,8 @@ var ROWS = [
   "q": "U2 Where The Streets Have No Name",
   "cells": [
    "U2",
-   "Where The Streets Have No Name",
-   "Rock irlandais",
+   "Where the Streets Have No Name (1987)",
+   "Rock alternatif",
    "1987",
    "Irlande",
    "<span class=\"stack\"><span>Bono : chanteur</span><span>The Edge : guitariste et claviériste</span><span>Adam Clayton : bassiste</span><span>Larry Mullen : batteur</span></span>"
@@ -96,7 +96,7 @@ var ROWS = [
   "q": "Nirvana Smells Like Teen Spirit",
   "cells": [
    "Nirvana",
-   "Smells Like Teen Spirit",
+   "Smells Like Teen Spirit (1991)",
    "Rock grunge",
    "Milieu des années 80",
    "Seattle, États-Unis",

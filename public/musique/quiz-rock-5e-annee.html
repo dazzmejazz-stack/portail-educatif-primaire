@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz &#8211; Le rock 5e ann&#233;e</title>
+<style>
+:root{--bg:#f2eeee;--card:#fff;--fg:#2b1d17;--muted:#6e5a50;--accent:#b34a1e;--soft:#f3d9cc;--line:#ddd0ca;--ok:#d8efd6;--okb:#2f8a3a;--no:#f6d5d0;--nob:#c0392b}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1411;--card:#2a1d18;--fg:#f4e9e4;--muted:#c4aea3;--accent:#f08a5d;--soft:#43291f;--line:#553a2f;--ok:#1f3a22;--okb:#6fcf7a;--no:#4a2420;--nob:#ff8a7a}}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.35;padding:16px}
+.wrap{max-width:560px;margin:0 auto}
+.top{display:flex;justify-content:space-between;color:var(--muted);font-size:.95rem;margin-bottom:8px}
+.bar{height:8px;background:var(--line);border-radius:6px;margin-bottom:16px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.q{font-size:1.45rem;font-weight:700;line-height:1.2;margin:0 0 16px}
+.a{display:block;width:100%;text-align:left;font:inherit;font-weight:600;color:inherit;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;min-height:48px;cursor:pointer}
+.a:hover:not(:disabled){border-color:var(--accent)}.a:focus-visible,.nx:focus-visible,.listen:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.a.ok{background:var(--ok);border-color:var(--okb)}.a.no{background:var(--no);border-color:var(--nob)}
+.fb{background:var(--soft);border-radius:12px;padding:12px;margin:6px 0 12px;font-size:1rem}
+.nx{display:block;width:100%;text-align:center;font:inherit;font-weight:700;color:#fff;background:var(--accent);border:0;border-radius:12px;padding:14px;cursor:pointer}
+.listen{display:inline-block;margin:0 0 12px;font-weight:600;font-size:.9rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:10px;padding:6px 12px}
+.end{text-align:center}.big{font-size:3rem;font-weight:800;color:var(--accent);margin:8px 0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="game">
+    <div class="top"><span id="num"></span><span id="score"></span></div>
+    <div class="bar"><i id="prog"></i></div>
+    <h1>Le rock &#8211; 5e ann&#233;e</h1>
+    <p class="q" id="q"></p>
+    <a class="listen" id="listen" target="_blank" rel="noopener noreferrer" hidden>&#201;couter &#8599;</a>
+    <div id="answers"></div>
+    <div class="fb" id="fb" hidden></div>
+    <button class="nx" id="next" type="button" hidden>Question suivante &#8594;</button>
+  </div>
+  <div class="end" id="end" hidden>
+    <h1>Le rock &#8211; 5e ann&#233;e</h1>
+    <p class="q">Quiz termin&#233; !</p>
+    <div class="big" id="final"></div>
+    <p id="msg"></p>
+    <button class="nx" id="again" type="button">Rejouer</button>
+  </div>
+</div>
+<script>
+var A = [
+ {n:"Jimi Hendrix", p:"Foxy Lady", y:1967, per:"Rock psychédélique", debut:1966, info:"Jimi Hendrix : rock psychédélique, guitare électrique et pédales d’effets, de 1966 à 1970.", q:"Jimi Hendrix Foxy Lady"},
+ {n:"Deep Purple", p:"Smoke on the Water", y:1972, per:"Hard rock", debut:1968, info:"Deep Purple : hard rock, groupe formé en 1968 en Angleterre.", q:"Deep Purple Smoke on the Water"},
+ {n:"The Clash", p:"Should I Stay or Should I Go", y:1982, per:"Punk rock", debut:1976, info:"The Clash : punk rock, groupe formé à Londres en 1976.", q:"The Clash Should I Stay or Should I Go"},
+ {n:"Depeche Mode", p:"Just Can’t Get Enough", y:1981, per:"Synthpop", debut:1980, info:"Depeche Mode : synthpop, groupe formé en 1980 à Basildon, en Angleterre.", q:"Depeche Mode Just Can't Get Enough"}
+];
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function build(){
+  var Q=[];
+  A.forEach(function(x){
+    Q.push({t:"Qui a joué « "+x.p+" » ("+x.y+") ?", opts:A.map(function(o){return o.n}), ok:x.n, fb:x.info, link:x.q});
+    Q.push({t:"Quelle pièce est de "+x.n+" ?", opts:A.map(function(o){return o.p}), ok:x.p, fb:x.info, link:x.q});
+    Q.push({t:"En quelle année est sortie « "+x.p+" » ?", opts:A.map(function(o){return String(o.y)}), ok:String(x.y), fb:"« "+x.p+" » de "+x.n+", "+x.y+".", link:x.q});
+    Q.push({t:"Quelle est la période de "+x.n+" ?", opts:A.map(function(o){return o.per}), ok:x.per, fb:x.info});
+    Q.push({t:"Quel artiste ou groupe a commencé en "+x.debut+" ?", opts:A.map(function(o){return o.n}), ok:x.n, fb:x.info});
+  });
+  Q.push({t:"Quel instrument est très important chez Depeche Mode ?", opts:["Les synthétiseurs","Le violon","L’harmonica","Le saxophone"], ok:"Les synthétiseurs", fb:"Depeche Mode joue du synthpop : beaucoup de synthétiseurs."});
+  Q.push({t:"Jimi Hendrix a surtout joué…", opts:["Aux États-Unis et en Angleterre","Seulement en Irlande","Seulement en Italie","En Australie"], ok:"Aux États-Unis et en Angleterre", fb:"Hendrix est américain, mais sa carrière a décollé à Londres."});
+  return shuffle(Q).slice(0,10);
+}
+var Q, i, score, $=function(id){return document.getElementById(id)};
+function start(){Q=build();i=0;score=0;$("game").hidden=false;$("end").hidden=true;show()}
+function show(){
+  var q=Q[i];$("num").textContent="Question "+(i+1)+" / "+Q.length;$("score").textContent="Score : "+score;
+  $("prog").style.width=(i/Q.length*100)+"%";$("q").textContent=q.t;
+  var l=$("listen");if(q.link){l.hidden=false;l.href="https://www.youtube.com/results?search_query="+encodeURIComponent(q.link)}else{l.hidden=true}
+  $("fb").hidden=true;$("next").hidden=true;var box=$("answers");box.innerHTML="";
+  shuffle(q.opts).forEach(function(o){var b=document.createElement("button");b.type="button";b.className="a";b.textContent=o;b.addEventListener("click",function(){pick(b,o)});box.appendChild(b)});
+}
+function pick(b,o){
+  var q=Q[i],good=o===q.ok;if(good)score++;
+  Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true;if(x.textContent===q.ok){x.classList.add("ok");if(x===b)x.textContent="✔ "+x.textContent}});
+  if(!good){b.classList.add("no");b.textContent="✘ "+o}
+  $("fb").textContent=(good?"Bravo ! ":"Pas tout à fait. La bonne réponse : "+q.ok+". ")+q.fb;$("fb").hidden=false;
+  $("score").textContent="Score : "+score;$("next").textContent=i===Q.length-1?"Voir mon résultat":"Question suivante →";$("next").hidden=false;$("next").focus();
+}
+$("next").addEventListener("click",function(){i++;if(i>=Q.length){end()}else{show()}});
+function end(){$("game").hidden=true;$("end").hidden=false;$("final").textContent=score+" / "+Q.length;
+  $("msg").textContent=score>=9?"Excellent ! Tu connais bien le rock.":score>=6?"Bien joué ! Encore un essai pour faire mieux ?":"Réécoute les extraits et réessaie !"}
+$("again").addEventListener("click",start);
+start();
+</script>
+</body>
+</html>
