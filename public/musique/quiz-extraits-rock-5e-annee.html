@@ -42,7 +42,7 @@ h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute
     <div id="teams"><button type="button" class="chip on" data-t="0">Sans équipes</button><button type="button" class="chip" data-t="2">2 équipes</button><button type="button" class="chip" data-t="3">3 équipes</button><button type="button" class="chip" data-t="4">4 équipes</button><button type="button" class="chip" data-t="5">5 équipes</button><button type="button" class="chip" data-t="6">6 équipes</button></div>
     <p class="lbl" style="margin-top:8px">Décompte avant le buzz (temps pour lire la question) :</p>
     <div id="cds"><button type="button" class="chip cdc" data-c="0">Sans décompte</button><button type="button" class="chip cdc on" data-c="5">5 secondes</button><button type="button" class="chip cdc" data-c="10">10 secondes</button></div>
-    <p class="lbl" style="margin:0 0 8px;font-size:.85rem">Points : 2 pour une bonne réponse du premier coup, 1 en réplique.</p>
+    <p class="lbl" style="margin:0 0 8px;font-size:.85rem">Points : 2 pour une bonne réponse du premier coup, 1 en réplique. Défi : dans la 2e moitié du quiz, une mauvaise réponse fait perdre 1 point.</p>
     <p class="lbl" style="margin-top:8px">Choisis la longueur de la partie.</p>
     <button class="a mode" type="button" data-n="10"><b>Court : 10 questions</b><br><small>environ 10 minutes</small></button>
     <button class="a mode" type="button" data-n="20"><b>Moyen : 20 questions</b><br><small>environ 20 minutes</small></button>
@@ -54,6 +54,7 @@ h1{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute
     <div class="bar"><i id="prog"></i></div>
     <h1>Le rock</h1>
     <p class="q" id="q"></p>
+    <div class="ban" id="warn" hidden style="background:#b3261e"></div>
     <div id="players"></div>
     <div class="bz" id="bz" hidden></div>
     <div class="ban" id="ban" hidden></div>
@@ -159,6 +160,7 @@ function startCD(){stopCD();if(!T||!CD)return;var n=CD,bn=$("ban");cdOn=true;
     else{stopCD();Array.prototype.forEach.call($("bz").children,function(b){b.disabled=false});bn.textContent="🔔 Buzz ! Le premier qui touche son bouton répond";bn.style.background="#b34a1e";$("skip").hidden=false;if(sndOn){try{if(AC){tone(1047,0,0.25,"square",0.12)}}catch(e){}}}},1000)}
 Array.prototype.forEach.call(document.querySelectorAll(".cdc"),function(c){c.addEventListener("click",function(){CD=parseInt(c.getAttribute("data-c"),10);Array.prototype.forEach.call(document.querySelectorAll(".cdc"),function(o){o.classList.toggle("on",o===c)})})});
 var Q,i,score;
+function pen(){return T>0&&i>=Math.floor(Q.length/2)}
 function start(n){Q=build(n);i=0;score=0;TS=[];for(var t=0;t<T;t++)TS.push(0);renderSB();$("start").hidden=true;$("end").hidden=true;$("game").hidden=false;show()}
 function show(){
   var q=Q[i];$("num").textContent="Question "+(i+1)+" / "+Q.length;$("score").textContent=T?"":"Score : "+score;
@@ -166,22 +168,22 @@ function show(){
   players.forEach(function(a,k){a.pause();a.style.display=(q.au===k)?"block":"none"});if(q.au!==undefined){try{players[q.au].currentTime=pickSeg(q.au)}catch(e){}}
   $("fb").hidden=true;$("next").hidden=true;var box=$("answers");box.innerHTML="";
   shuffle(q.opts).forEach(function(o){var b=document.createElement("button");b.type="button";b.className="a";b.textContent=o;b.addEventListener("click",function(){pick(b,o)});box.appendChild(b);if(T)b.disabled=true});
-  buz=-1;rp=0;lock=-1;renderBZ();startCD();
+  buz=-1;rp=0;lock=-1;var wn=$("warn");wn.hidden=!pen();if(pen())wn.textContent=i===Math.floor(Q.length/2)?"⚠️ DÉFI ! Attention : à partir de maintenant, une mauvaise réponse = −1 point":"⚠️ Attention : mauvaise réponse = −1 point";renderBZ();startCD();
 }
 function pick(b,o){
   var q=Q[i],good=o===q.ok;
-  if(T&&!good&&!rp&&buz>=0){sfx(false);b.classList.add("no");b.textContent="✘ "+o;b.dataset.w="1";rp=1;lock=buz;buz=-1;
+  if(T&&!good&&!rp&&buz>=0){sfx(false);b.classList.add("no");b.textContent="✘ "+o;b.dataset.w="1";if(pen()){TS[buz]-=1;gain=buz;renderSB();gain=-1}rp=1;lock=buz;buz=-1;
     Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true});
     Array.prototype.forEach.call($("bz").children,function(x,j){x.classList.remove("first");x.disabled=(j===lock)});
-    var bn=$("ban");bn.textContent="✘ Équipe "+(lock+1)+" s’est trompée. Droit de réplique : les autres équipes peuvent buzzer !";bn.style.background="#444";bn.hidden=false;$("skip").hidden=false;return}
-  if(good){score++;if(T&&buz>=0){TS[buz]+=rp?1:2;gain=buz;renderSB();gain=-1}}if(T)Array.prototype.forEach.call($("bz").children,function(x){x.disabled=true});sfx(good);
+    var bn=$("ban");bn.textContent="✘ Équipe "+(lock+1)+" s’est trompée"+(pen()?" (−1 point)":"")+". Droit de réplique : les autres équipes peuvent buzzer !";bn.style.background="#444";bn.hidden=false;$("skip").hidden=false;return}
+  if(good){score++;if(T&&buz>=0){TS[buz]+=rp?1:2;gain=buz;renderSB();gain=-1}}else if(pen()&&buz>=0){TS[buz]-=1;gain=buz;renderSB();gain=-1}if(T)Array.prototype.forEach.call($("bz").children,function(x){x.disabled=true});sfx(good);
   Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true;if(x.textContent===q.ok){x.classList.add("ok");if(x===b)x.textContent="✔ "+x.textContent}});
   if(!good){b.classList.add("no");b.textContent="✘ "+o}
-  var dd=good?"":describe(o);var pre=T&&buz>=0?(good?"Bravo ! +"+(rp?"1 point":"2 points")+" pour l’équipe "+(buz+1)+(rp?" (réplique)":"")+". ":"Pas tout à fait (0 point pour l’équipe "+(buz+1)+"). La bonne réponse : "+q.ok+". "):(good?"Bravo ! ":"Pas tout à fait. La bonne réponse : "+q.ok+". ");$("fb").textContent=pre+q.fb+(dd?" Ton choix, « "+o+" » → "+dd:"");$("fb").hidden=false;
+  var dd=good?"":describe(o);var pre=T&&buz>=0?(good?"Bravo ! +"+(rp?"1 point":"2 points")+" pour l’équipe "+(buz+1)+(rp?" (réplique)":"")+". ":"Pas tout à fait ("+(pen()?"−1 point":"0 point")+" pour l’équipe "+(buz+1)+"). La bonne réponse : "+q.ok+". "):(good?"Bravo ! ":"Pas tout à fait. La bonne réponse : "+q.ok+". ");$("fb").textContent=pre+q.fb+(dd?" Ton choix, « "+o+" » → "+dd:"");$("fb").hidden=false;
   $("score").textContent=T?"":"Score : "+score;$("next").textContent=i===Q.length-1?"Voir mon résultat":"Question suivante →";$("next").hidden=false;$("next").focus();
 }
 $("next").addEventListener("click",function(){i++;if(i>=Q.length){end()}else{show()}});
-function end(){stopCD();players.forEach(function(a){a.pause()});$("game").hidden=true;$("end").hidden=false;var p=score/Q.length;if(T){var mx=Math.max.apply(null,TS),w=[];TS.forEach(function(v,k){if(v===mx)w.push(k+1)});$("final").textContent=w.length>1?"Égalité !":"🏆 Équipe "+w[0];$("msg").textContent=TS.map(function(v,k){return "Équipe "+(k+1)+" : "+v}).join(" · ");$("sb").hidden=true;return}
+function end(){stopCD();players.forEach(function(a){a.pause()});$("game").hidden=true;$("end").hidden=false;var p=score/Q.length;if(T){var mx=Math.max.apply(null,TS),w=[];TS.forEach(function(v,k){if(v===mx)w.push(k+1)});$("final").textContent=w.length>1?"Égalité !":"🏆 Équipe "+w[0];$("msg").textContent=TS.map(function(v,k){return "Équipe "+(k+1)+" : "+v}).join(" · ");$("sb").hidden=true;$("warn").hidden=true;return}
   $("final").textContent=score+" / "+Q.length;
   $("msg").textContent=p>=0.9?"Excellent ! Tu connais bien le rock.":p>=0.6?"Bien joué ! Encore un essai pour faire mieux ?":"Réécoute les extraits et réessaie !"}
 $("again").addEventListener("click",function(){stopCD();players.forEach(function(a){a.pause()});$("end").hidden=true;$("start").hidden=false});
